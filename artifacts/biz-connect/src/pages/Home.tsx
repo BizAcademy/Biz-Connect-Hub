@@ -144,13 +144,23 @@ export default function Home() {
                 <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
                 <div className="bg-slate-900 p-2.5 rounded-2xl shadow-xl w-full max-w-lg">
                   <div className="aspect-video w-full rounded-xl overflow-hidden">
-                    <iframe
-                      src={content.videoUrl}
-                      title="Biz Connect Academy — présentation"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
+                    {/youtube\.com|youtu\.be|vimeo\.com/.test(content.videoUrl) ? (
+                      <iframe
+                        src={content.videoUrl}
+                        title="Biz Connect Academy — présentation"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full"
+                      />
+                    ) : (
+                      <video
+                        src={content.videoUrl}
+                        controls
+                        playsInline
+                        preload="metadata"
+                        className="w-full h-full object-contain bg-black"
+                      />
+                    )}
                   </div>
                 </div>
               </motion.div>

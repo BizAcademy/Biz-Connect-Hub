@@ -26,6 +26,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { TrainingsTab, TestimonialsTab, PortfolioTab, PartnersTab, PaymentsTab, ServicesTab, FeaturesTab, HelpVideosTab } from '@/pages/admin/ItemsTabs';
 import { MediaTab } from '@/pages/admin/MediaTab';
 import { useAdminUpload } from '@/hooks/use-admin-upload';
+import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { Upload } from 'lucide-react';
 
 // Auth Form Schema
@@ -404,6 +405,7 @@ function ContentTab({ pwd }: { pwd: string }) {
   const updateContent = useUpdateContent({ request: { headers: { 'x-admin-password': pwd } } });
   const { toast } = useToast();
   const { uploadFile, isUploading } = useAdminUpload(pwd);
+  const { uploadFile: uploadVideo, isUploading: isUploadingVideo } = useCloudinaryUpload(pwd);
 
   const form = useForm<z.infer<typeof contentSchema>>({
     resolver: zodResolver(contentSchema),
@@ -536,9 +538,35 @@ function ContentTab({ pwd }: { pwd: string }) {
 
             <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">
               <div className="col-span-2"><h3 className="font-bold text-lg mb-2">Médias & Contact</h3></div>
-              <FormField control={form.control} name="videoUrl" render={({ field }) => (
-                <FormItem><FormLabel>ID ou URL Vidéo</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
-              )} />
+              <div className="col-span-2 space-y-2">
+                <Label>Vidéo de présentation (page d'accueil)</Label>
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
+                    {isUploadingVideo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    {isUploadingVideo ? 'Envoi en cours…' : 'Uploader une vidéo'}
+                    <input type="file" accept="video/*" className="hidden" disabled={isUploadingVideo}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const media = await uploadVideo(file);
+                        if (media) {
+                          form.setValue('videoUrl', media.url, { shouldDirty: true });
+                          toast({ title: 'Vidéo envoyée', description: "N'oubliez pas d'enregistrer." });
+                        } else {
+                          toast({ title: 'Erreur', description: "Échec de l'envoi de la vidéo", variant: 'destructive' });
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                  {form.watch('videoUrl') && !/youtube\.com|youtu\.be|vimeo\.com/.test(form.watch('videoUrl')) && (
+                    <video src={form.watch('videoUrl')} className="h-24 rounded-md border border-border bg-black" controls preload="metadata" />
+                  )}
+                </div>
+                <FormField control={form.control} name="videoUrl" render={({ field }) => (
+                  <FormItem><FormControl><Input {...field} placeholder="…ou collez une URL de vidéo" /></FormControl></FormItem>
+                )} />
+              </div>
               <FormField control={form.control} name="whatsappNumber" render={({ field }) => (
                 <FormItem><FormLabel>Numéro WhatsApp (avec indicatif)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />
