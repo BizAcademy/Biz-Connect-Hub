@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrainingsTab, TestimonialsTab, PortfolioTab, PartnersTab, PaymentsTab, ServicesTab, FeaturesTab, HelpVideosTab } from '@/pages/admin/ItemsTabs';
+import { MediaTab } from '@/pages/admin/MediaTab';
 import { useAdminUpload } from '@/hooks/use-admin-upload';
 import { Upload } from 'lucide-react';
 
@@ -142,6 +143,7 @@ export default function Admin() {
             <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="features">Avantages</TabsTrigger>
             <TabsTrigger value="helpvideos">Vidéos d'aide</TabsTrigger>
+            <TabsTrigger value="media">Médias</TabsTrigger>
           </TabsList>
 
           <TabsContent value="leads">
@@ -186,6 +188,10 @@ export default function Admin() {
 
           <TabsContent value="helpvideos">
             <HelpVideosTab pwd={password} />
+          </TabsContent>
+
+          <TabsContent value="media">
+            <MediaTab pwd={password} />
           </TabsContent>
         </Tabs>
       </main>

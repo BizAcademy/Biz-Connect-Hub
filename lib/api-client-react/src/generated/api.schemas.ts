@@ -246,6 +246,32 @@ export interface HelpVideoInput {
   sortOrder?: number;
 }
 
+export interface MediaUploadSignature {
+  cloudName: string;
+  apiKey: string;
+  timestamp: number;
+  signature: string;
+  folder: string;
+}
+
+export interface MediaItem {
+  id: number;
+  name: string;
+  url: string;
+  publicId: string;
+  resourceType: string;
+  createdAt: string;
+}
+
+export interface MediaItemInput {
+  name?: string;
+  /** @minLength 1 */
+  url: string;
+  /** @minLength 1 */
+  publicId: string;
+  resourceType?: string;
+}
+
 export interface Notification {
   id: number;
   name: string;

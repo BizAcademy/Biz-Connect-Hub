@@ -771,6 +771,84 @@ export const DeleteHelpVideoResponse = zod.object({
 
 
 /**
+ * @summary Get a signed Cloudinary upload signature (admin only)
+ */
+export const GetMediaUploadSignatureHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const GetMediaUploadSignatureResponse = zod.object({
+  "cloudName": zod.string(),
+  "apiKey": zod.string(),
+  "timestamp": zod.number(),
+  "signature": zod.string(),
+  "folder": zod.string()
+})
+
+
+/**
+ * @summary List uploaded media (admin only)
+ */
+export const ListMediaHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const ListMediaResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "url": zod.string(),
+  "publicId": zod.string(),
+  "resourceType": zod.string(),
+  "createdAt": zod.string()
+})
+export const ListMediaResponse = zod.array(ListMediaResponseItem)
+
+
+/**
+ * @summary Register an uploaded Cloudinary media (admin only)
+ */
+export const CreateMediaHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const CreateMediaBody = zod.object({
+  "name": zod.string().optional(),
+  "url": zod.string().min(1),
+  "publicId": zod.string().min(1),
+  "resourceType": zod.string().optional()
+})
+
+export const CreateMediaResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "url": zod.string(),
+  "publicId": zod.string(),
+  "resourceType": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete media from Cloudinary and database (admin only)
+ */
+export const DeleteMediaParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteMediaHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const DeleteMediaResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
  * @summary Request a presigned upload URL (admin only)
  */
 export const RequestUploadUrlHeader = zod.object({

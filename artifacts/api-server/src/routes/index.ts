@@ -6,6 +6,7 @@ import contentRouter from "./content";
 import notificationsRouter from "./notifications";
 import siteItemsRouter from "./siteItems";
 import storageRouter from "./storage";
+import mediaRouter from "./media";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(contentRouter);
 router.use(notificationsRouter);
 router.use(siteItemsRouter);
 router.use(storageRouter);
+router.use(mediaRouter);
 
 export default router;

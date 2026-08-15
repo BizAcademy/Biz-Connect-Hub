@@ -32,6 +32,9 @@ import type {
   Lead,
   LeadInput,
   LeadsStats,
+  MediaItem,
+  MediaItemInput,
+  MediaUploadSignature,
   Notification,
   Partner,
   PartnerInput,
@@ -2792,6 +2795,296 @@ export const useDeleteHelpVideo = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getDeleteHelpVideoMutationOptions(options));
+    }
+
+export const getGetMediaUploadSignatureUrl = () => {
+
+
+
+
+  return `/api/media/uploads/signature`
+}
+
+/**
+ * @summary Get a signed Cloudinary upload signature (admin only)
+ */
+export const getMediaUploadSignature = async ( options?: Parameters<typeof customFetch>[1]): Promise<MediaUploadSignature> => {
+
+  return customFetch<MediaUploadSignature>(getGetMediaUploadSignatureUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMediaUploadSignatureMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext> => {
+
+const mutationKey = ['getMediaUploadSignature'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getMediaUploadSignature>>, void> = () => {
+
+
+          return  getMediaUploadSignature(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetMediaUploadSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof getMediaUploadSignature>>>
+
+    export type GetMediaUploadSignatureMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Get a signed Cloudinary upload signature (admin only)
+ */
+export const useGetMediaUploadSignature = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getMediaUploadSignature>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getGetMediaUploadSignatureMutationOptions(options));
+    }
+
+export const getListMediaUrl = () => {
+
+
+
+
+  return `/api/media`
+}
+
+/**
+ * @summary List uploaded media (admin only)
+ */
+export const listMedia = async ( options?: Parameters<typeof customFetch>[1]): Promise<MediaItem[]> => {
+
+  return customFetch<MediaItem[]>(getListMediaUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMediaQueryKey = () => {
+    return [
+    `/api/media`
+    ] as const;
+    }
+
+
+export const getListMediaQueryOptions = <TData = Awaited<ReturnType<typeof listMedia>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMedia>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMediaQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMedia>>> = ({ signal }) => listMedia({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMedia>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMediaQueryResult = NonNullable<Awaited<ReturnType<typeof listMedia>>>
+export type ListMediaQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary List uploaded media (admin only)
+ */
+
+export function useListMedia<TData = Awaited<ReturnType<typeof listMedia>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMedia>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMediaQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMediaUrl = () => {
+
+
+
+
+  return `/api/media`
+}
+
+/**
+ * @summary Register an uploaded Cloudinary media (admin only)
+ */
+export const createMedia = async (mediaItemInput: MediaItemInput, options?: Parameters<typeof customFetch>[1]): Promise<MediaItem> => {
+
+  return customFetch<MediaItem>(getCreateMediaUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(mediaItemInput)
+  }
+);}
+
+
+
+
+
+export const getCreateMediaMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMedia>>, TError,{data: BodyType<MediaItemInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMedia>>, TError,{data: BodyType<MediaItemInput>}, TContext> => {
+
+const mutationKey = ['createMedia'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMedia>>, {data: BodyType<MediaItemInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMedia(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMediaMutationResult = NonNullable<Awaited<ReturnType<typeof createMedia>>>
+    export type CreateMediaMutationBody = BodyType<MediaItemInput>
+    export type CreateMediaMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Register an uploaded Cloudinary media (admin only)
+ */
+export const useCreateMedia = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMedia>>, TError,{data: BodyType<MediaItemInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMedia>>,
+        TError,
+        {data: BodyType<MediaItemInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMediaMutationOptions(options));
+    }
+
+export const getDeleteMediaUrl = (id: number,) => {
+
+
+
+
+  return `/api/media/${id}`
+}
+
+/**
+ * @summary Delete media from Cloudinary and database (admin only)
+ */
+export const deleteMedia = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<DeleteResult> => {
+
+  return customFetch<DeleteResult>(getDeleteMediaUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteMediaMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMedia>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteMedia>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteMedia'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMedia>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteMedia(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteMediaMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMedia>>>
+
+    export type DeleteMediaMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Delete media from Cloudinary and database (admin only)
+ */
+export const useDeleteMedia = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMedia>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteMedia>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteMediaMutationOptions(options));
     }
 
 export const getRequestUploadUrlUrl = () => {

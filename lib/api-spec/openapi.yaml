@@ -950,6 +950,117 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /media/uploads/signature:
+    post:
+      operationId: getMediaUploadSignature
+      tags: [storage]
+      summary: Get a signed Cloudinary upload signature (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Signed upload parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaUploadSignature"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /media:
+    get:
+      operationId: listMedia
+      tags: [storage]
+      summary: List uploaded media (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Media items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MediaItem"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createMedia
+      tags: [storage]
+      summary: Register an uploaded Cloudinary media (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaItem"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /media/{id}:
+    delete:
+      operationId: deleteMedia
+      tags: [storage]
+      summary: Delete media from Cloudinary and database (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /storage/uploads/request-url:
     post:
       operationId: requestUploadUrl
@@ -1425,6 +1536,53 @@ components:
           minLength: 1
         sortOrder:
           type: number
+
+    MediaUploadSignature:
+      type: object
+      required: [cloudName, apiKey, timestamp, signature, folder]
+      properties:
+        cloudName:
+          type: string
+        apiKey:
+          type: string
+        timestamp:
+          type: number
+        signature:
+          type: string
+        folder:
+          type: string
+
+    MediaItem:
+      type: object
+      required: [id, name, url, publicId, resourceType, createdAt]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        url:
+          type: string
+        publicId:
+          type: string
+        resourceType:
+          type: string
+        createdAt:
+          type: string
+
+    MediaItemInput:
+      type: object
+      required: [url, publicId]
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          minLength: 1
+        publicId:
+          type: string
+          minLength: 1
+        resourceType:
+          type: string
 
     Notification:
       type: object
