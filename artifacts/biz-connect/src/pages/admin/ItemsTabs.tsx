@@ -9,20 +9,24 @@ import {
   useListServices, useCreateService, useDeleteService,
   useListFeatureItems, useCreateFeatureItem, useDeleteFeatureItem,
   useListHelpVideos, useCreateHelpVideo, useDeleteHelpVideo,
+  useListMedia,
 } from '@workspace/api-client-react';
-import { Loader2, Plus, Trash2, Upload } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, Images } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAdminUpload } from '@/hooks/use-admin-upload';
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from '@/components/ui/dialog';
+import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 
 function adminReq(pwd: string) {
   return { request: { headers: { 'x-admin-password': pwd } } };
 }
 
-// Small reusable upload button that returns the stored URL
+// Reusable upload field: upload a new file to Cloudinary OR pick from the media gallery
 function UploadField({
   pwd, value, onChange, label, accept = 'image/*',
 }: {
@@ -32,16 +36,29 @@ function UploadField({
   label: string;
   accept?: string;
 }) {
-  const { uploadFile, isUploading } = useAdminUpload(pwd);
+  const { uploadFile, isUploading } = useCloudinaryUpload(pwd);
   const { toast } = useToast();
+  const [galleryOpen, setGalleryOpen] = useState(false);
+
+  const { data: allMedia } = useListMedia(adminReq(pwd));
+
+  // Filter gallery to the accepted resource type
+  const wantsVideo = accept.includes('video');
+  const wantsImage = accept.includes('image');
+  const filteredMedia = (allMedia ?? []).filter((m) => {
+    if (wantsVideo && !wantsImage) return m.resourceType === 'video';
+    if (wantsImage && !wantsVideo) return m.resourceType === 'image';
+    return true; // accept both
+  });
 
   return (
     <div className="space-y-2">
       <div className="text-sm font-medium">{label}</div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Upload new file to Cloudinary */}
         <label className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
           {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-          {isUploading ? 'Envoi en cours…' : 'Choisir un fichier'}
+          {isUploading ? 'Envoi en cours…' : 'Importer'}
           <input
             type="file"
             accept={accept}
@@ -50,9 +67,9 @@ function UploadField({
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const url = await uploadFile(file);
-              if (url) {
-                onChange(url);
+              const media = await uploadFile(file);
+              if (media) {
+                onChange(media.url);
                 toast({ title: 'Fichier envoyé' });
               } else {
                 toast({ title: 'Erreur', description: "Échec de l'envoi du fichier", variant: 'destructive' });
@@ -61,8 +78,54 @@ function UploadField({
             }}
           />
         </label>
+
+        {/* Pick from existing Cloudinary gallery */}
+        <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
+          <DialogTrigger asChild>
+            <Button type="button" variant="outline" size="sm" className="gap-2 h-9">
+              <Images className="w-4 h-4" /> Galerie
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Choisir depuis la bibliothèque Cloudinary</DialogTitle>
+              <DialogDescription>
+                Clique sur un média pour le sélectionner.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-3 gap-3 max-h-96 overflow-y-auto py-2 pr-1">
+              {filteredMedia.length === 0 ? (
+                <p className="col-span-3 text-sm text-muted-foreground text-center py-8">
+                  Aucun média disponible. Importe d'abord depuis l'onglet « Médias ».
+                </p>
+              ) : (
+                filteredMedia.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    className="rounded-lg border border-border overflow-hidden text-left hover:border-primary focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
+                    onClick={() => {
+                      onChange(m.url);
+                      setGalleryOpen(false);
+                      toast({ title: 'Média sélectionné' });
+                    }}
+                  >
+                    {m.resourceType === 'video' ? (
+                      <video src={m.url} className="w-full aspect-square object-cover" muted playsInline />
+                    ) : (
+                      <img src={m.url} alt={m.name} className="w-full aspect-square object-cover" loading="lazy" />
+                    )}
+                    <div className="px-2 py-1 text-xs truncate text-muted-foreground">{m.name || m.publicId}</div>
+                  </button>
+                ))
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Preview current value */}
         {value && (
-          accept.startsWith('image') ? (
+          wantsImage && !wantsVideo ? (
             <img src={value} alt="" className="h-12 rounded-md border border-border object-contain bg-muted" />
           ) : (
             <span className="text-xs text-muted-foreground truncate max-w-[200px]">{value}</span>
