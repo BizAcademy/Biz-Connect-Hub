@@ -3,13 +3,26 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: API specification for Biz Connect Academy
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: leads
+    description: Lead management
+  - name: content
+    description: CMS content management
+  - name: admin
+    description: Admin operations
+  - name: notifications
+    description: Notification widget data
+  - name: items
+    description: Configurable site items (trainings, testimonials, portfolio, partners, payment methods)
+  - name: storage
+    description: Object storage uploads
+
 paths:
   /healthz:
     get:
@@ -24,6 +37,950 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /leads:
+    post:
+      operationId: createLead
+      tags: [leads]
+      summary: Create a new lead (public CTA form submission)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LeadInput"
+      responses:
+        "201":
+          description: Lead created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Lead"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      operationId: listLeads
+      tags: [leads]
+      summary: List all leads (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of leads
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lead"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /leads/export:
+    get:
+      operationId: exportLeads
+      tags: [leads]
+      summary: Export leads as CSV (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /leads/stats:
+    get:
+      operationId: getLeadsStats
+      tags: [leads]
+      summary: Get lead statistics per day (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Stats grouped by day
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeadsStats"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/verify:
+    post:
+      operationId: verifyAdmin
+      tags: [admin]
+      summary: Verify admin password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCredentials"
+      responses:
+        "200":
+          description: Password valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminVerifyResult"
+        "401":
+          description: Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /content:
+    get:
+      operationId: getContent
+      tags: [content]
+      summary: Get all editable site content (texts and prices)
+      responses:
+        "200":
+          description: Site content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContent"
+
+    put:
+      operationId: updateContent
+      tags: [content]
+      summary: Update site content (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SiteContentInput"
+      responses:
+        "200":
+          description: Updated site content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SiteContent"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: Get recent fake notification messages for the widget
+      responses:
+        "200":
+          description: List of notification messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /trainings:
+    get:
+      operationId: listTrainings
+      tags: [items]
+      summary: List trainings
+      responses:
+        "200":
+          description: Trainings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Training"
+    post:
+      operationId: createTraining
+      tags: [items]
+      summary: Create training (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainingInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Training"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /trainings/{id}:
+    put:
+      operationId: updateTraining
+      tags: [items]
+      summary: Update training (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrainingInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Training"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteTraining
+      tags: [items]
+      summary: Delete training (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /testimonials:
+    get:
+      operationId: listTestimonials
+      tags: [items]
+      summary: List testimonials
+      responses:
+        "200":
+          description: Testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+    post:
+      operationId: createTestimonial
+      tags: [items]
+      summary: Create testimonial (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /testimonials/{id}:
+    put:
+      operationId: updateTestimonial
+      tags: [items]
+      summary: Update testimonial (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteTestimonial
+      tags: [items]
+      summary: Delete testimonial (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /portfolio:
+    get:
+      operationId: listPortfolioItems
+      tags: [items]
+      summary: List portfolio preview images
+      responses:
+        "200":
+          description: Portfolio items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PortfolioItem"
+    post:
+      operationId: createPortfolioItem
+      tags: [items]
+      summary: Create portfolio item (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PortfolioItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioItem"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /portfolio/{id}:
+    delete:
+      operationId: deletePortfolioItem
+      tags: [items]
+      summary: Delete portfolio item (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /partners:
+    get:
+      operationId: listPartners
+      tags: [items]
+      summary: List partner logos
+      responses:
+        "200":
+          description: Partners
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Partner"
+    post:
+      operationId: createPartner
+      tags: [items]
+      summary: Create partner (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /partners/{id}:
+    delete:
+      operationId: deletePartner
+      tags: [items]
+      summary: Delete partner (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /payment-methods:
+    get:
+      operationId: listPaymentMethods
+      tags: [items]
+      summary: List payment method logos
+      responses:
+        "200":
+          description: Payment methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentMethod"
+    post:
+      operationId: createPaymentMethod
+      tags: [items]
+      summary: Create payment method (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentMethodInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /payment-methods/{id}:
+    delete:
+      operationId: deletePaymentMethod
+      tags: [items]
+      summary: Delete payment method (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [items]
+      summary: List services
+      responses:
+        "200":
+          description: Services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      operationId: createService
+      tags: [items]
+      summary: Create service (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /services/{id}:
+    put:
+      operationId: updateService
+      tags: [items]
+      summary: Update service (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteService
+      tags: [items]
+      summary: Delete service (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /features:
+    get:
+      operationId: listFeatureItems
+      tags: [items]
+      summary: List feature items
+      responses:
+        "200":
+          description: Feature items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureItem"
+    post:
+      operationId: createFeatureItem
+      tags: [items]
+      summary: Create feature item (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeatureItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureItem"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /features/{id}:
+    delete:
+      operationId: deleteFeatureItem
+      tags: [items]
+      summary: Delete feature item (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-videos:
+    get:
+      operationId: listHelpVideos
+      tags: [items]
+      summary: List help center videos
+      responses:
+        "200":
+          description: Help videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HelpVideo"
+    post:
+      operationId: createHelpVideo
+      tags: [items]
+      summary: Create help video (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HelpVideoInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelpVideo"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /help-videos/{id}:
+    put:
+      operationId: updateHelpVideo
+      tags: [items]
+      summary: Update help video (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HelpVideoInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HelpVideo"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteHelpVideo
+      tags: [items]
+      summary: Delete help video (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /storage/uploads/request-url:
+    post:
+      operationId: requestUploadUrl
+      tags: [storage]
+      summary: Request a presigned upload URL (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: Presigned upload URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +991,452 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    LeadInput:
+      type: object
+      required: [name, phone, city]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        city:
+          type: string
+          minLength: 1
+
+    Lead:
+      type: object
+      required: [id, name, phone, city, createdAt]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        phone:
+          type: string
+        city:
+          type: string
+        createdAt:
+          type: string
+
+    LeadStatDay:
+      type: object
+      required: [date, count]
+      properties:
+        date:
+          type: string
+        count:
+          type: number
+
+    LeadsStats:
+      type: object
+      required: [total, byDay]
+      properties:
+        total:
+          type: number
+        byDay:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadStatDay"
+
+    AdminCredentials:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+
+    AdminVerifyResult:
+      type: object
+      required: [valid]
+      properties:
+        valid:
+          type: boolean
+
+    SiteContent:
+      type: object
+      required: [id, heroTitle, heroSubtitle, heroCtaText, memberCount, memberCountLabel, geoAvailability, videoUrl, offerPrice, offerOriginalPrice, offerLabel, level1Name, level1Amount, level2Name, level2Amount, level3Name, level3Amount, whatsappNumber, updatedAt]
+      properties:
+        id:
+          type: number
+        heroTitle:
+          type: string
+        heroSubtitle:
+          type: string
+        heroCtaText:
+          type: string
+        memberCount:
+          type: string
+        memberCountLabel:
+          type: string
+        geoAvailability:
+          type: string
+        videoUrl:
+          type: string
+        offerPrice:
+          type: string
+        offerOriginalPrice:
+          type: string
+        offerLabel:
+          type: string
+        level1Name:
+          type: string
+        level1Amount:
+          type: string
+        level2Name:
+          type: string
+        level2Amount:
+          type: string
+        level3Name:
+          type: string
+        level3Amount:
+          type: string
+        whatsappNumber:
+          type: string
+        heroImageUrl:
+          type: string
+        signupUrl:
+          type: string
+        communityImageUrl:
+          type: string
+        countriesIconUrl:
+          type: string
+        telegramLink:
+          type: string
+        supportPhone1:
+          type: string
+        supportPhone2:
+          type: string
+        updatedAt:
+          type: string
+
+    SiteContentInput:
+      type: object
+      properties:
+        heroTitle:
+          type: string
+        heroSubtitle:
+          type: string
+        heroCtaText:
+          type: string
+        memberCount:
+          type: string
+        memberCountLabel:
+          type: string
+        geoAvailability:
+          type: string
+        videoUrl:
+          type: string
+        offerPrice:
+          type: string
+        offerOriginalPrice:
+          type: string
+        offerLabel:
+          type: string
+        level1Name:
+          type: string
+        level1Amount:
+          type: string
+        level2Name:
+          type: string
+        level2Amount:
+          type: string
+        level3Name:
+          type: string
+        level3Amount:
+          type: string
+        whatsappNumber:
+          type: string
+        heroImageUrl:
+          type: string
+        signupUrl:
+          type: string
+        communityImageUrl:
+          type: string
+        countriesIconUrl:
+          type: string
+        telegramLink:
+          type: string
+        supportPhone1:
+          type: string
+        supportPhone2:
+          type: string
+
+    DeleteResult:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+
+    Training:
+      type: object
+      required: [id, title, bannerUrl, linkUrl, sortOrder]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        bannerUrl:
+          type: string
+        linkUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    TrainingInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        bannerUrl:
+          type: string
+        linkUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    Testimonial:
+      type: object
+      required: [id, name, country, duration, text, mediaUrl, mediaType, sortOrder]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        country:
+          type: string
+        duration:
+          type: string
+        text:
+          type: string
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        sortOrder:
+          type: number
+
+    TestimonialInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        country:
+          type: string
+        duration:
+          type: string
+        text:
+          type: string
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        sortOrder:
+          type: number
+
+    PortfolioItem:
+      type: object
+      required: [id, imageUrl, caption, sortOrder]
+      properties:
+        id:
+          type: number
+        imageUrl:
+          type: string
+        caption:
+          type: string
+        sortOrder:
+          type: number
+
+    PortfolioItemInput:
+      type: object
+      required: [imageUrl]
+      properties:
+        imageUrl:
+          type: string
+          minLength: 1
+        caption:
+          type: string
+        sortOrder:
+          type: number
+
+    Partner:
+      type: object
+      required: [id, name, logoUrl, sortOrder]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        logoUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    PartnerInput:
+      type: object
+      required: [logoUrl]
+      properties:
+        name:
+          type: string
+        logoUrl:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: number
+
+    PaymentMethod:
+      type: object
+      required: [id, name, logoUrl, sortOrder]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        logoUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    PaymentMethodInput:
+      type: object
+      required: [logoUrl]
+      properties:
+        name:
+          type: string
+        logoUrl:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: number
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+        size:
+          type: number
+        contentType:
+          type: string
+
+    UploadUrlResult:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+
+    Service:
+      type: object
+      required: [id, title, description, iconUrl, sortOrder]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        iconUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    ServiceInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        iconUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    FeatureItem:
+      type: object
+      required: [id, section, label, sortOrder]
+      properties:
+        id:
+          type: number
+        section:
+          type: string
+        label:
+          type: string
+        sortOrder:
+          type: number
+
+    FeatureItemInput:
+      type: object
+      required: [label]
+      properties:
+        section:
+          type: string
+        label:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: number
+
+    HelpVideo:
+      type: object
+      required: [id, title, description, videoUrl, sortOrder]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        videoUrl:
+          type: string
+        sortOrder:
+          type: number
+
+    HelpVideoInput:
+      type: object
+      required: [title, videoUrl]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        videoUrl:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: number
+
+    Notification:
+      type: object
+      required: [id, name, city, action, time]
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        city:
+          type: string
+        action:
+          type: string
+        time:
+          type: string
