@@ -25,7 +25,6 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrainingsTab, TestimonialsTab, PortfolioTab, PartnersTab, PaymentsTab, ServicesTab, FeaturesTab, HelpVideosTab } from '@/pages/admin/ItemsTabs';
 import { MediaTab } from '@/pages/admin/MediaTab';
-import { useAdminUpload } from '@/hooks/use-admin-upload';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { Upload } from 'lucide-react';
 
@@ -404,8 +403,12 @@ function ContentTab({ pwd }: { pwd: string }) {
   const { data: content, isLoading } = useGetContent();
   const updateContent = useUpdateContent({ request: { headers: { 'x-admin-password': pwd } } });
   const { toast } = useToast();
-  const { uploadFile, isUploading } = useAdminUpload(pwd);
-  const { uploadFile: uploadVideo, isUploading: isUploadingVideo } = useCloudinaryUpload(pwd);
+  const { uploadFile: uploadMedia, isUploading } = useCloudinaryUpload(pwd);
+  const isUploadingVideo = isUploading;
+  const uploadVideo = uploadMedia;
+  // Toutes les images/vidéos du formulaire de contenu passent par Cloudinary
+  const uploadFile = async (file: File): Promise<string | null> =>
+    (await uploadMedia(file))?.url ?? null;
 
   const form = useForm<z.infer<typeof contentSchema>>({
     resolver: zodResolver(contentSchema),
