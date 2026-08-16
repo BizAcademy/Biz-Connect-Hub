@@ -9,9 +9,10 @@ import {
   useListServices, useCreateService, useUpdateService, useDeleteService,
   useListFeatureItems, useCreateFeatureItem, useUpdateFeatureItem, useDeleteFeatureItem,
   useListHelpVideos, useCreateHelpVideo, useUpdateHelpVideo, useDeleteHelpVideo,
+  useListServiceTestimonials, useCreateServiceTestimonial, useUpdateServiceTestimonial, useDeleteServiceTestimonial,
   useListMedia,
 } from '@workspace/api-client-react';
-import { Loader2, Plus, Trash2, Upload, Images, Pencil } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, Images, Pencil, MessageSquareQuote } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -652,6 +653,7 @@ export function ServicesTab({ pwd }: { pwd: string }) {
   const [eTitle, setETitle] = useState('');
   const [eDescription, setEDescription] = useState('');
   const [eIconUrl, setEIconUrl] = useState('');
+  const [testimonialsServiceId, setTestimonialsServiceId] = useState<number | null>(null);
 
   const refresh = () => qc.invalidateQueries();
 
@@ -689,6 +691,9 @@ export function ServicesTab({ pwd }: { pwd: string }) {
               </div>
             </div>
             <div className="flex items-center shrink-0">
+              <Button variant="ghost" size="icon" title="Témoignages du service" onClick={() => setTestimonialsServiceId(s.id)}>
+                <MessageSquareQuote className="w-4 h-4 text-blue-600" />
+              </Button>
               <EditButton onClick={() => { setEditId(s.id); setETitle(s.title); setEDescription(s.description ?? ''); setEIconUrl(s.iconUrl ?? ''); }} />
               <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: s.id }, { onSuccess: refresh })}>
                 <Trash2 className="w-4 h-4 text-destructive" />
@@ -716,7 +721,150 @@ export function ServicesTab({ pwd }: { pwd: string }) {
         <Input placeholder="Description" value={eDescription} onChange={(e) => setEDescription(e.target.value)} />
         <UploadField pwd={pwd} value={eIconUrl} onChange={setEIconUrl} label="Icône (image)" />
       </EditDialog>
+
+      {testimonialsServiceId !== null && (
+        <ServiceTestimonialsDialog
+          pwd={pwd}
+          serviceId={testimonialsServiceId}
+          serviceTitle={(items ?? []).find((s) => s.id === testimonialsServiceId)?.title ?? ''}
+          onClose={() => setTestimonialsServiceId(null)}
+        />
+      )}
     </SectionCard>
+  );
+}
+
+// Gestion des témoignages d'un service (1–2 recommandés, photo/vidéo + nom + pays)
+function ServiceTestimonialsDialog({
+  pwd, serviceId, serviceTitle, onClose,
+}: {
+  pwd: string; serviceId: number; serviceTitle: string; onClose: () => void;
+}) {
+  const qc = useQueryClient();
+  const { toast } = useToast();
+  const { data: all, isLoading } = useListServiceTestimonials();
+  const create = useCreateServiceTestimonial(adminReq(pwd));
+  const update = useUpdateServiceTestimonial(adminReq(pwd));
+  const del = useDeleteServiceTestimonial(adminReq(pwd));
+  const items = (all ?? []).filter((t) => t.serviceId === serviceId);
+
+  const [name, setName] = useState('');
+  const [country, setCountry] = useState('');
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eName, setEName] = useState('');
+  const [eCountry, setECountry] = useState('');
+  const [eMediaUrl, setEMediaUrl] = useState('');
+  const [eMediaType, setEMediaType] = useState<'image' | 'video'>('image');
+
+  const refresh = () => qc.invalidateQueries();
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Témoignages — {serviceTitle}</DialogTitle>
+          <DialogDescription>Photo ou vidéo + nom + pays. 1 à 2 témoignages recommandés par service.</DialogDescription>
+        </DialogHeader>
+
+        {isLoading ? (
+          <div className="py-8 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-3 p-3 rounded-xl border border-border bg-muted/10">
+              <Input placeholder="Nom" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input placeholder="Pays" value={country} onChange={(e) => setCountry(e.target.value)} />
+              <select
+                className="h-10 rounded-md border border-border bg-background px-3 text-sm"
+                value={mediaType}
+                onChange={(e) => { setMediaType(e.target.value as 'image' | 'video'); setMediaUrl(''); }}
+              >
+                <option value="image">Photo</option>
+                <option value="video">Vidéo</option>
+              </select>
+              <div className="md:col-span-2">
+                <UploadField
+                  pwd={pwd}
+                  value={mediaUrl}
+                  onChange={setMediaUrl}
+                  label={mediaType === 'video' ? 'Vidéo du témoignage' : 'Photo du témoignage'}
+                  accept={mediaType === 'video' ? 'video/*' : 'image/*'}
+                />
+              </div>
+              <Button
+                disabled={!name || !mediaUrl || create.isPending}
+                onClick={() =>
+                  create.mutate({ data: { serviceId, name, country, mediaUrl, mediaType } }, {
+                    onSuccess: () => { setName(''); setCountry(''); setMediaUrl(''); refresh(); toast({ title: 'Témoignage ajouté' }); },
+                    onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+                  })
+                }
+              >
+                {create.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />} Ajouter
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              {items.map((t) => (
+                <div key={t.id} className="border border-border rounded-xl p-3 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {t.mediaType === 'video' ? (
+                      <video src={t.mediaUrl} className="w-14 h-14 object-cover rounded-md bg-black shrink-0" />
+                    ) : (
+                      <img src={t.mediaUrl} alt="" className="w-14 h-14 object-cover rounded-md bg-muted shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <div className="font-semibold text-sm truncate">{t.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">{t.country || '—'} · {t.mediaType === 'video' ? 'Vidéo' : 'Photo'}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center shrink-0">
+                    <EditButton onClick={() => { setEditId(t.id); setEName(t.name); setECountry(t.country ?? ''); setEMediaUrl(t.mediaUrl); setEMediaType((t.mediaType as 'image' | 'video') || 'image'); }} />
+                    <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {items.length === 0 && <p className="text-sm text-muted-foreground">Aucun témoignage pour ce service.</p>}
+            </div>
+          </div>
+        )}
+
+        <EditDialog
+          open={editId !== null}
+          onOpenChange={(o) => !o && setEditId(null)}
+          title="Modifier le témoignage"
+          isSaving={update.isPending}
+          canSave={!!eName && !!eMediaUrl}
+          onSave={() =>
+            update.mutate({ id: editId!, data: { serviceId, name: eName, country: eCountry, mediaUrl: eMediaUrl, mediaType: eMediaType } }, {
+              onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Témoignage modifié' }); },
+              onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+            })
+          }
+        >
+          <Input placeholder="Nom" value={eName} onChange={(e) => setEName(e.target.value)} />
+          <Input placeholder="Pays" value={eCountry} onChange={(e) => setECountry(e.target.value)} />
+          <select
+            className="h-10 rounded-md border border-border bg-background px-3 text-sm"
+            value={eMediaType}
+            onChange={(e) => setEMediaType(e.target.value as 'image' | 'video')}
+          >
+            <option value="image">Photo</option>
+            <option value="video">Vidéo</option>
+          </select>
+          <UploadField
+            pwd={pwd}
+            value={eMediaUrl}
+            onChange={setEMediaUrl}
+            label={eMediaType === 'video' ? 'Vidéo du témoignage' : 'Photo du témoignage'}
+            accept={eMediaType === 'video' ? 'video/*' : 'image/*'}
+          />
+        </EditDialog>
+      </DialogContent>
+    </Dialog>
   );
 }
 

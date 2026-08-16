@@ -72,6 +72,18 @@ export const servicesTable = pgTable("services", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Témoignages liés à un service (« Voir le témoignage » sur chaque carte service)
+export const serviceTestimonialsTable = pgTable("service_testimonials", {
+  id: serial("id").primaryKey(),
+  serviceId: integer("service_id").notNull(),
+  name: text("name").notNull(),
+  country: text("country").notNull().default(""),
+  mediaUrl: text("media_url").notNull(),
+  mediaType: text("media_type").notNull().default("image"), // 'image' | 'video'
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // Listes d'avantages ('included' = tout ce qui est inclus, 'offer' = carte de prix)
 export const featureItemsTable = pgTable("feature_items", {
   id: serial("id").primaryKey(),
@@ -92,6 +104,9 @@ export const helpVideosTable = pgTable("help_videos", {
 });
 
 export const insertServiceSchema = createInsertSchema(servicesTable).omit({ id: true, createdAt: true });
+export const insertServiceTestimonialSchema = createInsertSchema(serviceTestimonialsTable).omit({ id: true, createdAt: true });
+export type ServiceTestimonial = typeof serviceTestimonialsTable.$inferSelect;
+export type InsertServiceTestimonial = z.infer<typeof insertServiceTestimonialSchema>;
 export const insertFeatureItemSchema = createInsertSchema(featureItemsTable).omit({ id: true, createdAt: true });
 export const insertHelpVideoSchema = createInsertSchema(helpVideosTable).omit({ id: true, createdAt: true });
 export type Service = typeof servicesTable.$inferSelect;

@@ -29,6 +29,7 @@ function formatContent(c: typeof siteContentTable.$inferSelect) {
     signupUrl: c.signupUrl,
     communityImageUrl: c.communityImageUrl,
     countriesIconUrl: c.countriesIconUrl,
+    gainsPosterUrl: c.gainsPosterUrl,
     telegramLink: c.telegramLink,
     supportPhone1: c.supportPhone1,
     supportPhone2: c.supportPhone2,

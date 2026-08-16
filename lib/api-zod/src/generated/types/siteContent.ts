@@ -29,6 +29,7 @@ export interface SiteContent {
   signupUrl?: string;
   communityImageUrl?: string;
   countriesIconUrl?: string;
+  gainsPosterUrl?: string;
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;

@@ -121,6 +121,7 @@ export const GetContentResponse = zod.object({
   "signupUrl": zod.string().optional(),
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
+  "gainsPosterUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
@@ -157,6 +158,7 @@ export const UpdateContentBody = zod.object({
   "signupUrl": zod.string().optional(),
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
+  "gainsPosterUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional()
@@ -185,6 +187,7 @@ export const UpdateContentResponse = zod.object({
   "signupUrl": zod.string().optional(),
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
+  "gainsPosterUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
@@ -770,6 +773,103 @@ export const DeleteServiceHeader = zod.object({
 })
 
 export const DeleteServiceResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary List service testimonials
+ */
+export const ListServiceTestimonialsResponseItem = zod.object({
+  "id": zod.number(),
+  "serviceId": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "sortOrder": zod.number()
+})
+export const ListServiceTestimonialsResponse = zod.array(ListServiceTestimonialsResponseItem)
+
+
+/**
+ * @summary Create service testimonial (admin only)
+ */
+export const CreateServiceTestimonialHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const CreateServiceTestimonialBody = zod.object({
+  "serviceId": zod.number(),
+  "name": zod.string().min(1),
+  "country": zod.string().optional(),
+  "mediaUrl": zod.string().min(1),
+  "mediaType": zod.enum(['image', 'video']).optional(),
+  "sortOrder": zod.number().optional()
+})
+
+export const CreateServiceTestimonialResponse = zod.object({
+  "id": zod.number(),
+  "serviceId": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Update service testimonial (admin only)
+ */
+export const UpdateServiceTestimonialParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateServiceTestimonialHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const UpdateServiceTestimonialBody = zod.object({
+  "serviceId": zod.number(),
+  "name": zod.string().min(1),
+  "country": zod.string().optional(),
+  "mediaUrl": zod.string().min(1),
+  "mediaType": zod.enum(['image', 'video']).optional(),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateServiceTestimonialResponse = zod.object({
+  "id": zod.number(),
+  "serviceId": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "mediaUrl": zod.string(),
+  "mediaType": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Delete service testimonial (admin only)
+ */
+export const DeleteServiceTestimonialParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteServiceTestimonialHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const DeleteServiceTestimonialResponse = zod.object({
   "success": zod.boolean()
 })
 

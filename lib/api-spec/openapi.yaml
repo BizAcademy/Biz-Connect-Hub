@@ -944,6 +944,114 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /service-testimonials:
+    get:
+      operationId: listServiceTestimonials
+      tags: [items]
+      summary: List service testimonials
+      responses:
+        "200":
+          description: Service testimonials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceTestimonial"
+    post:
+      operationId: createServiceTestimonial
+      tags: [items]
+      summary: Create service testimonial (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceTestimonialInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceTestimonial"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /service-testimonials/{id}:
+    put:
+      operationId: updateServiceTestimonial
+      tags: [items]
+      summary: Update service testimonial (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceTestimonialInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceTestimonial"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteServiceTestimonial
+      tags: [items]
+      summary: Delete service testimonial (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /features:
     get:
       operationId: listFeatureItems
@@ -1436,6 +1544,8 @@ components:
           type: string
         countriesIconUrl:
           type: string
+        gainsPosterUrl:
+          type: string
         telegramLink:
           type: string
         supportPhone1:
@@ -1490,12 +1600,53 @@ components:
           type: string
         countriesIconUrl:
           type: string
+        gainsPosterUrl:
+          type: string
         telegramLink:
           type: string
         supportPhone1:
           type: string
         supportPhone2:
           type: string
+
+    ServiceTestimonial:
+      type: object
+      required: [id, serviceId, name, country, mediaUrl, mediaType, sortOrder]
+      properties:
+        id:
+          type: number
+        serviceId:
+          type: number
+        name:
+          type: string
+        country:
+          type: string
+        mediaUrl:
+          type: string
+        mediaType:
+          type: string
+        sortOrder:
+          type: number
+
+    ServiceTestimonialInput:
+      type: object
+      required: [serviceId, name, mediaUrl]
+      properties:
+        serviceId:
+          type: number
+        name:
+          type: string
+          minLength: 1
+        country:
+          type: string
+        mediaUrl:
+          type: string
+          minLength: 1
+        mediaType:
+          type: string
+          enum: [image, video]
+        sortOrder:
+          type: number
 
     DeleteResult:
       type: object

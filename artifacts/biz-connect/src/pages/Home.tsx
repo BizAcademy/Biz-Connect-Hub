@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   useGetContent, useListTrainings, useListTestimonials,
   useListAmbassadors, useListPartners, useListPaymentMethods,
-  useListServices, useListFeatureItems,
+  useListServices, useListFeatureItems, useListServiceTestimonials,
 } from '@workspace/api-client-react';
 import { NotificationWidget } from '@/components/NotificationWidget';
 import { Navbar } from '@/components/Navbar';
@@ -72,6 +72,8 @@ export default function Home() {
   const { data: paymentMethods } = useListPaymentMethods();
   const { data: services } = useListServices();
   const { data: featureItems } = useListFeatureItems();
+  const { data: serviceTestimonials } = useListServiceTestimonials();
+  const [openServiceId, setOpenServiceId] = useState<number | null>(null);
 
   if (isLoading || !content) {
     return (
@@ -93,7 +95,7 @@ export default function Home() {
   const communityImage = content.communityImageUrl || '/membres-bca.jpg';
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans overflow-hidden">
+    <div className="home-emphasis min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans overflow-hidden">
 
       <Navbar />
 
@@ -132,7 +134,7 @@ export default function Home() {
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
                 <SignupLink
                   href={signupUrl}
-                  className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 text-base"
+                  className="btn-blink px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 text-base"
                 >
                   {content.heroCtaText} <ArrowRight size={20} />
                 </SignupLink>
@@ -330,12 +332,24 @@ export default function Home() {
 
           {services && services.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((s, i) => (
+              {services.map((s) => {
+                const sTestimonials = (serviceTestimonials ?? []).filter(t => t.serviceId === s.id);
+                const isOpen = openServiceId === s.id;
+                return (
                 <motion.div
                   key={s.id}
                   initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}
-                  className="p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors group"
+                  className="relative p-8 rounded-2xl bg-card border border-border hover:border-primary/50 transition-colors group"
                 >
+                  {sTestimonials.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setOpenServiceId(isOpen ? null : s.id)}
+                      className="btn-blink absolute top-3 right-3 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-full hover:bg-blue-700 transition-colors z-10"
+                    >
+                      {isOpen ? 'Fermer' : 'Voir le témoignage'}
+                    </button>
+                  )}
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 overflow-hidden">
                     {s.iconUrl ? (
                       <img src={s.iconUrl} alt="" className="w-9 h-9 object-contain" />
@@ -345,8 +359,32 @@ export default function Home() {
                   </div>
                   <h3 className="text-lg font-bold mb-2">{s.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
+                  {isOpen && sTestimonials.length > 0 && (
+                    <div className="mt-5 -mx-2 overflow-hidden">
+                      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory px-2 pb-2">
+                        {sTestimonials.map((t) => (
+                          <div key={t.id} className="snap-start shrink-0 w-48 rounded-xl border border-border bg-background overflow-hidden">
+                            {t.mediaType === 'video' ? (
+                              <video src={t.mediaUrl} controls className="w-full h-40 object-cover bg-black" />
+                            ) : (
+                              <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-cover" />
+                            )}
+                            <div className="px-3 py-2 text-xs">
+                              <span className="font-bold">{t.name}</span>
+                              {t.country && (
+                                <span className="text-muted-foreground">
+                                  {' '}· {COUNTRY_FLAGS[t.country] ? `${COUNTRY_FLAGS[t.country]} ` : ''}{t.country}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -415,6 +453,16 @@ export default function Home() {
             <p className="text-muted-foreground">Calcule ce que tu peux gagner en parrainant d'autres membres.</p>
           </div>
 
+          {content.gainsPosterUrl ? (
+            <div className="mb-12">
+              <img
+                src={content.gainsPosterUrl}
+                alt="Tes gains par affiliation"
+                className="w-full rounded-2xl border border-border shadow-lg"
+              />
+            </div>
+          ) : (
+          <>
           {/* Simulation table */}
           <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm mb-12">
             <div className="grid grid-cols-4 bg-slate-800 text-white text-xs font-bold uppercase tracking-wider px-6 py-3">
@@ -441,56 +489,8 @@ export default function Home() {
             </p>
             <p className="text-muted-foreground text-sm mt-2">Et tes filleuls travaillent pour toi 24h/24</p>
           </div>
-        </div>
-      </section>
-
-      {/* ===== 8. PARRAINAGE 3 NIVEAUX — storytelling ===== */}
-      <section className="py-16 px-6 bg-blue-900 text-white">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl lg:text-4xl font-bold mb-3 text-green-400">Le système de parrainage à 3 niveaux</h2>
-            <p className="text-base text-blue-100/80 max-w-2xl mx-auto">
-              Un système conçu pour maximiser tes gains de manière exponentielle.
-            </p>
-          </div>
-
-          {/* Level cards */}
-          <div className="grid md:grid-cols-3 gap-5 mb-10">
-            {[
-              { level: 1, name: content.level1Name, amount: content.level1Amount, desc: "Tu invites quelqu'un directement", example: "Toi → invites → Rufus", color: "bg-amber-400" },
-              { level: 2, name: content.level2Name, amount: content.level2Amount, desc: "Ton filleul invite à son tour", example: "Rufus → invites → Jamelle", color: "bg-green-500" },
-              { level: 3, name: content.level3Name, amount: content.level3Amount, desc: "Le filleul de ton filleul invite", example: "Jamelle → invites → Christian", color: "bg-amber-600" },
-            ].map((tier, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="bg-white/5 border border-white/10 p-6 rounded-2xl relative overflow-hidden"
-              >
-                <div className={`absolute top-0 left-0 w-full h-1 ${tier.color}`} />
-                <div className="text-xs font-bold uppercase tracking-wider text-white/50 mb-2">Niveau {tier.level}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{tier.name}</h3>
-                <p className="text-blue-100/70 text-sm mb-4">{tier.desc}</p>
-                <div className="text-xs text-blue-100/60 mb-3 italic">{tier.example}</div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-amber-400">{tier.amount}</span>
-                  <span className="text-white/50 text-sm">/ vente</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Key message */}
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}
-            className="bg-white/10 border border-white/20 rounded-2xl p-6 text-center"
-          >
-            <Star className="w-8 h-8 text-amber-400 mx-auto mb-3" />
-            <p className="text-white font-bold text-lg leading-relaxed">
-              Même si tu ne connais pas Jamelle, ni Christian — tu es quand même payé quand ils s'inscrivent !
-            </p>
-            <SignupLink href={signupUrl} className="mt-5 inline-flex items-center gap-2 px-7 py-3.5 bg-green-500 text-white font-bold rounded-xl hover:scale-105 transition-transform">
-              Je m'inscris maintenant <ArrowRight size={18} />
-            </SignupLink>
-          </motion.div>
+          </>
+          )}
         </div>
       </section>
 
@@ -500,7 +500,7 @@ export default function Home() {
           <div className="text-center mb-14">
             <Award className="w-10 h-10 text-primary mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">
-              De nombreux jeunes venant de plusieurs pays se sont lancer et voilà leur résultat et témoignage
+              De nombreux jeunes venant de plusieurs pays se sont lancés et voilà leurs résultats et témoignages
             </h2>
           </div>
 
@@ -555,7 +555,7 @@ export default function Home() {
           )}
 
           <div className="text-center mt-10">
-            <SignupLink href={signupUrl} className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
+            <SignupLink href={signupUrl} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
               Je m'inscris maintenant <ArrowRight size={18} />
             </SignupLink>
           </div>
@@ -597,7 +597,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <SignupLink href={signupUrl} className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
+              <SignupLink href={signupUrl} className="btn-blink w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
                 Je m'inscris maintenant <ArrowRight size={16} />
               </SignupLink>
             </motion.div>
@@ -729,7 +729,7 @@ export default function Home() {
           </p>
           <p className="text-base mb-10 opacity-80">Je prends la décision aujourd'hui de transformer ma vie avec la BCA</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <SignupLink href={signupUrl} className="px-8 py-4 bg-background text-foreground font-black rounded-xl shadow-2xl hover:scale-105 transition-transform w-full sm:w-auto text-base">
+            <SignupLink href={signupUrl} className="btn-blink px-8 py-4 bg-background text-foreground font-black rounded-xl shadow-2xl hover:scale-105 transition-transform w-full sm:w-auto text-base">
               Je m'inscris maintenant
             </SignupLink>
             <Link href="/contact"

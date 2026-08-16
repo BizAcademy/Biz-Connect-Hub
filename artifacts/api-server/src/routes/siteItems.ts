@@ -9,6 +9,7 @@ import {
   partnersTable,
   paymentMethodsTable,
   servicesTable,
+  serviceTestimonialsTable,
   featureItemsTable,
   helpVideosTable,
 } from "@workspace/db";
@@ -27,6 +28,8 @@ import {
   UpdatePaymentMethodBody,
   CreateServiceBody,
   UpdateServiceBody,
+  CreateServiceTestimonialBody,
+  UpdateServiceTestimonialBody,
   CreateFeatureItemBody,
   UpdateFeatureItemBody,
   CreateHelpVideoBody,
@@ -382,6 +385,58 @@ router.delete("/services/:id", async (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
   await db.delete(servicesTable).where(eq(servicesTable.id, id));
+  res.json({ success: true });
+});
+
+// ---------- Service testimonials ----------
+router.get("/service-testimonials", async (_req, res) => {
+  const rows = await db
+    .select()
+    .from(serviceTestimonialsTable)
+    .orderBy(asc(serviceTestimonialsTable.sortOrder), asc(serviceTestimonialsTable.id));
+  res.json(rows);
+});
+
+router.post("/service-testimonials", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const parsed = CreateServiceTestimonialBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db
+    .insert(serviceTestimonialsTable)
+    .values(parsed.data)
+    .returning();
+  res.status(201).json(created);
+});
+
+router.put("/service-testimonials/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdateServiceTestimonialBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(serviceTestimonialsTable)
+    .set(parsed.data)
+    .where(eq(serviceTestimonialsTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
+});
+
+router.delete("/service-testimonials/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  await db.delete(serviceTestimonialsTable).where(eq(serviceTestimonialsTable.id, id));
   res.json({ success: true });
 });
 

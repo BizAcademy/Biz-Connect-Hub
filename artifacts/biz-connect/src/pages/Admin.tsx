@@ -56,6 +56,7 @@ const contentSchema = z.object({
   signupUrl: z.string().min(1),
   communityImageUrl: z.string(),
   countriesIconUrl: z.string(),
+  gainsPosterUrl: z.string(),
   telegramLink: z.string(),
   supportPhone1: z.string(),
   supportPhone2: z.string(),
@@ -66,7 +67,7 @@ function ImageUploadField({
   form, name, label, uploadFile, isUploading,
 }: {
   form: ReturnType<typeof useForm<z.infer<typeof contentSchema>>>;
-  name: 'communityImageUrl' | 'countriesIconUrl';
+  name: 'communityImageUrl' | 'countriesIconUrl' | 'gainsPosterUrl';
   label: string;
   uploadFile: (file: File, opts?: { removeBackground?: boolean }) => Promise<string | null>;
   isUploading: boolean;
@@ -535,8 +536,9 @@ function ContentTab({ pwd }: { pwd: string }) {
                 <FormItem><FormLabel>Prix Barré (Original)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name="offerLabel" render={({ field }) => (
-                <FormItem><FormLabel>Label de l'offre (ex: OFFRE SPÉCIALE)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+                <FormItem><FormLabel>Label de l'offre (ex: Inscriptions à vie)</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />
+              <ImageUploadField form={form} name="gainsPosterUrl" label="Affiche « Tes gains par affiliation » (remplace le tableau des gains)" uploadFile={uploadFile} isUploading={isUploading} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">

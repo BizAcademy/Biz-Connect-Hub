@@ -71,6 +71,7 @@ export interface SiteContent {
   signupUrl?: string;
   communityImageUrl?: string;
   countriesIconUrl?: string;
+  gainsPosterUrl?: string;
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
@@ -99,9 +100,39 @@ export interface SiteContentInput {
   signupUrl?: string;
   communityImageUrl?: string;
   countriesIconUrl?: string;
+  gainsPosterUrl?: string;
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
+}
+
+export interface ServiceTestimonial {
+  id: number;
+  serviceId: number;
+  name: string;
+  country: string;
+  mediaUrl: string;
+  mediaType: string;
+  sortOrder: number;
+}
+
+export type ServiceTestimonialInputMediaType = typeof ServiceTestimonialInputMediaType[keyof typeof ServiceTestimonialInputMediaType];
+
+
+export const ServiceTestimonialInputMediaType = {
+  image: 'image',
+  video: 'video',
+} as const;
+
+export interface ServiceTestimonialInput {
+  serviceId: number;
+  /** @minLength 1 */
+  name: string;
+  country?: string;
+  /** @minLength 1 */
+  mediaUrl: string;
+  mediaType?: ServiceTestimonialInputMediaType;
+  sortOrder?: number;
 }
 
 export interface DeleteResult {
