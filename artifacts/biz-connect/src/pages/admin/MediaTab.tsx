@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useListMedia, useDeleteMedia, getListMediaQueryKey,
@@ -19,6 +20,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
   const { data: items, isLoading } = useListMedia(adminReq(pwd));
   const del = useDeleteMedia(adminReq(pwd));
   const { uploadFile, isUploading } = useCloudinaryUpload(pwd);
+  const [removeBg, setRemoveBg] = useState(false);
 
   const refresh = () => qc.invalidateQueries({ queryKey: getListMediaQueryKey() });
 
@@ -51,7 +53,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                const media = await uploadFile(file);
+                const media = await uploadFile(file, { removeBackground: removeBg && file.type.startsWith('image') });
                 if (media) {
                   refresh();
                   toast({ title: 'Média envoyé', description: media.name });
@@ -61,6 +63,15 @@ export function MediaTab({ pwd }: { pwd: string }) {
                 e.target.value = '';
               }}
             />
+          </label>
+          <label className="mt-3 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+            <input
+              type="checkbox"
+              className="accent-primary"
+              checked={removeBg}
+              onChange={(e) => setRemoveBg(e.target.checked)}
+            />
+            Supprimer le fond (images uniquement — image détourée, qualité conservée)
           </label>
         </div>
 

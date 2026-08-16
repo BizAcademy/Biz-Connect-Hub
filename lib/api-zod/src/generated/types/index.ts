@@ -24,6 +24,7 @@ export * from './leadStatDay';
 export * from './mediaItem';
 export * from './mediaItemInput';
 export * from './mediaUploadSignature';
+export * from './mediaUploadSignatureRequest';
 export * from './notification';
 export * from './partner';
 export * from './partnerInput';

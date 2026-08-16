@@ -12,4 +12,5 @@ export interface MediaUploadSignature {
   timestamp: number;
   signature: string;
   folder: string;
+  backgroundRemoval?: string;
 }

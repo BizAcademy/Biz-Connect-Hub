@@ -68,10 +68,11 @@ function ImageUploadField({
   form: ReturnType<typeof useForm<z.infer<typeof contentSchema>>>;
   name: 'communityImageUrl' | 'countriesIconUrl';
   label: string;
-  uploadFile: (file: File) => Promise<string | null>;
+  uploadFile: (file: File, opts?: { removeBackground?: boolean }) => Promise<string | null>;
   isUploading: boolean;
 }) {
   const { toast } = useToast();
+  const [removeBg, setRemoveBg] = useState(false);
   const value = form.watch(name);
   return (
     <div className="col-span-2 space-y-2">
@@ -84,7 +85,7 @@ function ImageUploadField({
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const url = await uploadFile(file);
+              const url = await uploadFile(file, { removeBackground: removeBg });
               if (url) {
                 form.setValue(name, url, { shouldDirty: true });
                 toast({ title: 'Image envoyée', description: "N'oubliez pas d'enregistrer." });
@@ -102,6 +103,15 @@ function ImageUploadField({
           </Button>
         )}
       </div>
+      <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+        <input
+          type="checkbox"
+          className="accent-primary"
+          checked={removeBg}
+          onChange={(e) => setRemoveBg(e.target.checked)}
+        />
+        Supprimer le fond (image détourée, qualité conservée)
+      </label>
     </div>
   );
 }
@@ -400,6 +410,7 @@ function StatsTab({ pwd }: { pwd: string }) {
 // CONTENT TAB COMPONENT
 // --------------------------------------------------------
 function ContentTab({ pwd }: { pwd: string }) {
+  const [removeBgHero, setRemoveBgHero] = useState(false);
   const { data: content, isLoading } = useGetContent();
   const updateContent = useUpdateContent({ request: { headers: { 'x-admin-password': pwd } } });
   const { toast } = useToast();
@@ -407,8 +418,10 @@ function ContentTab({ pwd }: { pwd: string }) {
   const isUploadingVideo = isUploading;
   const uploadVideo = uploadMedia;
   // Toutes les images/vidéos du formulaire de contenu passent par Cloudinary
-  const uploadFile = async (file: File): Promise<string | null> =>
-    (await uploadMedia(file))?.url ?? null;
+  const uploadFile = async (
+    file: File,
+    opts?: { removeBackground?: boolean },
+  ): Promise<string | null> => (await uploadMedia(file, opts))?.url ?? null;
 
   const form = useForm<z.infer<typeof contentSchema>>({
     resolver: zodResolver(contentSchema),
@@ -466,7 +479,7 @@ function ContentTab({ pwd }: { pwd: string }) {
                       onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (!file) return;
-                        const url = await uploadFile(file);
+                        const url = await uploadFile(file, { removeBackground: removeBgHero });
                         if (url) {
                           form.setValue('heroImageUrl', url, { shouldDirty: true });
                           toast({ title: 'Image envoyée', description: "N'oubliez pas d'enregistrer." });
@@ -486,6 +499,15 @@ function ContentTab({ pwd }: { pwd: string }) {
                     </Button>
                   )}
                 </div>
+                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    className="accent-primary"
+                    checked={removeBgHero}
+                    onChange={(e) => setRemoveBgHero(e.target.checked)}
+                  />
+                  Supprimer le fond (image détourée, qualité conservée)
+                </label>
               </div>
               <ImageUploadField form={form} name="communityImageUrl" label="Image des membres (sous le bouton d'inscription)" uploadFile={uploadFile} isUploading={isUploading} />
               <ImageUploadField form={form} name="countriesIconUrl" label="Icône de la section « Disponible dans X pays »" uploadFile={uploadFile} isUploading={isUploading} />

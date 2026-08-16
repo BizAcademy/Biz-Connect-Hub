@@ -6,12 +6,6 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface MediaItemInput {
-  name?: string;
-  /** @minLength 1 */
-  url: string;
-  /** @minLength 1 */
-  publicId: string;
-  resourceType?: string;
+export interface MediaUploadSignatureRequest {
   removeBackground?: boolean;
 }

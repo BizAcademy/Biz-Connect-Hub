@@ -1035,6 +1035,12 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MediaUploadSignatureRequest"
       responses:
         "200":
           description: Signed upload parameters
@@ -1641,6 +1647,12 @@ components:
         sortOrder:
           type: number
 
+    MediaUploadSignatureRequest:
+      type: object
+      properties:
+        removeBackground:
+          type: boolean
+
     MediaUploadSignature:
       type: object
       required: [cloudName, apiKey, timestamp, signature, folder]
@@ -1654,6 +1666,8 @@ components:
         signature:
           type: string
         folder:
+          type: string
+        backgroundRemoval:
           type: string
 
     MediaItem:
@@ -1687,6 +1701,8 @@ components:
           minLength: 1
         resourceType:
           type: string
+        removeBackground:
+          type: boolean
 
     Notification:
       type: object

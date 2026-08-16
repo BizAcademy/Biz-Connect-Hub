@@ -39,6 +39,7 @@ function UploadField({
   const { uploadFile, isUploading } = useCloudinaryUpload(pwd);
   const { toast } = useToast();
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [removeBg, setRemoveBg] = useState(false);
 
   const { data: allMedia } = useListMedia(adminReq(pwd));
 
@@ -67,7 +68,7 @@ function UploadField({
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const media = await uploadFile(file);
+              const media = await uploadFile(file, { removeBackground: removeBg && !file.type.startsWith('video') });
               if (media) {
                 onChange(media.url);
                 toast({ title: 'Fichier envoyé' });
@@ -132,6 +133,17 @@ function UploadField({
           )
         )}
       </div>
+      {wantsImage && (
+        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
+          <input
+            type="checkbox"
+            className="accent-primary"
+            checked={removeBg}
+            onChange={(e) => setRemoveBg(e.target.checked)}
+          />
+          Supprimer le fond (image détourée, qualité conservée)
+        </label>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { requireAdmin } from "../lib/adminAuth";
 const router: IRouter = Router();
 
 const CLOUDINARY_FOLDER = "biz-connect";
+const BACKGROUND_REMOVAL = "cloudinary_ai";
 const MAX_BYTES = 50 * 1024 * 1024; // 50 Mo, aligné sur l'upload object-storage
 
 function getCloudinaryConfig(): {
@@ -37,7 +38,18 @@ type CloudinaryResource = {
   secure_url: string;
   resource_type: string;
   bytes: number;
+  info?: {
+    background_removal?: {
+      cloudinary_ai?: { status?: string };
+    };
+  };
 };
+
+function backgroundRemovalStatus(resource: CloudinaryResource): string | null {
+  return resource.info?.background_removal?.cloudinary_ai?.status ?? null;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Fetch asset metadata from the Cloudinary Admin API (server-side truth). */
 async function fetchCloudinaryResource(
@@ -94,11 +106,17 @@ router.post("/media/uploads/signature", (req: Request, res: Response) => {
     return;
   }
 
-  const timestamp = Math.floor(Date.now() / 1000);
-  const signature = signParams(
-    { folder: CLOUDINARY_FOLDER, timestamp },
-    config.apiSecret,
+  const removeBackground = Boolean(
+    (req.body as { removeBackground?: unknown } | undefined)?.removeBackground,
   );
+
+  const timestamp = Math.floor(Date.now() / 1000);
+  const params: Record<string, string | number> = {
+    folder: CLOUDINARY_FOLDER,
+    timestamp,
+  };
+  if (removeBackground) params.background_removal = BACKGROUND_REMOVAL;
+  const signature = signParams(params, config.apiSecret);
 
   res.json({
     cloudName: config.cloudName,
@@ -106,6 +124,7 @@ router.post("/media/uploads/signature", (req: Request, res: Response) => {
     timestamp,
     signature,
     folder: CLOUDINARY_FOLDER,
+    ...(removeBackground ? { backgroundRemoval: BACKGROUND_REMOVAL } : {}),
   });
 });
 
@@ -155,9 +174,43 @@ router.post("/media", async (req: Request, res: Response) => {
   }
 
   try {
-    const resource = await fetchCloudinaryResource(config, publicId);
+    let resource = await fetchCloudinaryResource(config, publicId);
     if (!resource) {
       res.status(400).json({ error: "Média introuvable sur Cloudinary" });
+      return;
+    }
+
+    // Si une suppression d'arrière-plan est en cours, attendre qu'elle soit
+    // terminée pour enregistrer l'URL finale (PNG transparent).
+    // Quand le client a demandé la suppression, un statut absent est traité
+    // comme « en attente » (l'Admin API peut mettre du temps à l'exposer).
+    const removalRequested = parsed.data.removeBackground === true;
+    let status = backgroundRemovalStatus(resource);
+    if (removalRequested && status === null) status = "pending";
+    if (status === "pending") {
+      for (let i = 0; i < 15 && status === "pending"; i++) {
+        await sleep(2000);
+        resource = await fetchCloudinaryResource(config, publicId);
+        if (!resource) break;
+        status = backgroundRemovalStatus(resource);
+        if (removalRequested && status === null) status = "pending";
+      }
+    }
+    if (!resource) {
+      res.status(400).json({ error: "Média introuvable sur Cloudinary" });
+      return;
+    }
+    if (status === "pending") {
+      res.status(504).json({
+        error: "La suppression de l'arrière-plan prend trop de temps, réessayez",
+      });
+      return;
+    }
+    if (status && status !== "complete") {
+      await destroyCloudinaryAsset(config, publicId, resource.resource_type);
+      res.status(422).json({
+        error: "Échec de la suppression de l'arrière-plan, réessayez",
+      });
       return;
     }
     if (resource.bytes > MAX_BYTES) {

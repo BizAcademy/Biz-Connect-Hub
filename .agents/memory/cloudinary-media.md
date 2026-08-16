@@ -13,3 +13,7 @@ Rules (from a code-review pass):
 - **Why:** the Cloudinary secret is higher-privilege than admin-session data; unverified publicIds would let a signed destroy hit arbitrary assets in the account.
 
 Cloudinary signatures = sha1 of sorted `key=value` params joined by `&` + api secret; only the signed params may be sent in the upload form.
+
+## Suppression de fond (Cloudinary AI)
+- Add-on `background_removal: "cloudinary_ai"` actif sur le compte ; le paramètre doit être inclus dans la signature serveur et envoyé sur l'endpoint `image/upload` (ignoré sur `auto/upload`).
+- Traitement asynchrone : l'asset est remplacé par un PNG (nouvelle version/URL). À l'enregistrement, le serveur polle l'Admin API (`info.background_removal.cloudinary_ai.status`) jusqu'à `complete` et persiste l'URL finale ; statut absent juste après upload = encore en attente si la suppression a été demandée (flag `removeBackground` dans le body de POST /media).

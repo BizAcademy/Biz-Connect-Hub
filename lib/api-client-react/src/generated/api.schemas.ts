@@ -263,12 +263,17 @@ export interface HelpVideoInput {
   sortOrder?: number;
 }
 
+export interface MediaUploadSignatureRequest {
+  removeBackground?: boolean;
+}
+
 export interface MediaUploadSignature {
   cloudName: string;
   apiKey: string;
   timestamp: number;
   signature: string;
   folder: string;
+  backgroundRemoval?: string;
 }
 
 export interface MediaItem {
@@ -287,6 +292,7 @@ export interface MediaItemInput {
   /** @minLength 1 */
   publicId: string;
   resourceType?: string;
+  removeBackground?: boolean;
 }
 
 export interface Notification {

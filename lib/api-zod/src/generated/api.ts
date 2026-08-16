@@ -833,12 +833,17 @@ export const GetMediaUploadSignatureHeader = zod.object({
   "x-admin-password": zod.string()
 })
 
+export const GetMediaUploadSignatureBody = zod.object({
+  "removeBackground": zod.boolean().optional()
+})
+
 export const GetMediaUploadSignatureResponse = zod.object({
   "cloudName": zod.string(),
   "apiKey": zod.string(),
   "timestamp": zod.number(),
   "signature": zod.string(),
-  "folder": zod.string()
+  "folder": zod.string(),
+  "backgroundRemoval": zod.string().optional()
 })
 
 
@@ -875,7 +880,8 @@ export const CreateMediaBody = zod.object({
   "name": zod.string().optional(),
   "url": zod.string().min(1),
   "publicId": zod.string().min(1),
-  "resourceType": zod.string().optional()
+  "resourceType": zod.string().optional(),
+  "removeBackground": zod.boolean().optional()
 })
 
 export const CreateMediaResponse = zod.object({

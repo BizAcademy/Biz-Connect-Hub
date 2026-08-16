@@ -37,6 +37,7 @@ import type {
   MediaItem,
   MediaItemInput,
   MediaUploadSignature,
+  MediaUploadSignatureRequest,
   Notification,
   Partner,
   PartnerInput,
@@ -3029,14 +3030,14 @@ export const getGetMediaUploadSignatureUrl = () => {
 /**
  * @summary Get a signed Cloudinary upload signature (admin only)
  */
-export const getMediaUploadSignature = async ( options?: Parameters<typeof customFetch>[1]): Promise<MediaUploadSignature> => {
+export const getMediaUploadSignature = async (mediaUploadSignatureRequest?: MediaUploadSignatureRequest, options?: Parameters<typeof customFetch>[1]): Promise<MediaUploadSignature> => {
 
   return customFetch<MediaUploadSignature>(getGetMediaUploadSignatureUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(mediaUploadSignatureRequest)
   }
 );}
 
@@ -3045,8 +3046,8 @@ export const getMediaUploadSignature = async ( options?: Parameters<typeof custo
 
 
 export const getGetMediaUploadSignatureMutationOptions = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,{data?: BodyType<MediaUploadSignatureRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,{data?: BodyType<MediaUploadSignatureRequest>}, TContext> => {
 
 const mutationKey = ['getMediaUploadSignature'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -3058,10 +3059,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getMediaUploadSignature>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getMediaUploadSignature>>, {data?: BodyType<MediaUploadSignatureRequest>}> = (props) => {
+          const {data} = props ?? {};
 
-
-          return  getMediaUploadSignature(requestOptions)
+          return  getMediaUploadSignature(data,requestOptions)
         }
 
 
@@ -3072,18 +3073,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type GetMediaUploadSignatureMutationResult = NonNullable<Awaited<ReturnType<typeof getMediaUploadSignature>>>
-
+    export type GetMediaUploadSignatureMutationBody = BodyType<MediaUploadSignatureRequest> | undefined
     export type GetMediaUploadSignatureMutationError = ErrorType<ErrorResponse>
 
     /**
  * @summary Get a signed Cloudinary upload signature (admin only)
  */
 export const useGetMediaUploadSignature = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getMediaUploadSignature>>, TError,{data?: BodyType<MediaUploadSignatureRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof getMediaUploadSignature>>,
         TError,
-        void,
+        {data?: BodyType<MediaUploadSignatureRequest>},
         TContext
       > => {
       return useMutation(getGetMediaUploadSignatureMutationOptions(options));
