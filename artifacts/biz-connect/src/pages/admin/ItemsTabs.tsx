@@ -1,17 +1,17 @@
 import { useState, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  useListTrainings, useCreateTraining, useDeleteTraining,
-  useListTestimonials, useCreateTestimonial, useDeleteTestimonial,
-  useListAmbassadors, useCreateAmbassador, useDeleteAmbassador,
-  useListPartners, useCreatePartner, useDeletePartner,
-  useListPaymentMethods, useCreatePaymentMethod, useDeletePaymentMethod,
-  useListServices, useCreateService, useDeleteService,
-  useListFeatureItems, useCreateFeatureItem, useDeleteFeatureItem,
-  useListHelpVideos, useCreateHelpVideo, useDeleteHelpVideo,
+  useListTrainings, useCreateTraining, useUpdateTraining, useDeleteTraining,
+  useListTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial,
+  useListAmbassadors, useCreateAmbassador, useUpdateAmbassador, useDeleteAmbassador,
+  useListPartners, useCreatePartner, useUpdatePartner, useDeletePartner,
+  useListPaymentMethods, useCreatePaymentMethod, useUpdatePaymentMethod, useDeletePaymentMethod,
+  useListServices, useCreateService, useUpdateService, useDeleteService,
+  useListFeatureItems, useCreateFeatureItem, useUpdateFeatureItem, useDeleteFeatureItem,
+  useListHelpVideos, useCreateHelpVideo, useUpdateHelpVideo, useDeleteHelpVideo,
   useListMedia,
 } from '@workspace/api-client-react';
-import { Loader2, Plus, Trash2, Upload, Images } from 'lucide-react';
+import { Loader2, Plus, Trash2, Upload, Images, Pencil } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -148,6 +148,45 @@ function UploadField({
   );
 }
 
+// Reusable edit dialog shell with save/cancel actions
+function EditDialog({
+  open, onOpenChange, title, onSave, isSaving, canSave = true, children,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  onSave: () => void;
+  isSaving: boolean;
+  canSave?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Modifie les champs puis enregistre.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">{children}</div>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>Annuler</Button>
+          <Button onClick={onSave} disabled={isSaving || !canSave}>
+            {isSaving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Enregistrer
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditButton({ onClick }: { onClick: () => void }) {
+  return (
+    <Button variant="ghost" size="icon" onClick={onClick} title="Modifier">
+      <Pencil className="w-4 h-4 text-muted-foreground" />
+    </Button>
+  );
+}
+
 function SectionCard({ title, desc, children }: { title: string; desc: string; children: ReactNode }) {
   return (
     <Card>
@@ -168,10 +207,15 @@ export function TrainingsTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListTrainings();
   const create = useCreateTraining(adminReq(pwd));
+  const update = useUpdateTraining(adminReq(pwd));
   const del = useDeleteTraining(adminReq(pwd));
   const [title, setTitle] = useState('');
   const [bannerUrl, setBannerUrl] = useState('');
   const [linkUrl, setLinkUrl] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eTitle, setETitle] = useState('');
+  const [eBannerUrl, setEBannerUrl] = useState('');
+  const [eLinkUrl, setELinkUrl] = useState('');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -207,14 +251,35 @@ export function TrainingsTab({ pwd }: { pwd: string }) {
                 <div className="font-semibold text-sm truncate">{t.title}</div>
                 <div className="text-xs text-muted-foreground truncate">{t.linkUrl || 'Aucun lien'}</div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex items-center shrink-0">
+                <EditButton onClick={() => { setEditId(t.id); setETitle(t.title); setEBannerUrl(t.bannerUrl ?? ''); setELinkUrl(t.linkUrl ?? ''); }} />
+                <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
           </div>
         ))}
         {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground">Aucune formation. La section utilisera le contenu par défaut.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier la formation"
+        isSaving={update.isPending}
+        canSave={!!eTitle}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { title: eTitle, bannerUrl: eBannerUrl, linkUrl: eLinkUrl } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Formation modifiée' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Titre de la formation" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
+        <Input placeholder="Lien « Accéder maintenant » (https://…)" value={eLinkUrl} onChange={(e) => setELinkUrl(e.target.value)} />
+        <UploadField pwd={pwd} value={eBannerUrl} onChange={setEBannerUrl} label="Bannière (image)" />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -227,6 +292,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListTestimonials();
   const create = useCreateTestimonial(adminReq(pwd));
+  const update = useUpdateTestimonial(adminReq(pwd));
   const del = useDeleteTestimonial(adminReq(pwd));
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
@@ -234,6 +300,13 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
   const [text, setText] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eName, setEName] = useState('');
+  const [eCountry, setECountry] = useState('');
+  const [eDuration, setEDuration] = useState('');
+  const [eText, setEText] = useState('');
+  const [eMediaUrl, setEMediaUrl] = useState('');
+  const [eMediaType, setEMediaType] = useState<'image' | 'video'>('image');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -291,14 +364,54 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
                 <div className="font-semibold text-sm truncate">{t.name} · {t.country}</div>
                 <div className="text-xs text-muted-foreground truncate">{t.duration} — {t.text}</div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex items-center shrink-0">
+                <EditButton onClick={() => {
+                  setEditId(t.id); setEName(t.name); setECountry(t.country ?? ''); setEDuration(t.duration ?? '');
+                  setEText(t.text ?? ''); setEMediaUrl(t.mediaUrl ?? ''); setEMediaType((t.mediaType === 'video' ? 'video' : 'image'));
+                }} />
+                <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
           </div>
         ))}
         {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground">Aucun témoignage. La section utilisera le contenu par défaut.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier le témoignage"
+        isSaving={update.isPending}
+        canSave={!!eName}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { name: eName, country: eCountry, duration: eDuration, text: eText, mediaUrl: eMediaUrl, mediaType: eMediaType } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Témoignage modifié' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Nom (ex: Aïcha K.)" value={eName} onChange={(e) => setEName(e.target.value)} />
+        <Input placeholder="Pays (ex: Côte d'Ivoire)" value={eCountry} onChange={(e) => setECountry(e.target.value)} />
+        <Input placeholder="Durée pour le résultat (ex: 12 jours)" value={eDuration} onChange={(e) => setEDuration(e.target.value)} />
+        <Input placeholder="Texte affiché au-dessus du média" value={eText} onChange={(e) => setEText(e.target.value)} />
+        <select
+          className="border border-border rounded-md px-3 py-2 text-sm bg-background"
+          value={eMediaType}
+          onChange={(e) => { setEMediaType(e.target.value as 'image' | 'video'); setEMediaUrl(''); }}
+        >
+          <option value="image">Capture d'écran</option>
+          <option value="video">Vidéo</option>
+        </select>
+        <UploadField
+          pwd={pwd}
+          value={eMediaUrl}
+          onChange={setEMediaUrl}
+          label={eMediaType === 'video' ? 'Vidéo (mp4…)' : 'Capture (image)'}
+          accept={eMediaType === 'video' ? 'video/*' : 'image/*'}
+        />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -307,7 +420,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
 // GÉNÉRIQUE — listes d'images (portefeuille, partenaires, paiements)
 // --------------------------------------------------------
 function ImageListTab({
-  pwd, title, desc, items, isLoading, onCreate, onDelete, isCreating, withName,
+  pwd, title, desc, items, isLoading, onCreate, onUpdate, onDelete, isCreating, isUpdating, withName,
 }: {
   pwd: string;
   title: string;
@@ -315,12 +428,17 @@ function ImageListTab({
   items: Array<{ id: number; url: string; label: string }>;
   isLoading: boolean;
   onCreate: (url: string, name: string, done: () => void) => void;
+  onUpdate: (id: number, url: string, name: string, done: () => void) => void;
   onDelete: (id: number) => void;
   isCreating: boolean;
+  isUpdating: boolean;
   withName?: boolean;
 }) {
   const [url, setUrl] = useState('');
   const [name, setName] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eUrl, setEUrl] = useState('');
+  const [eName, setEName] = useState('');
 
   if (isLoading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
 
@@ -340,14 +458,29 @@ function ImageListTab({
             <img src={it.url} alt={it.label} className="w-full h-28 object-contain bg-muted" />
             <div className="p-2 flex items-center justify-between gap-2">
               <span className="text-xs truncate">{it.label || '—'}</span>
-              <Button variant="ghost" size="icon" onClick={() => onDelete(it.id)}>
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex items-center shrink-0">
+                <EditButton onClick={() => { setEditId(it.id); setEUrl(it.url); setEName(it.label); }} />
+                <Button variant="ghost" size="icon" onClick={() => onDelete(it.id)}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
           </div>
         ))}
         {items.length === 0 && <p className="text-sm text-muted-foreground col-span-full">Aucun élément. La section utilisera le contenu par défaut.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title={`Modifier — ${title}`}
+        isSaving={isUpdating}
+        canSave={!!eUrl}
+        onSave={() => onUpdate(editId!, eUrl, eName, () => setEditId(null))}
+      >
+        {withName && <Input placeholder="Nom (optionnel)" value={eName} onChange={(e) => setEName(e.target.value)} />}
+        <UploadField pwd={pwd} value={eUrl} onChange={setEUrl} label="Image" />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -360,10 +493,15 @@ export function AmbassadorsTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListAmbassadors();
   const create = useCreateAmbassador(adminReq(pwd));
+  const update = useUpdateAmbassador(adminReq(pwd));
   const del = useDeleteAmbassador(adminReq(pwd));
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eName, setEName] = useState('');
+  const [eCountry, setECountry] = useState('');
+  const [eImageUrl, setEImageUrl] = useState('');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -394,14 +532,35 @@ export function AmbassadorsTab({ pwd }: { pwd: string }) {
             <img src={a.imageUrl} alt={a.name} className="w-full h-40 object-cover" />
             <div className="p-2 flex items-center justify-between gap-2">
               <span className="text-xs truncate">{a.name}{a.country ? ` · ${a.country}` : ''}</span>
-              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: a.id }, { onSuccess: refresh })}>
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex items-center shrink-0">
+                <EditButton onClick={() => { setEditId(a.id); setEName(a.name); setECountry(a.country ?? ''); setEImageUrl(a.imageUrl); }} />
+                <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: a.id }, { onSuccess: refresh })}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
           </div>
         ))}
         {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground col-span-full">Aucun ambassadeur configuré.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier l'ambassadeur"
+        isSaving={update.isPending}
+        canSave={!!eName && !!eImageUrl}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { name: eName, country: eCountry, imageUrl: eImageUrl } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Ambassadeur modifié' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Nom (ex: Aïcha K.)" value={eName} onChange={(e) => setEName(e.target.value)} />
+        <Input placeholder="Pays (ex: Cameroun)" value={eCountry} onChange={(e) => setECountry(e.target.value)} />
+        <UploadField pwd={pwd} value={eImageUrl} onChange={setEImageUrl} label="Capture d'écran" />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -411,6 +570,7 @@ export function PartnersTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data, isLoading } = useListPartners();
   const create = useCreatePartner(adminReq(pwd));
+  const update = useUpdatePartner(adminReq(pwd));
   const del = useDeletePartner(adminReq(pwd));
 
   return (
@@ -421,10 +581,17 @@ export function PartnersTab({ pwd }: { pwd: string }) {
       items={(data ?? []).map((p) => ({ id: p.id, url: p.logoUrl, label: p.name }))}
       isLoading={isLoading}
       isCreating={create.isPending}
+      isUpdating={update.isPending}
       withName
       onCreate={(url, name, done) =>
         create.mutate({ data: { logoUrl: url, name } }, {
           onSuccess: () => { done(); qc.invalidateQueries(); toast({ title: 'Ajouté' }); },
+          onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+        })
+      }
+      onUpdate={(id, url, name, done) =>
+        update.mutate({ id, data: { logoUrl: url, name } }, {
+          onSuccess: () => { done(); qc.invalidateQueries(); toast({ title: 'Modifié' }); },
           onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
         })
       }
@@ -438,6 +605,7 @@ export function PaymentsTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data, isLoading } = useListPaymentMethods();
   const create = useCreatePaymentMethod(adminReq(pwd));
+  const update = useUpdatePaymentMethod(adminReq(pwd));
   const del = useDeletePaymentMethod(adminReq(pwd));
 
   return (
@@ -448,10 +616,17 @@ export function PaymentsTab({ pwd }: { pwd: string }) {
       items={(data ?? []).map((p) => ({ id: p.id, url: p.logoUrl, label: p.name }))}
       isLoading={isLoading}
       isCreating={create.isPending}
+      isUpdating={update.isPending}
       withName
       onCreate={(url, name, done) =>
         create.mutate({ data: { logoUrl: url, name } }, {
           onSuccess: () => { done(); qc.invalidateQueries(); toast({ title: 'Ajouté' }); },
+          onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+        })
+      }
+      onUpdate={(id, url, name, done) =>
+        update.mutate({ id, data: { logoUrl: url, name } }, {
+          onSuccess: () => { done(); qc.invalidateQueries(); toast({ title: 'Modifié' }); },
           onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
         })
       }
@@ -468,10 +643,15 @@ export function ServicesTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListServices();
   const create = useCreateService(adminReq(pwd));
+  const update = useUpdateService(adminReq(pwd));
   const del = useDeleteService(adminReq(pwd));
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [iconUrl, setIconUrl] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eTitle, setETitle] = useState('');
+  const [eDescription, setEDescription] = useState('');
+  const [eIconUrl, setEIconUrl] = useState('');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -508,13 +688,34 @@ export function ServicesTab({ pwd }: { pwd: string }) {
                 <div className="text-xs text-muted-foreground truncate">{s.description}</div>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: s.id }, { onSuccess: refresh })}>
-              <Trash2 className="w-4 h-4 text-destructive" />
-            </Button>
+            <div className="flex items-center shrink-0">
+              <EditButton onClick={() => { setEditId(s.id); setETitle(s.title); setEDescription(s.description ?? ''); setEIconUrl(s.iconUrl ?? ''); }} />
+              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: s.id }, { onSuccess: refresh })}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
           </div>
         ))}
         {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground">Aucun service. La section utilisera le contenu par défaut.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier le service"
+        isSaving={update.isPending}
+        canSave={!!eTitle}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { title: eTitle, description: eDescription, iconUrl: eIconUrl } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Service modifié' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Titre du service" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
+        <Input placeholder="Description" value={eDescription} onChange={(e) => setEDescription(e.target.value)} />
+        <UploadField pwd={pwd} value={eIconUrl} onChange={setEIconUrl} label="Icône (image)" />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -527,9 +728,13 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListFeatureItems();
   const create = useCreateFeatureItem(adminReq(pwd));
+  const update = useUpdateFeatureItem(adminReq(pwd));
   const del = useDeleteFeatureItem(adminReq(pwd));
   const [label, setLabel] = useState('');
   const [section, setSection] = useState<'included' | 'offer'>('included');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eLabel, setELabel] = useState('');
+  const [eSection, setESection] = useState<'included' | 'offer'>('included');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -545,9 +750,12 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
         {rows.map((f) => (
           <div key={f.id} className="border border-border rounded-lg px-3 py-2 flex items-center justify-between gap-2 text-sm">
             <span className="truncate">{f.label}</span>
-            <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: f.id }, { onSuccess: refresh })}>
-              <Trash2 className="w-4 h-4 text-destructive" />
-            </Button>
+            <div className="flex items-center shrink-0">
+              <EditButton onClick={() => { setEditId(f.id); setELabel(f.label); setESection(f.section === 'offer' ? 'offer' : 'included'); }} />
+              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: f.id }, { onSuccess: refresh })}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
           </div>
         ))}
         {rows.length === 0 && <p className="text-xs text-muted-foreground">Aucun élément. La section utilisera le contenu par défaut.</p>}
@@ -584,6 +792,30 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
         {list('Tout ce qui est inclus', included)}
         {list('Carte de prix (offre)', offer)}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier l'avantage"
+        isSaving={update.isPending}
+        canSave={!!eLabel}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { label: eLabel, section: eSection } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Avantage modifié' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <select
+          className="border border-border rounded-md px-3 py-2 text-sm bg-background w-full"
+          value={eSection}
+          onChange={(e) => setESection(e.target.value as 'included' | 'offer')}
+        >
+          <option value="included">Tout ce qui est inclus</option>
+          <option value="offer">Carte de prix (offre)</option>
+        </select>
+        <Input placeholder="Texte de l'avantage" value={eLabel} onChange={(e) => setELabel(e.target.value)} />
+      </EditDialog>
     </SectionCard>
   );
 }
@@ -596,10 +828,15 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListHelpVideos();
   const create = useCreateHelpVideo(adminReq(pwd));
+  const update = useUpdateHelpVideo(adminReq(pwd));
   const del = useDeleteHelpVideo(adminReq(pwd));
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eTitle, setETitle] = useState('');
+  const [eDescription, setEDescription] = useState('');
+  const [eVideoUrl, setEVideoUrl] = useState('');
 
   const refresh = () => qc.invalidateQueries();
 
@@ -634,13 +871,35 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
               <div className="font-semibold truncate">{v.title}</div>
               <div className="text-xs text-muted-foreground truncate">{v.description} — {v.videoUrl}</div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: v.id }, { onSuccess: refresh })}>
-              <Trash2 className="w-4 h-4 text-destructive" />
-            </Button>
+            <div className="flex items-center shrink-0">
+              <EditButton onClick={() => { setEditId(v.id); setETitle(v.title); setEDescription(v.description ?? ''); setEVideoUrl(v.videoUrl); }} />
+              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: v.id }, { onSuccess: refresh })}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
           </div>
         ))}
         {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground">Aucune vidéo pour le moment.</p>}
       </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(o) => !o && setEditId(null)}
+        title="Modifier la vidéo d'aide"
+        isSaving={update.isPending}
+        canSave={!!eTitle && !!eVideoUrl}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { title: eTitle, description: eDescription, videoUrl: eVideoUrl } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Vidéo modifiée' }); },
+            onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Titre de la vidéo" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
+        <Input placeholder="Description" value={eDescription} onChange={(e) => setEDescription(e.target.value)} />
+        <Input placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
+        <UploadField pwd={pwd} value={eVideoUrl} onChange={setEVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
+      </EditDialog>
     </SectionCard>
   );
 }

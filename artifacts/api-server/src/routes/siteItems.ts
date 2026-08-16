@@ -20,11 +20,15 @@ import {
   UpdateTestimonialBody,
   CreatePortfolioItemBody,
   CreateAmbassadorBody,
+  UpdateAmbassadorBody,
   CreatePartnerBody,
+  UpdatePartnerBody,
   CreatePaymentMethodBody,
+  UpdatePaymentMethodBody,
   CreateServiceBody,
   UpdateServiceBody,
   CreateFeatureItemBody,
+  UpdateFeatureItemBody,
   CreateHelpVideoBody,
   UpdateHelpVideoBody,
 } from "@workspace/api-zod";
@@ -198,6 +202,27 @@ router.post("/ambassadors", async (req, res) => {
   res.status(201).json(created);
 });
 
+router.put("/ambassadors/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdateAmbassadorBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(ambassadorsTable)
+    .set(parsed.data)
+    .where(eq(ambassadorsTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
+});
+
 router.delete("/ambassadors/:id", async (req, res) => {
   if (!requireAdmin(req, res)) return;
   const id = parseId(req, res);
@@ -229,6 +254,27 @@ router.post("/partners", async (req, res) => {
   res.status(201).json(created);
 });
 
+router.put("/partners/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdatePartnerBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(partnersTable)
+    .set(parsed.data)
+    .where(eq(partnersTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
+});
+
 router.delete("/partners/:id", async (req, res) => {
   if (!requireAdmin(req, res)) return;
   const id = parseId(req, res);
@@ -258,6 +304,27 @@ router.post("/payment-methods", async (req, res) => {
     .values(parsed.data)
     .returning();
   res.status(201).json(created);
+});
+
+router.put("/payment-methods/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdatePaymentMethodBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(paymentMethodsTable)
+    .set(parsed.data)
+    .where(eq(paymentMethodsTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
 });
 
 router.delete("/payment-methods/:id", async (req, res) => {
@@ -336,6 +403,27 @@ router.post("/features", async (req, res) => {
   }
   const [created] = await db.insert(featureItemsTable).values(parsed.data).returning();
   res.status(201).json(created);
+});
+
+router.put("/features/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdateFeatureItemBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(featureItemsTable)
+    .set(parsed.data)
+    .where(eq(featureItemsTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
 });
 
 router.delete("/features/:id", async (req, res) => {

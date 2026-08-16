@@ -483,6 +483,37 @@ export const CreateAmbassadorResponse = zod.object({
 
 
 /**
+ * @summary Update ambassador (admin only)
+ */
+export const UpdateAmbassadorParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAmbassadorHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const UpdateAmbassadorBody = zod.object({
+  "name": zod.string().min(1),
+  "country": zod.string().optional(),
+  "imageUrl": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateAmbassadorResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "imageUrl": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
  * @summary Delete ambassador (admin only)
  */
 export const DeleteAmbassadorParams = zod.object({
@@ -535,6 +566,34 @@ export const CreatePartnerResponse = zod.object({
 
 
 /**
+ * @summary Update partner (admin only)
+ */
+export const UpdatePartnerParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdatePartnerHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+export const UpdatePartnerBody = zod.object({
+  "name": zod.string().optional(),
+  "logoUrl": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdatePartnerResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "logoUrl": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
  * @summary Delete partner (admin only)
  */
 export const DeletePartnerParams = zod.object({
@@ -579,6 +638,34 @@ export const CreatePaymentMethodBody = zod.object({
 })
 
 export const CreatePaymentMethodResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "logoUrl": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Update payment method (admin only)
+ */
+export const UpdatePaymentMethodParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdatePaymentMethodHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+export const UpdatePaymentMethodBody = zod.object({
+  "name": zod.string().optional(),
+  "logoUrl": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdatePaymentMethodResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "logoUrl": zod.string(),
@@ -716,6 +803,34 @@ export const CreateFeatureItemBody = zod.object({
 })
 
 export const CreateFeatureItemResponse = zod.object({
+  "id": zod.number(),
+  "section": zod.string(),
+  "label": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Update feature item (admin only)
+ */
+export const UpdateFeatureItemParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateFeatureItemHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+export const UpdateFeatureItemBody = zod.object({
+  "section": zod.string().optional(),
+  "label": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateFeatureItemResponse = zod.object({
   "id": zod.number(),
   "section": zod.string(),
   "label": zod.string(),

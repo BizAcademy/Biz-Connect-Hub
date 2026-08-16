@@ -1709,6 +1709,78 @@ export const useCreateAmbassador = <TError = ErrorType<ErrorResponse>,
       return useMutation(getCreateAmbassadorMutationOptions(options));
     }
 
+export const getUpdateAmbassadorUrl = (id: number,) => {
+
+
+
+
+  return `/api/ambassadors/${id}`
+}
+
+/**
+ * @summary Update ambassador (admin only)
+ */
+export const updateAmbassador = async (id: number,
+    ambassadorInput: AmbassadorInput, options?: Parameters<typeof customFetch>[1]): Promise<Ambassador> => {
+
+  return customFetch<Ambassador>(getUpdateAmbassadorUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(ambassadorInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateAmbassadorMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAmbassador>>, TError,{id: number;data: BodyType<AmbassadorInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAmbassador>>, TError,{id: number;data: BodyType<AmbassadorInput>}, TContext> => {
+
+const mutationKey = ['updateAmbassador'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAmbassador>>, {id: number;data: BodyType<AmbassadorInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateAmbassador(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAmbassadorMutationResult = NonNullable<Awaited<ReturnType<typeof updateAmbassador>>>
+    export type UpdateAmbassadorMutationBody = BodyType<AmbassadorInput>
+    export type UpdateAmbassadorMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update ambassador (admin only)
+ */
+export const useUpdateAmbassador = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAmbassador>>, TError,{id: number;data: BodyType<AmbassadorInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateAmbassador>>,
+        TError,
+        {id: number;data: BodyType<AmbassadorInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateAmbassadorMutationOptions(options));
+    }
+
 export const getDeleteAmbassadorUrl = (id: number,) => {
 
 
@@ -1928,6 +2000,78 @@ export const useCreatePartner = <TError = ErrorType<ErrorResponse>,
       return useMutation(getCreatePartnerMutationOptions(options));
     }
 
+export const getUpdatePartnerUrl = (id: number,) => {
+
+
+
+
+  return `/api/partners/${id}`
+}
+
+/**
+ * @summary Update partner (admin only)
+ */
+export const updatePartner = async (id: number,
+    partnerInput: PartnerInput, options?: Parameters<typeof customFetch>[1]): Promise<Partner> => {
+
+  return customFetch<Partner>(getUpdatePartnerUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(partnerInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePartnerMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerInput>}, TContext> => {
+
+const mutationKey = ['updatePartner'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePartner>>, {id: number;data: BodyType<PartnerInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePartner(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePartnerMutationResult = NonNullable<Awaited<ReturnType<typeof updatePartner>>>
+    export type UpdatePartnerMutationBody = BodyType<PartnerInput>
+    export type UpdatePartnerMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update partner (admin only)
+ */
+export const useUpdatePartner = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePartner>>, TError,{id: number;data: BodyType<PartnerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePartner>>,
+        TError,
+        {id: number;data: BodyType<PartnerInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePartnerMutationOptions(options));
+    }
+
 export const getDeletePartnerUrl = (id: number,) => {
 
 
@@ -2145,6 +2289,78 @@ export const useCreatePaymentMethod = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getCreatePaymentMethodMutationOptions(options));
+    }
+
+export const getUpdatePaymentMethodUrl = (id: number,) => {
+
+
+
+
+  return `/api/payment-methods/${id}`
+}
+
+/**
+ * @summary Update payment method (admin only)
+ */
+export const updatePaymentMethod = async (id: number,
+    paymentMethodInput: PaymentMethodInput, options?: Parameters<typeof customFetch>[1]): Promise<PaymentMethod> => {
+
+  return customFetch<PaymentMethod>(getUpdatePaymentMethodUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(paymentMethodInput)
+  }
+);}
+
+
+
+
+
+export const getUpdatePaymentMethodMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentMethod>>, TError,{id: number;data: BodyType<PaymentMethodInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updatePaymentMethod>>, TError,{id: number;data: BodyType<PaymentMethodInput>}, TContext> => {
+
+const mutationKey = ['updatePaymentMethod'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updatePaymentMethod>>, {id: number;data: BodyType<PaymentMethodInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updatePaymentMethod(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdatePaymentMethodMutationResult = NonNullable<Awaited<ReturnType<typeof updatePaymentMethod>>>
+    export type UpdatePaymentMethodMutationBody = BodyType<PaymentMethodInput>
+    export type UpdatePaymentMethodMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update payment method (admin only)
+ */
+export const useUpdatePaymentMethod = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updatePaymentMethod>>, TError,{id: number;data: BodyType<PaymentMethodInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updatePaymentMethod>>,
+        TError,
+        {id: number;data: BodyType<PaymentMethodInput>},
+        TContext
+      > => {
+      return useMutation(getUpdatePaymentMethodMutationOptions(options));
     }
 
 export const getDeletePaymentMethodUrl = (id: number,) => {
@@ -2655,6 +2871,78 @@ export const useCreateFeatureItem = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getCreateFeatureItemMutationOptions(options));
+    }
+
+export const getUpdateFeatureItemUrl = (id: number,) => {
+
+
+
+
+  return `/api/features/${id}`
+}
+
+/**
+ * @summary Update feature item (admin only)
+ */
+export const updateFeatureItem = async (id: number,
+    featureItemInput: FeatureItemInput, options?: Parameters<typeof customFetch>[1]): Promise<FeatureItem> => {
+
+  return customFetch<FeatureItem>(getUpdateFeatureItemUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(featureItemInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateFeatureItemMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFeatureItem>>, TError,{id: number;data: BodyType<FeatureItemInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateFeatureItem>>, TError,{id: number;data: BodyType<FeatureItemInput>}, TContext> => {
+
+const mutationKey = ['updateFeatureItem'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFeatureItem>>, {id: number;data: BodyType<FeatureItemInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateFeatureItem(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateFeatureItemMutationResult = NonNullable<Awaited<ReturnType<typeof updateFeatureItem>>>
+    export type UpdateFeatureItemMutationBody = BodyType<FeatureItemInput>
+    export type UpdateFeatureItemMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update feature item (admin only)
+ */
+export const useUpdateFeatureItem = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFeatureItem>>, TError,{id: number;data: BodyType<FeatureItemInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateFeatureItem>>,
+        TError,
+        {id: number;data: BodyType<FeatureItemInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateFeatureItemMutationOptions(options));
     }
 
 export const getDeleteFeatureItemUrl = (id: number,) => {
