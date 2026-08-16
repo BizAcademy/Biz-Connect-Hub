@@ -5,6 +5,7 @@ import {
   trainingsTable,
   testimonialsTable,
   portfolioItemsTable,
+  ambassadorsTable,
   partnersTable,
   paymentMethodsTable,
   servicesTable,
@@ -18,6 +19,7 @@ import {
   CreateTestimonialBody,
   UpdateTestimonialBody,
   CreatePortfolioItemBody,
+  CreateAmbassadorBody,
   CreatePartnerBody,
   CreatePaymentMethodBody,
   CreateServiceBody,
@@ -170,6 +172,37 @@ router.delete("/portfolio/:id", async (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
   await db.delete(portfolioItemsTable).where(eq(portfolioItemsTable.id, id));
+  res.json({ success: true });
+});
+
+// ---------- Ambassadors ----------
+router.get("/ambassadors", async (_req, res) => {
+  const rows = await db
+    .select()
+    .from(ambassadorsTable)
+    .orderBy(asc(ambassadorsTable.sortOrder), asc(ambassadorsTable.id));
+  res.json(rows);
+});
+
+router.post("/ambassadors", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const parsed = CreateAmbassadorBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db
+    .insert(ambassadorsTable)
+    .values(parsed.data)
+    .returning();
+  res.status(201).json(created);
+});
+
+router.delete("/ambassadors/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  await db.delete(ambassadorsTable).where(eq(ambassadorsTable.id, id));
   res.json({ success: true });
 });
 

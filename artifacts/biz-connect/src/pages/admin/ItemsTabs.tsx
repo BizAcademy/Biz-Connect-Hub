@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   useListTrainings, useCreateTraining, useDeleteTraining,
   useListTestimonials, useCreateTestimonial, useDeleteTestimonial,
-  useListPortfolioItems, useCreatePortfolioItem, useDeletePortfolioItem,
+  useListAmbassadors, useCreateAmbassador, useDeleteAmbassador,
   useListPartners, useCreatePartner, useDeletePartner,
   useListPaymentMethods, useCreatePaymentMethod, useDeletePaymentMethod,
   useListServices, useCreateService, useDeleteService,
@@ -340,30 +340,57 @@ function ImageListTab({
   );
 }
 
-export function PortfolioTab({ pwd }: { pwd: string }) {
+// --------------------------------------------------------
+// AMBASSADEURS
+// --------------------------------------------------------
+export function AmbassadorsTab({ pwd }: { pwd: string }) {
   const qc = useQueryClient();
   const { toast } = useToast();
-  const { data, isLoading } = useListPortfolioItems();
-  const create = useCreatePortfolioItem(adminReq(pwd));
-  const del = useDeletePortfolioItem(adminReq(pwd));
+  const { data: items, isLoading } = useListAmbassadors();
+  const create = useCreateAmbassador(adminReq(pwd));
+  const del = useDeleteAmbassador(adminReq(pwd));
+  const [name, setName] = useState('');
+  const [country, setCountry] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+
+  const refresh = () => qc.invalidateQueries();
+
+  if (isLoading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
 
   return (
-    <ImageListTab
-      pwd={pwd}
-      title="Aperçus portefeuille"
-      desc="Captures d'écran (téléphone) montrant le portefeuille des membres"
-      items={(data ?? []).map((p) => ({ id: p.id, url: p.imageUrl, label: p.caption }))}
-      isLoading={isLoading}
-      isCreating={create.isPending}
-      withName
-      onCreate={(url, name, done) =>
-        create.mutate({ data: { imageUrl: url, caption: name } }, {
-          onSuccess: () => { done(); qc.invalidateQueries(); toast({ title: 'Ajouté' }); },
-          onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
-        })
-      }
-      onDelete={(id) => del.mutate({ id }, { onSuccess: () => qc.invalidateQueries() })}
-    />
+    <SectionCard title="Nos ambassadeurs" desc="Capture d'écran + nom + pays. Affichés en slider horizontal sur la page d'accueil.">
+      <div className="grid md:grid-cols-2 gap-4 p-4 rounded-xl border border-border bg-muted/10 items-end">
+        <Input placeholder="Nom (ex: Aïcha K.)" value={name} onChange={(e) => setName(e.target.value)} />
+        <Input placeholder="Pays (ex: Cameroun)" value={country} onChange={(e) => setCountry(e.target.value)} />
+        <UploadField pwd={pwd} value={imageUrl} onChange={setImageUrl} label="Capture d'écran" />
+        <Button
+          disabled={!name || !imageUrl || create.isPending}
+          onClick={() =>
+            create.mutate({ data: { name, country, imageUrl } }, {
+              onSuccess: () => { setName(''); setCountry(''); setImageUrl(''); refresh(); toast({ title: 'Ambassadeur ajouté' }); },
+              onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
+            })
+          }
+        >
+          {create.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />} Ajouter
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {(items ?? []).map((a) => (
+          <div key={a.id} className="border border-border rounded-xl overflow-hidden">
+            <img src={a.imageUrl} alt={a.name} className="w-full h-40 object-cover" />
+            <div className="p-2 flex items-center justify-between gap-2">
+              <span className="text-xs truncate">{a.name}{a.country ? ` · ${a.country}` : ''}</span>
+              <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: a.id }, { onSuccess: refresh })}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+          </div>
+        ))}
+        {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground col-span-full">Aucun ambassadeur configuré.</p>}
+      </div>
+    </SectionCard>
   );
 }
 

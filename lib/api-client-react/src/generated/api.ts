@@ -22,6 +22,8 @@ import type {
 import type {
   AdminCredentials,
   AdminVerifyResult,
+  Ambassador,
+  AmbassadorInput,
   DeleteResult,
   ErrorResponse,
   FeatureItem,
@@ -1556,6 +1558,225 @@ export const useDeletePortfolioItem = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getDeletePortfolioItemMutationOptions(options));
+    }
+
+export const getListAmbassadorsUrl = () => {
+
+
+
+
+  return `/api/ambassadors`
+}
+
+/**
+ * @summary List ambassadors
+ */
+export const listAmbassadors = async ( options?: Parameters<typeof customFetch>[1]): Promise<Ambassador[]> => {
+
+  return customFetch<Ambassador[]>(getListAmbassadorsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAmbassadorsQueryKey = () => {
+    return [
+    `/api/ambassadors`
+    ] as const;
+    }
+
+
+export const getListAmbassadorsQueryOptions = <TData = Awaited<ReturnType<typeof listAmbassadors>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAmbassadors>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAmbassadorsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAmbassadors>>> = ({ signal }) => listAmbassadors({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAmbassadors>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAmbassadorsQueryResult = NonNullable<Awaited<ReturnType<typeof listAmbassadors>>>
+export type ListAmbassadorsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List ambassadors
+ */
+
+export function useListAmbassadors<TData = Awaited<ReturnType<typeof listAmbassadors>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAmbassadors>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAmbassadorsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateAmbassadorUrl = () => {
+
+
+
+
+  return `/api/ambassadors`
+}
+
+/**
+ * @summary Create ambassador (admin only)
+ */
+export const createAmbassador = async (ambassadorInput: AmbassadorInput, options?: Parameters<typeof customFetch>[1]): Promise<Ambassador> => {
+
+  return customFetch<Ambassador>(getCreateAmbassadorUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(ambassadorInput)
+  }
+);}
+
+
+
+
+
+export const getCreateAmbassadorMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAmbassador>>, TError,{data: BodyType<AmbassadorInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAmbassador>>, TError,{data: BodyType<AmbassadorInput>}, TContext> => {
+
+const mutationKey = ['createAmbassador'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAmbassador>>, {data: BodyType<AmbassadorInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAmbassador(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAmbassadorMutationResult = NonNullable<Awaited<ReturnType<typeof createAmbassador>>>
+    export type CreateAmbassadorMutationBody = BodyType<AmbassadorInput>
+    export type CreateAmbassadorMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create ambassador (admin only)
+ */
+export const useCreateAmbassador = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAmbassador>>, TError,{data: BodyType<AmbassadorInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAmbassador>>,
+        TError,
+        {data: BodyType<AmbassadorInput>},
+        TContext
+      > => {
+      return useMutation(getCreateAmbassadorMutationOptions(options));
+    }
+
+export const getDeleteAmbassadorUrl = (id: number,) => {
+
+
+
+
+  return `/api/ambassadors/${id}`
+}
+
+/**
+ * @summary Delete ambassador (admin only)
+ */
+export const deleteAmbassador = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<DeleteResult> => {
+
+  return customFetch<DeleteResult>(getDeleteAmbassadorUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAmbassadorMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAmbassador>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAmbassador>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteAmbassador'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAmbassador>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAmbassador(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAmbassadorMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAmbassador>>>
+
+    export type DeleteAmbassadorMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Delete ambassador (admin only)
+ */
+export const useDeleteAmbassador = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAmbassador>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAmbassador>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteAmbassadorMutationOptions(options));
     }
 
 export const getListPartnersUrl = () => {

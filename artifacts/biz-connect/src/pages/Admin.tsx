@@ -23,7 +23,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow 
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrainingsTab, TestimonialsTab, PortfolioTab, PartnersTab, PaymentsTab, ServicesTab, FeaturesTab, HelpVideosTab } from '@/pages/admin/ItemsTabs';
+import { TrainingsTab, TestimonialsTab, AmbassadorsTab, PartnersTab, PaymentsTab, ServicesTab, FeaturesTab, HelpVideosTab } from '@/pages/admin/ItemsTabs';
 import { MediaTab } from '@/pages/admin/MediaTab';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { Upload } from 'lucide-react';
@@ -137,7 +137,7 @@ export default function Admin() {
             <TabsTrigger value="content">Contenu</TabsTrigger>
             <TabsTrigger value="trainings">Formations</TabsTrigger>
             <TabsTrigger value="testimonials">Témoignages</TabsTrigger>
-            <TabsTrigger value="portfolio">Portefeuille</TabsTrigger>
+            <TabsTrigger value="ambassadors">Ambassadeurs</TabsTrigger>
             <TabsTrigger value="partners">Partenaires</TabsTrigger>
             <TabsTrigger value="payments">Paiements</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
@@ -166,8 +166,8 @@ export default function Admin() {
             <TestimonialsTab pwd={password} />
           </TabsContent>
 
-          <TabsContent value="portfolio">
-            <PortfolioTab pwd={password} />
+          <TabsContent value="ambassadors">
+            <AmbassadorsTab pwd={password} />
           </TabsContent>
 
           <TabsContent value="partners">

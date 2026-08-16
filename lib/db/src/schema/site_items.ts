@@ -34,6 +34,16 @@ export const portfolioItemsTable = pgTable("portfolio_items", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Ambassadeurs (capture d'écran + nom + pays)
+export const ambassadorsTable = pgTable("ambassadors", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  country: text("country").notNull().default(""),
+  imageUrl: text("image_url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 // Logos partenaires
 export const partnersTable = pgTable("partners", {
   id: serial("id").primaryKey(),
@@ -94,12 +104,15 @@ export type InsertHelpVideo = z.infer<typeof insertHelpVideoSchema>;
 export const insertTrainingSchema = createInsertSchema(trainingsTable).omit({ id: true, createdAt: true });
 export const insertTestimonialSchema = createInsertSchema(testimonialsTable).omit({ id: true, createdAt: true });
 export const insertPortfolioItemSchema = createInsertSchema(portfolioItemsTable).omit({ id: true, createdAt: true });
+export const insertAmbassadorSchema = createInsertSchema(ambassadorsTable).omit({ id: true, createdAt: true });
 export const insertPartnerSchema = createInsertSchema(partnersTable).omit({ id: true, createdAt: true });
 export const insertPaymentMethodSchema = createInsertSchema(paymentMethodsTable).omit({ id: true, createdAt: true });
 
 export type Training = typeof trainingsTable.$inferSelect;
 export type Testimonial = typeof testimonialsTable.$inferSelect;
 export type PortfolioItem = typeof portfolioItemsTable.$inferSelect;
+export type Ambassador = typeof ambassadorsTable.$inferSelect;
+export type InsertAmbassador = z.infer<typeof insertAmbassadorSchema>;
 export type Partner = typeof partnersTable.$inferSelect;
 export type PaymentMethod = typeof paymentMethodsTable.$inferSelect;
 export type InsertTraining = z.infer<typeof insertTrainingSchema>;

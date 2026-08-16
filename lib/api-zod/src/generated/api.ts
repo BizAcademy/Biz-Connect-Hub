@@ -443,6 +443,62 @@ export const DeletePortfolioItemResponse = zod.object({
 
 
 /**
+ * @summary List ambassadors
+ */
+export const ListAmbassadorsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "imageUrl": zod.string(),
+  "sortOrder": zod.number()
+})
+export const ListAmbassadorsResponse = zod.array(ListAmbassadorsResponseItem)
+
+
+/**
+ * @summary Create ambassador (admin only)
+ */
+export const CreateAmbassadorHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const CreateAmbassadorBody = zod.object({
+  "name": zod.string().min(1),
+  "country": zod.string().optional(),
+  "imageUrl": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const CreateAmbassadorResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "imageUrl": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Delete ambassador (admin only)
+ */
+export const DeleteAmbassadorParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteAmbassadorHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const DeleteAmbassadorResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
  * @summary List partner logos
  */
 export const ListPartnersResponseItem = zod.object({

@@ -160,6 +160,23 @@ export interface PortfolioItemInput {
   sortOrder?: number;
 }
 
+export interface Ambassador {
+  id: number;
+  name: string;
+  country: string;
+  imageUrl: string;
+  sortOrder: number;
+}
+
+export interface AmbassadorInput {
+  /** @minLength 1 */
+  name: string;
+  country?: string;
+  /** @minLength 1 */
+  imageUrl: string;
+  sortOrder?: number;
+}
+
 export interface Partner {
   id: number;
   name: string;

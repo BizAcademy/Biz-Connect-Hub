@@ -8,6 +8,8 @@
 
 export * from './adminCredentials';
 export * from './adminVerifyResult';
+export * from './ambassador';
+export * from './ambassadorInput';
 export * from './deleteResult';
 export * from './errorResponse';
 export * from './featureItem';

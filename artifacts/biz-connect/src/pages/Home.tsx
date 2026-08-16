@@ -3,7 +3,7 @@ import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import {
   useGetContent, useListTrainings, useListTestimonials,
-  useListPortfolioItems, useListPartners, useListPaymentMethods,
+  useListAmbassadors, useListPartners, useListPaymentMethods,
   useListServices, useListFeatureItems,
 } from '@workspace/api-client-react';
 import { NotificationWidget } from '@/components/NotificationWidget';
@@ -67,7 +67,7 @@ export default function Home() {
   const { data: content, isLoading } = useGetContent();
   const { data: trainings } = useListTrainings();
   const { data: testimonials } = useListTestimonials();
-  const { data: portfolioItems } = useListPortfolioItems();
+  const { data: ambassadors } = useListAmbassadors();
   const { data: partners } = useListPartners();
   const { data: paymentMethods } = useListPaymentMethods();
   const { data: services } = useListServices();
@@ -305,7 +305,7 @@ export default function Home() {
 
       {/* ===== 4. PHOTO DES MEMBRES (déplacée ici, à la place de la vidéo) ===== */}
       <section className="pt-24 px-6 bg-background">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-[84rem]">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="relative">
             <img
               src={communityImage}
@@ -375,60 +375,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== 6. APERÇU PORTEFEUILLE ===== */}
-      <section className="py-24 px-6 bg-muted/30 border-y border-border">
-        <div className="container mx-auto max-w-6xl">
+      {/* ===== 6. NOS AMBASSADEURS ===== */}
+      <section id="ambassadeurs" className="py-24 bg-muted/30 border-y border-border overflow-hidden">
+        <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold mb-3 text-green-600">Aperçu de ton portefeuille</h2>
-            <p className="text-muted-foreground">Voici à quoi ressemble le dashboard de nos membres actifs.</p>
+            <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">Nos ambassadeurs</h2>
           </div>
-          {portfolioItems && portfolioItems.length > 0 ? (
-            <div className="flex flex-wrap justify-center gap-6">
-              {portfolioItems.map((p, i) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                  className="w-56 sm:w-64"
-                >
-                  <div className="rounded-[2rem] border-4 border-slate-800 bg-slate-900 overflow-hidden shadow-2xl">
-                    <img src={p.imageUrl} alt={p.caption || 'Aperçu portefeuille'} className="w-full object-cover" />
-                  </div>
-                  {p.caption && <p className="text-center text-sm text-muted-foreground mt-3">{p.caption}</p>}
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: "Marc K.", country: "Côte d'Ivoire", flag: "🇨🇮", rev: "1.2M FCFA / mois", role: "Consultant Digital", filleuls: 142 },
-              { name: "Sarah N.", country: "Cameroun", flag: "🇨🇲", rev: "850K FCFA / mois", role: "E-commerçante", filleuls: 98 },
-              { name: "Amadou B.", country: "Sénégal", flag: "🇸🇳", rev: "2.1M FCFA / mois", role: "Entrepreneur", filleuls: 287 },
-            ].map((u, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}
-                className="bg-card p-6 rounded-2xl border border-border shadow-sm relative overflow-hidden"
-              >
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-primary-foreground font-bold text-lg">
-                    {u.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h4 className="font-bold">{u.name}</h4>
-                    <p className="text-xs text-muted-foreground">{u.role} · {u.flag} {u.country}</p>
-                  </div>
-                </div>
-                <div className="space-y-3 pt-4 border-t border-border">
-                  <div className="flex justify-between">
-                    <span className="text-xs text-muted-foreground">Gains</span>
-                    <span className="text-sm font-black text-primary">{u.rev}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-xs text-muted-foreground">Filleuls</span>
-                    <span className="text-sm font-bold">{u.filleuls}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          )}
         </div>
+        {ambassadors && ambassadors.length > 0 ? (
+          <InfiniteSlider speed={30} direction="left" gap={24}>
+            {ambassadors.map((a) => (
+              <div key={a.id} className="w-56 sm:w-64 shrink-0">
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
+                  <img src={a.imageUrl} alt={a.name} className="w-full aspect-[3/4] object-cover" />
+                </div>
+                <div className="flex items-center justify-center gap-2 mt-3 text-sm">
+                  <span className="font-bold">{a.name}</span>
+                  {a.country && (
+                    <span className="text-muted-foreground">
+                      {COUNTRY_FLAGS[a.country] ? `${COUNTRY_FLAGS[a.country]} ` : ''}{a.country}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </InfiniteSlider>
+        ) : (
+          <p className="text-center text-sm text-muted-foreground px-6">
+            Configure tes ambassadeurs depuis le tableau de bord administrateur (onglet « Ambassadeurs »).
+          </p>
+        )}
       </section>
 
       {/* ===== 7. GAINS PAR AFFILIATION ===== */}
