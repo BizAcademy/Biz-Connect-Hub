@@ -2,6 +2,8 @@
 
 # compiled output
 dist
+# ...sauf le build de production commité pour le déploiement Plesk
+!artifacts/api-server/dist/
 tmp
 out-tsc
 *.tsbuildinfo
