@@ -121,11 +121,11 @@ export default function Home() {
                 Le réseau business #1 en Afrique francophone
               </motion.div>
 
-              <motion.h1 variants={fadeIn} className="text-4xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight text-green-600">
+              <motion.h1 variants={fadeIn} className="text-3xl lg:text-5xl font-extrabold tracking-tight mb-6 leading-tight text-green-600">
                 {content.heroTitle}
               </motion.h1>
 
-              <motion.p variants={fadeIn} className="text-base lg:text-lg text-muted-foreground mb-8 leading-relaxed">
+              <motion.p variants={fadeIn} className="text-sm lg:text-base text-muted-foreground mb-8 leading-relaxed">
                 {content.heroSubtitle}
               </motion.p>
 
@@ -171,13 +171,13 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9, x: 40 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="hidden lg:flex items-center justify-center"
+              className="flex items-center justify-center order-first lg:order-none"
             >
               {content.heroImageUrl ? (
                 <img
                   src={content.heroImageUrl}
                   alt="Aperçu de l'application BCA"
-                  className="max-h-[560px] w-auto object-contain drop-shadow-2xl rounded-3xl"
+                  className="max-h-[340px] lg:max-h-[560px] w-auto object-contain drop-shadow-2xl rounded-3xl"
                 />
               ) : (
               <div className="relative w-64">
