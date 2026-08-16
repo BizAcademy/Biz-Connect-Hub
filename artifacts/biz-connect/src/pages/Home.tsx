@@ -304,14 +304,16 @@ export default function Home() {
       </section>
 
       {/* ===== 4. PHOTO DES MEMBRES (déplacée ici, à la place de la vidéo) ===== */}
-      <section className="py-24 px-6 bg-background">
+      <section className="pt-24 px-6 bg-background">
         <div className="container mx-auto max-w-4xl">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="relative">
             <img
               src={communityImage}
               alt="Les membres de la Biz Connect Academy"
-              className="w-full rounded-3xl border border-border shadow-xl object-cover"
+              className="w-full object-contain"
             />
+            {/* Effet nuage : fondu doux vers le bas de l'image */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-background via-background/70 to-transparent" />
           </motion.div>
         </div>
       </section>
