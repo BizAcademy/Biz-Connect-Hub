@@ -422,7 +422,7 @@ export default function Home() {
           </div>
         </div>
         {ambassadors && ambassadors.length > 0 ? (
-          <InfiniteSlider speed={22.5} direction="left" gap={24}>
+          <InfiniteSlider speed={30} direction="left" gap={24}>
             {ambassadors.map((a) => (
               <div key={a.id} className="w-56 sm:w-64 shrink-0">
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">

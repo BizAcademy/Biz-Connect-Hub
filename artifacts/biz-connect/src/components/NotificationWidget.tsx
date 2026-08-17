@@ -45,16 +45,16 @@ export function NotificationWidget() {
           animate={{ opacity: 1, y: 0, x: 0 }}
           exit={{ opacity: 0, y: 20, x: -20 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="fixed bottom-2 left-2 z-50 flex items-center gap-1 rounded-md border border-gray-200 bg-white px-1.5 py-1 shadow-lg w-max max-w-[calc(100vw-1rem)]"
+          className="fixed bottom-2 left-2 z-50 flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2 py-1.5 shadow-lg w-max max-w-[220px]"
         >
           {/* BCA logo */}
-          <img src="/logo-bca.png" alt="BCA" className="w-3.5 h-3.5 object-contain shrink-0" />
+          <img src="/logo-bca.png" alt="BCA" className="w-4 h-4 object-contain shrink-0" />
 
-          <div className="flex-1 min-w-0 pr-2">
-            <p className="text-[8px] font-normal text-slate-800 leading-tight break-words">
+          <div className="flex-1 min-w-0 pr-3">
+            <p className="!text-[10px] !font-normal text-slate-800 leading-tight break-words">
               {n.name}
             </p>
-            <p className="text-[7px] text-slate-500 mt-0.5 leading-tight break-words">
+            <p className="!text-[9px] !font-normal text-slate-500 mt-0.5 leading-tight break-words">
               {n.action} · {n.time}
             </p>
           </div>
