@@ -1,7 +1,14 @@
 import { Link } from 'wouter';
 import { MessageCircle } from 'lucide-react';
+import { useGetContent } from '@workspace/api-client-react';
 
 export function Navbar() {
+  const { data: content } = useGetContent();
+  const signupUrl = content?.signupUrl || '/inscription';
+  const isExternal = /^https?:\/\//i.test(signupUrl);
+
+  const ctaClass = "px-5 py-2 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-105 transition-all shadow-sm";
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100 shadow-sm">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-6xl">
@@ -25,12 +32,15 @@ export function Navbar() {
             <MessageCircle size={16} className="text-green-500" />
             WhatsApp
           </Link>
-          <Link
-            href="/inscription"
-            className="px-5 py-2 bg-primary text-white font-bold rounded-xl text-sm hover:brightness-105 transition-all shadow-sm"
-          >
-            S'inscrire
-          </Link>
+          {isExternal ? (
+            <a href={signupUrl} target="_blank" rel="noopener noreferrer" className={ctaClass}>
+              S'inscrire
+            </a>
+          ) : (
+            <Link href={signupUrl} className={ctaClass}>
+              S'inscrire
+            </Link>
+          )}
         </div>
       </div>
     </header>

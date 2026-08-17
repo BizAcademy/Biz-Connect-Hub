@@ -100,7 +100,7 @@ export default function Home() {
       <Navbar />
 
       {/* ===== 1. HERO ===== */}
-      <section className="relative pt-28 pb-16 lg:pt-40 lg:pb-24 px-6 overflow-hidden bg-white">
+      <section className="relative pt-24 pb-10 lg:pt-28 lg:pb-14 px-6 overflow-hidden bg-white">
         {/* SBC-style floating pastel circles */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           <div className="absolute top-10 left-8 w-20 h-20 rounded-full bg-blue-100 opacity-70" />
@@ -145,8 +145,8 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-green-600 mb-2">Découvrez Biz Connect Academy</h2>
                 <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
                 <div className="bg-slate-900 p-2.5 rounded-2xl shadow-xl w-full max-w-lg">
-                  <div className="aspect-video w-full rounded-xl overflow-hidden">
-                    {/youtube\.com|youtu\.be|vimeo\.com/.test(content.videoUrl) ? (
+                  {/youtube\.com|youtu\.be|vimeo\.com/.test(content.videoUrl) ? (
+                    <div className="aspect-video w-full rounded-xl overflow-hidden">
                       <iframe
                         src={content.videoUrl}
                         title="Biz Connect Academy — présentation"
@@ -154,16 +154,17 @@ export default function Home() {
                         allowFullScreen
                         className="w-full h-full"
                       />
-                    ) : (
-                      <video
-                        src={content.videoUrl}
-                        controls
-                        playsInline
-                        preload="metadata"
-                        className="w-full h-full object-contain bg-black"
-                      />
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    // La vidéo garde son format d'origine (horizontal ou vertical) et s'affiche entièrement
+                    <video
+                      src={content.videoUrl}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="w-auto h-auto max-w-full max-h-[70vh] mx-auto rounded-xl bg-black"
+                    />
+                  )}
                 </div>
               </motion.div>
             </motion.div>
@@ -237,7 +238,7 @@ export default function Home() {
       </section>
 
       {/* ===== 2. STATS BAR ===== */}
-      <section className="py-10 border-y border-border/50 bg-muted/30">
+      <section className="py-6 border-y border-border/50 bg-muted/30">
         <div className="container mx-auto px-6">
           <div className="flex flex-wrap items-center justify-center gap-x-16 gap-y-8 text-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
@@ -261,9 +262,9 @@ export default function Home() {
       </section>
 
       {/* ===== 3. GÉOGRAPHIE — slider infini ===== */}
-      <section className="py-20 bg-background">
+      <section className="py-12 bg-background">
         <div className="container mx-auto max-w-5xl px-6">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-10">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-6">
             {content.countriesIconUrl ? (
               <img src={content.countriesIconUrl} alt="Pays d'Afrique" className="w-14 h-14 object-contain mx-auto mb-4" />
             ) : (
@@ -306,7 +307,7 @@ export default function Home() {
       </section>
 
       {/* ===== 4. PHOTO DES MEMBRES (déplacée ici, à la place de la vidéo) ===== */}
-      <section className="pt-24 px-6 bg-background">
+      <section className="pt-14 px-6 bg-background">
         <div className="container mx-auto max-w-[84rem]">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="relative">
             <img
@@ -321,9 +322,9 @@ export default function Home() {
       </section>
 
       {/* ===== 5. CE QUE TU VAS GAGNER ===== */}
-      <section className="py-24 px-6 bg-background">
+      <section className="py-14 px-6 bg-background">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
+          <div className="text-center mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-green-600">
               Voici ce que tu vas gagner en nous rejoignant
             </h2>
@@ -414,14 +415,14 @@ export default function Home() {
       </section>
 
       {/* ===== 6. NOS AMBASSADEURS ===== */}
-      <section id="ambassadeurs" className="py-24 bg-muted/30 border-y border-border overflow-hidden">
+      <section id="ambassadeurs" className="py-14 bg-muted/30 border-y border-border overflow-hidden">
         <div className="container mx-auto max-w-6xl px-6">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">Nos ambassadeurs</h2>
           </div>
         </div>
         {ambassadors && ambassadors.length > 0 ? (
-          <InfiniteSlider speed={18} direction="left" gap={24}>
+          <InfiniteSlider speed={22} direction="left" gap={24}>
             {ambassadors.map((a) => (
               <div key={a.id} className="w-56 sm:w-64 shrink-0">
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
@@ -446,9 +447,9 @@ export default function Home() {
       </section>
 
       {/* ===== 7. GAINS PAR AFFILIATION ===== */}
-      <section className="py-24 px-6 bg-background">
+      <section className="py-14 px-6 bg-background">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-3 text-green-600">Tes gains par affiliation</h2>
             <p className="text-muted-foreground">Calcule ce que tu peux gagner en parrainant d'autres membres.</p>
           </div>
@@ -495,9 +496,9 @@ export default function Home() {
       </section>
 
       {/* ===== SOCIAL PROOF — jeunes africains qui ont généré des millions ===== */}
-      <section className="py-24 px-6 bg-background">
+      <section className="py-14 px-6 bg-background">
         <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <Award className="w-10 h-10 text-primary mx-auto mb-4" />
             <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">
               De nombreux jeunes venant de plusieurs pays se sont lancés et voilà leurs résultats et témoignages
@@ -563,9 +564,9 @@ export default function Home() {
       </section>
 
       {/* ===== 9. OFFRE / PRIX — 2 formules ===== */}
-      <section className="py-24 px-6 bg-muted/30 border-y border-border">
+      <section className="py-14 px-6 bg-muted/30 border-y border-border">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-3 text-green-600">{content.offerLabel}</h2>
             <p className="text-muted-foreground">Un seul tarif, un accès complet à vie.</p>
           </div>
@@ -612,7 +613,7 @@ export default function Home() {
       </section>
 
       {/* ===== 10. LISTE BÉNÉFICES ===== */}
-      <section className="py-16 px-6 bg-background">
+      <section className="py-10 px-6 bg-background">
         <div className="container mx-auto max-w-3xl">
           <h2 className="text-2xl font-bold text-center mb-8 text-green-600">Tout ce qui est inclus dans ton accès</h2>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -641,7 +642,7 @@ export default function Home() {
       </section>
 
       {/* ===== 11. CATALOGUE FORMATIONS ===== */}
-      <section className="py-24 px-6 bg-muted/30">
+      <section className="py-14 px-6 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
@@ -719,7 +720,7 @@ export default function Home() {
       </section>
 
       {/* ===== 13. CTA FINAL ===== */}
-      <section className="py-24 px-6 bg-primary text-primary-foreground text-center relative overflow-hidden">
+      <section className="py-14 px-6 bg-primary text-primary-foreground text-center relative overflow-hidden">
         <div className="container mx-auto max-w-3xl relative z-10">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight text-green-300">
             Tu veux commencer ?
@@ -742,9 +743,9 @@ export default function Home() {
       </section>
 
       {/* ===== 14. FAQ ===== */}
-      <section className="py-24 px-6 bg-background border-t border-border">
+      <section className="py-14 px-6 bg-background border-t border-border">
         <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-14">
+          <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-3 text-green-600">Questions fréquentes</h2>
             <p className="text-muted-foreground mb-6">Tout ce que tu dois savoir avant de nous rejoindre.</p>
             <Link
@@ -773,7 +774,7 @@ export default function Home() {
       </section>
 
       {/* ===== 15. CONTACT WHATSAPP ===== */}
-      <section className="py-16 px-6 bg-muted/30 border-y border-border">
+      <section className="py-10 px-6 bg-muted/30 border-y border-border">
         <div className="container mx-auto max-w-xl text-center">
           <Phone className="w-10 h-10 text-green-500 mx-auto mb-4" />
           <h3 className="text-2xl font-bold mb-3 text-green-600">Contacte le support</h3>
@@ -788,16 +789,16 @@ export default function Home() {
       </section>
 
       {/* ===== 16. PARTENAIRES — slider infini ===== */}
-      <section className="py-10 bg-background border-b border-border overflow-hidden">
+      <section className="py-6 bg-background border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Nos partenaires</p>
         {partners && partners.length > 0 ? (
-          <InfiniteSlider speed={25} direction="left" gap={48}>
+          <InfiniteSlider speed={31} direction="left" gap={48}>
             {partners.map((p) => (
               <img key={p.id} src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
             ))}
           </InfiniteSlider>
         ) : (
-        <InfiniteSlider speed={25} direction="left" gap={48}>
+        <InfiniteSlider speed={31} direction="left" gap={48}>
           {["FUTURISTE", "EVÉNEMENT+", "WESTCOAST BIZ", "AFRICA INVEST", "DIGITAL HUB", "AFRIK MEDIA", "BIZ AFRICA", "CÔTE BUSINESS", "DAKAR STARTUP"].map((p, i) => (
             <div key={i} className="text-lg font-black italic tracking-tighter text-muted-foreground/40 hover:text-muted-foreground transition-colors whitespace-nowrap cursor-default">
               {p}
@@ -808,16 +809,16 @@ export default function Home() {
       </section>
 
       {/* ===== 17. PAIEMENTS — slider infini ===== */}
-      <section className="py-10 bg-muted/30 border-b border-border overflow-hidden">
+      <section className="py-6 bg-muted/30 border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Moyens de paiement acceptés</p>
         {paymentMethods && paymentMethods.length > 0 ? (
-          <InfiniteSlider speed={20} direction="left" gap={40}>
+          <InfiniteSlider speed={25} direction="left" gap={40}>
             {paymentMethods.map((pm) => (
               <img key={pm.id} src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-10 w-auto object-contain" />
             ))}
           </InfiniteSlider>
         ) : (
-        <InfiniteSlider speed={20} direction="left" gap={40}>
+        <InfiniteSlider speed={25} direction="left" gap={40}>
           {[
             { label: "📱 MOBILE MONEY", color: "text-yellow-600" },
             { label: "🟠 ORANGE MONEY", color: "text-orange-500" },
