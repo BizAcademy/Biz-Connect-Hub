@@ -32,7 +32,9 @@ export function Navbar() {
             <MessageCircle size={16} className="text-green-500" />
             WhatsApp
           </Link>
-          {isExternal ? (
+          {!content ? (
+            <span className={`${ctaClass} opacity-60 pointer-events-none`}>S'inscrire</span>
+          ) : isExternal ? (
             <a href={signupUrl} target="_blank" rel="noopener noreferrer" className={ctaClass}>
               S'inscrire
             </a>

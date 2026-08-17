@@ -422,7 +422,7 @@ export default function Home() {
           </div>
         </div>
         {ambassadors && ambassadors.length > 0 ? (
-          <InfiniteSlider speed={22} direction="left" gap={24}>
+          <InfiniteSlider speed={22.5} direction="left" gap={24}>
             {ambassadors.map((a) => (
               <div key={a.id} className="w-56 sm:w-64 shrink-0">
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
@@ -792,13 +792,13 @@ export default function Home() {
       <section className="py-6 bg-background border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Nos partenaires</p>
         {partners && partners.length > 0 ? (
-          <InfiniteSlider speed={31} direction="left" gap={48}>
+          <InfiniteSlider speed={31.25} direction="left" gap={48}>
             {partners.map((p) => (
               <img key={p.id} src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
             ))}
           </InfiniteSlider>
         ) : (
-        <InfiniteSlider speed={31} direction="left" gap={48}>
+        <InfiniteSlider speed={31.25} direction="left" gap={48}>
           {["FUTURISTE", "EVÉNEMENT+", "WESTCOAST BIZ", "AFRICA INVEST", "DIGITAL HUB", "AFRIK MEDIA", "BIZ AFRICA", "CÔTE BUSINESS", "DAKAR STARTUP"].map((p, i) => (
             <div key={i} className="text-lg font-black italic tracking-tighter text-muted-foreground/40 hover:text-muted-foreground transition-colors whitespace-nowrap cursor-default">
               {p}

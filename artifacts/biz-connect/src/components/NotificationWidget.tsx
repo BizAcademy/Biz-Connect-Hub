@@ -50,11 +50,11 @@ export function NotificationWidget() {
           {/* BCA logo */}
           <img src="/logo-bca.png" alt="BCA" className="w-3.5 h-3.5 object-contain shrink-0" />
 
-          <div className="flex-1 pr-2">
-            <p className="text-[8px] font-normal text-slate-800 leading-tight whitespace-nowrap">
+          <div className="flex-1 min-w-0 pr-2">
+            <p className="text-[8px] font-normal text-slate-800 leading-tight break-words">
               {n.name}
             </p>
-            <p className="text-[7px] text-slate-500 mt-0.5 leading-tight whitespace-nowrap">
+            <p className="text-[7px] text-slate-500 mt-0.5 leading-tight break-words">
               {n.action} · {n.time}
             </p>
           </div>
