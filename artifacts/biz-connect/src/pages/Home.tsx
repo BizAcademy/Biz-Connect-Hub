@@ -838,7 +838,7 @@ export default function Home() {
       <footer className="py-10 px-6 bg-slate-900 text-white">
         <div className="flex flex-col items-center gap-4">
           {/* Logo centré */}
-          <img src="/logo-bca.png" alt="Biz Connect Academy" className="w-16 h-16 object-contain" />
+          <img src="/logo-bca-blanc.png" alt="Biz Connect Academy" className="h-16 w-auto object-contain" />
           <p className="text-sm text-slate-400">
             Biz Connect Academy · © {new Date().getFullYear()} Tous droits réservés
           </p>
