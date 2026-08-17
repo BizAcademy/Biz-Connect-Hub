@@ -45,16 +45,16 @@ export function NotificationWidget() {
           animate={{ opacity: 1, y: 0, x: 0 }}
           exit={{ opacity: 0, y: 20, x: -20 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="fixed bottom-4 left-4 z-50 flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-2 shadow-xl max-w-[240px]"
+          className="fixed bottom-2 left-2 z-50 flex items-center gap-1 rounded-md border border-gray-200 bg-white px-1.5 py-1 shadow-lg max-w-[120px]"
         >
           {/* BCA logo */}
-          <img src="/logo-bca.png" alt="BCA" className="w-7 h-7 object-contain shrink-0" />
+          <img src="/logo-bca.png" alt="BCA" className="w-3.5 h-3.5 object-contain shrink-0" />
 
-          <div className="flex-1 min-w-0 pr-3">
-            <p className="text-xs font-bold text-slate-800 leading-tight truncate">
+          <div className="flex-1 min-w-0 pr-2">
+            <p className="text-[8px] font-bold text-slate-800 leading-tight truncate">
               {n.name}
             </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
+            <p className="text-[7px] text-slate-500 mt-0.5 leading-tight truncate">
               {n.action} · {n.time}
             </p>
           </div>
@@ -62,9 +62,9 @@ export function NotificationWidget() {
           <button
             onClick={() => setDismissed(true)}
             aria-label="Fermer la notification"
-            className="absolute right-0 top-0 p-2 text-slate-400 hover:text-slate-700 transition-colors"
+            className="absolute right-0 top-0 p-1 text-slate-400 hover:text-slate-700 transition-colors"
           >
-            <X size={12} />
+            <X size={8} />
           </button>
         </motion.div>
       )}

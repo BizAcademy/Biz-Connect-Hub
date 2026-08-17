@@ -25,7 +25,7 @@ export function InfiniteSlider({
     <div className="slider-viewport overflow-hidden w-full" style={style}>
       <div
         className={`flex items-center ${direction === 'right' ? 'animate-slider-right' : 'animate-slider-left'}`}
-        style={{ gap: `${gap}px` }}
+        style={{ gap: `${gap}px`, width: 'max-content' }}
       >
         {/* Original set */}
         {children.map((child, i) => (
