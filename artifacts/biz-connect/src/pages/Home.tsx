@@ -421,11 +421,11 @@ export default function Home() {
           </div>
         </div>
         {ambassadors && ambassadors.length > 0 ? (
-          <InfiniteSlider speed={30} direction="left" gap={24}>
+          <InfiniteSlider speed={20} direction="left" gap={24}>
             {ambassadors.map((a) => (
               <div key={a.id} className="w-56 sm:w-64 shrink-0">
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
-                  <img src={a.imageUrl} alt={a.name} className="w-full aspect-[3/4] object-cover" />
+                  <img src={a.imageUrl} alt={a.name} className="w-full aspect-[3/4] object-contain bg-white" />
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-3 text-sm">
                   <span className="font-bold">{a.name}</span>
