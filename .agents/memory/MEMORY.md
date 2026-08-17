@@ -1,6 +1,1 @@
-- [Biz Connect Academy project](biz-connect-project.md) — full-stack landing page with 3-level affiliate system; GitHub repo BizAcademy/Biz-Connect-Hub.
-- [Orval codegen quirks](orval-codegen-quirks.md) — schema-name collisions with operation-derived zod names; index.ts must stay a two-line star-export after regen.
-- Admin auth: all api-server admin routes use `src/lib/adminAuth.ts` (timing-safe; dev fallback `biz2024admin`, fail-closed in production — ADMIN_PASSWORD secret required before deploy).
-- [Plesk deployment flow](plesk-deploy.md) — app is hosted on Plesk via GitHub pull; run `pnpm run build:plesk` + commit + push after every change so the committed dist stays fresh.
-- [Cloudinary media flow](cloudinary-media.md) — signed direct upload; server must verify assets via Admin API before registering and treat destroy as authoritative before deleting DB rows.
-- Slider pause-on-hover CSS must be scoped to `.slider-viewport:hover`, never a generic utility class like `.overflow-hidden:hover` (page root carries it and froze all sliders).
+- [Biz Connect Hub setup](biz-connect-setup.md) — projet cloné depuis GitHub, artifact enregistré, db schema pushé, deux workflows actifs.
