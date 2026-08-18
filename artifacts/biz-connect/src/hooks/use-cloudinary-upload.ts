@@ -36,19 +36,56 @@ export function useCloudinaryUpload(pwd: string) {
 
       // background_removal n'est pris en compte que sur l'endpoint image/upload
       const endpoint = sig.backgroundRemoval ? 'image' : 'auto';
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${sig.cloudName}/${endpoint}/upload`,
-        { method: 'POST', body: form },
-      );
-      if (!res.ok) {
-        console.error('Cloudinary upload failed', await res.text());
-        return null;
+      const uploadUrl = `https://api.cloudinary.com/v1_1/${sig.cloudName}/${endpoint}/upload`;
+
+      type Uploaded = { secure_url: string; public_id: string; resource_type: string };
+      let uploaded: Uploaded;
+
+      // Au-delà de ~95 Mo, Cloudinary exige un envoi par morceaux (chunked upload)
+      const CHUNK_THRESHOLD = 95 * 1024 * 1024;
+      const CHUNK_SIZE = 20 * 1024 * 1024; // 20 Mo par morceau
+
+      if (file.size > CHUNK_THRESHOLD) {
+        const uploadId = `uw-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        let result: Uploaded | null = null;
+        for (let start = 0; start < file.size; start += CHUNK_SIZE) {
+          const end = Math.min(start + CHUNK_SIZE, file.size);
+          const chunkForm = new FormData();
+          chunkForm.append('file', file.slice(start, end), file.name);
+          chunkForm.append('api_key', sig.apiKey);
+          chunkForm.append('timestamp', String(sig.timestamp));
+          chunkForm.append('signature', sig.signature);
+          chunkForm.append('folder', sig.folder);
+          if (sig.backgroundRemoval) chunkForm.append('background_removal', sig.backgroundRemoval);
+
+          const res = await fetch(uploadUrl, {
+            method: 'POST',
+            body: chunkForm,
+            headers: {
+              'X-Unique-Upload-Id': uploadId,
+              'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
+            },
+          });
+          if (!res.ok) {
+            console.error('Cloudinary chunked upload failed', await res.text());
+            return null;
+          }
+          const data = (await res.json()) as Partial<Uploaded>;
+          if (data.secure_url && data.public_id) result = data as Uploaded;
+        }
+        if (!result) {
+          console.error('Cloudinary chunked upload: no final response');
+          return null;
+        }
+        uploaded = result;
+      } else {
+        const res = await fetch(uploadUrl, { method: 'POST', body: form });
+        if (!res.ok) {
+          console.error('Cloudinary upload failed', await res.text());
+          return null;
+        }
+        uploaded = (await res.json()) as Uploaded;
       }
-      const uploaded = (await res.json()) as {
-        secure_url: string;
-        public_id: string;
-        resource_type: string;
-      };
 
       // 3. Enregistrer le média dans la base de données.
       // Si la suppression de fond est demandée, le serveur attend la fin du

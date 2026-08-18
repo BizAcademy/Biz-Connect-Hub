@@ -10,7 +10,7 @@ const router: IRouter = Router();
 
 const CLOUDINARY_FOLDER = "biz-connect";
 const BACKGROUND_REMOVAL = "cloudinary_ai";
-const MAX_BYTES = 50 * 1024 * 1024; // 50 Mo, aligné sur l'upload object-storage
+const MAX_BYTES = 500 * 1024 * 1024; // 500 Mo — permet les vidéos volumineuses
 
 function getCloudinaryConfig(): {
   cloudName: string;
@@ -216,7 +216,7 @@ router.post("/media", async (req: Request, res: Response) => {
     if (resource.bytes > MAX_BYTES) {
       // Oversized upload slipped through the client — clean it up remotely.
       await destroyCloudinaryAsset(config, publicId, resource.resource_type);
-      res.status(400).json({ error: "Fichier trop volumineux (max 50 Mo)" });
+      res.status(400).json({ error: "Fichier trop volumineux (max 500 Mo)" });
       return;
     }
 
