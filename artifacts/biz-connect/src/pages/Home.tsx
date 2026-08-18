@@ -269,7 +269,7 @@ export default function Home() {
               <img
                 src={content.countriesIconUrl}
                 alt="Pays d'Afrique"
-                className="w-24 h-24 object-cover mx-auto mb-4 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-black/10 transition-transform hover:scale-105"
+                className="w-36 h-36 object-cover mx-auto mb-4 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-black/10 transition-transform hover:scale-105"
               />
             ) : (
               <Globe2 className="w-10 h-10 text-primary mx-auto mb-4" />
