@@ -57651,6 +57651,17 @@ async function ensureVideoBucket(config2) {
   const headers = { ...supabaseHeaders(config2.serviceKey), "Content-Type": "application/json" };
   const res = await fetch(`${config2.url}/storage/v1/bucket/${SUPABASE_BUCKET}`, { headers });
   if (res.ok) {
+    const bucket = await res.json();
+    if (!bucket.public) {
+      const upd = await fetch(`${config2.url}/storage/v1/bucket/${SUPABASE_BUCKET}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ public: true })
+      });
+      if (!upd.ok) {
+        throw new Error(`Bucket Supabase existant mais priv\xE9, mise \xE0 jour impossible: ${await upd.text()}`);
+      }
+    }
     bucketEnsured = true;
     return;
   }
@@ -57768,6 +57779,20 @@ router7.post("/media", async (req, res) => {
       );
       if (!info.ok) {
         res.status(400).json({ error: "Vid\xE9o introuvable sur Supabase" });
+        return;
+      }
+      const meta = await info.json();
+      const size = meta.metadata?.size ?? meta.size ?? 0;
+      const mimetype = meta.metadata?.mimetype ?? meta.contentType ?? "";
+      const invalid = size > 0 && size > MAX_BYTES || mimetype !== "" && !mimetype.startsWith("video/");
+      if (invalid) {
+        await fetch(`${supa.url}/storage/v1/object/${SUPABASE_BUCKET}/${objectPath}`, {
+          method: "DELETE",
+          headers: supabaseHeaders(supa.serviceKey)
+        });
+        res.status(400).json({
+          error: size > MAX_BYTES ? "Fichier trop volumineux (max 500 Mo)" : "Le fichier n'est pas une vid\xE9o"
+        });
         return;
       }
       const [row] = await db.insert(mediaTable).values({

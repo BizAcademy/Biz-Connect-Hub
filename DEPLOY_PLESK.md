@@ -16,7 +16,8 @@ Aucun `npm install` ni build n'est nécessaire sur Plesk : le serveur est un bun
 4. **Variables d'environnement** (obligatoires) :
    - `DATABASE_URL` — chaîne de connexion PostgreSQL
    - `ADMIN_PASSWORD` — mot de passe admin du site
-   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — pour l'upload des médias
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` — pour l'upload des images
+   - `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — pour le stockage des vidéos (Supabase Storage, bucket `videos`)
    - `SESSION_SECRET`
    - `PORT` — fourni automatiquement par Passenger (sinon 3000 par défaut)
 

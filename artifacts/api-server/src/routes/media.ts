@@ -117,6 +117,18 @@ async function ensureVideoBucket(config: { url: string; serviceKey: string }): P
   const headers = { ...supabaseHeaders(config.serviceKey), "Content-Type": "application/json" };
   const res = await fetch(`${config.url}/storage/v1/bucket/${SUPABASE_BUCKET}`, { headers });
   if (res.ok) {
+    const bucket = (await res.json()) as { public?: boolean };
+    if (!bucket.public) {
+      // Le bucket doit être public pour que les vidéos soient lisibles sur le site.
+      const upd = await fetch(`${config.url}/storage/v1/bucket/${SUPABASE_BUCKET}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ public: true }),
+      });
+      if (!upd.ok) {
+        throw new Error(`Bucket Supabase existant mais privé, mise à jour impossible: ${await upd.text()}`);
+      }
+    }
     bucketEnsured = true;
     return;
   }
@@ -275,6 +287,29 @@ router.post("/media", async (req: Request, res: Response) => {
       );
       if (!info.ok) {
         res.status(400).json({ error: "Vidéo introuvable sur Supabase" });
+        return;
+      }
+      // Validation serveur : le fichier doit être une vidéo et rester sous la limite.
+      const meta = (await info.json()) as {
+        metadata?: { size?: number; mimetype?: string };
+        size?: number;
+        contentType?: string;
+      };
+      const size = meta.metadata?.size ?? meta.size ?? 0;
+      const mimetype = meta.metadata?.mimetype ?? meta.contentType ?? "";
+      const invalid =
+        (size > 0 && size > MAX_BYTES) ||
+        (mimetype !== "" && !mimetype.startsWith("video/"));
+      if (invalid) {
+        await fetch(`${supa.url}/storage/v1/object/${SUPABASE_BUCKET}/${objectPath}`, {
+          method: "DELETE",
+          headers: supabaseHeaders(supa.serviceKey),
+        });
+        res.status(400).json({
+          error: size > MAX_BYTES
+            ? "Fichier trop volumineux (max 500 Mo)"
+            : "Le fichier n'est pas une vidéo",
+        });
         return;
       }
       const [row] = await db
