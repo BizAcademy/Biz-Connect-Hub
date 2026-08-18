@@ -1,8 +1,25 @@
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
-import { ArrowLeft, PlayCircle } from 'lucide-react';
-import { useListHelpVideos } from '@workspace/api-client-react';
+import { ArrowLeft, ArrowRight, PlayCircle } from 'lucide-react';
+import { useListHelpVideos, useGetContent } from '@workspace/api-client-react';
 import { Navbar } from '@/components/Navbar';
+
+// Bouton d'inscription (gère les liens externes configurés dans l'admin)
+function SignupButton({ href }: { href: string }) {
+  const cls = "btn-blink-soft inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-colors shadow-sm";
+  if (/^https?:\/\//i.test(href)) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+        S'inscrire maintenant <ArrowRight size={15} />
+      </a>
+    );
+  }
+  return (
+    <Link href={href} className={cls}>
+      S'inscrire maintenant <ArrowRight size={15} />
+    </Link>
+  );
+}
 
 // Convertit les URLs YouTube/Vimeo classiques en URLs intégrables (embed)
 function toEmbedUrl(url: string): string | null {
@@ -35,6 +52,8 @@ function VideoPlayer({ url, title }: { url: string; title: string }) {
 
 export default function Aide() {
   const { data: videos, isLoading } = useListHelpVideos();
+  const { data: content } = useGetContent();
+  const signupUrl = content?.signupUrl || '/inscription';
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -71,6 +90,9 @@ export default function Aide() {
                   <h2 className="text-xl font-bold mb-2">{v.title}</h2>
                   {v.description && <p className="text-muted-foreground text-sm mb-4">{v.description}</p>}
                   <VideoPlayer url={v.videoUrl} title={v.title} />
+                  <div className="mt-4 text-center">
+                    <SignupButton href={signupUrl} />
+                  </div>
                 </motion.div>
               ))}
             </div>

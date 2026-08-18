@@ -750,9 +750,9 @@ export default function Home() {
             <p className="text-muted-foreground mb-6">Tout ce que tu dois savoir avant de nous rejoindre.</p>
             <Link
               href="/aide"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors"
+              className="btn-blink-gold inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 text-white font-bold text-lg rounded-xl hover:bg-amber-600 transition-colors"
             >
-              Centre d'aide <ArrowRight size={16} />
+              Guide d'utilisation BCA <ArrowRight size={19} />
             </Link>
           </div>
           <Accordion type="single" collapsible className="w-full space-y-3">
