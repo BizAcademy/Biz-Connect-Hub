@@ -20700,27 +20700,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router9;
+    module.exports = Router10;
     module.exports.Route = Route;
-    function Router9(options) {
-      if (!(this instanceof Router9)) {
-        return new Router9(options);
+    function Router10(options) {
+      if (!(this instanceof Router10)) {
+        return new Router10(options);
       }
       const opts = options || {};
-      function router9(req, res, next) {
-        router9.handle(req, res, next);
+      function router10(req, res, next) {
+        router10.handle(req, res, next);
       }
-      Object.setPrototypeOf(router9, this);
-      router9.caseSensitive = opts.caseSensitive;
-      router9.mergeParams = opts.mergeParams;
-      router9.params = {};
-      router9.strict = opts.strict;
-      router9.stack = [];
-      return router9;
+      Object.setPrototypeOf(router10, this);
+      router10.caseSensitive = opts.caseSensitive;
+      router10.mergeParams = opts.mergeParams;
+      router10.params = {};
+      router10.strict = opts.strict;
+      router10.stack = [];
+      return router10;
     }
-    Router9.prototype = function() {
+    Router10.prototype = function() {
     };
-    Router9.prototype.param = function param(name, fn) {
+    Router10.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20740,7 +20740,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router9.prototype.handle = function handle(req, res, callback) {
+    Router10.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20867,7 +20867,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router9.prototype.use = function use(handler) {
+    Router10.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20900,7 +20900,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router9.prototype.route = function route(path2) {
+    Router10.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20915,7 +20915,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router9.prototype[method] = function(path2) {
+      Router10.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21098,13 +21098,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router9 = require_router();
+    var Router10 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router9 = null;
+      var router10 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21113,13 +21113,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router9 === null) {
-            router9 = new Router9({
+          if (router10 === null) {
+            router10 = new Router10({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router9;
+          return router10;
         }
       });
     };
@@ -21190,15 +21190,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router9 = this.router;
+      var router10 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router9.use(path2, fn2);
+          return router10.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router9.use(path2, function mounted_app(req, res, next) {
+        router10.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23783,7 +23783,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router9 = require_router();
+    var Router10 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23805,8 +23805,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router9.Route;
-    exports.Router = Router9;
+    exports.Route = Router10.Route;
+    exports.Router = Router10;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -33815,14 +33815,14 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express9 = __toESM(require_express2(), 1);
+var import_express10 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/routes/index.ts
-var import_express8 = __toESM(require_express2(), 1);
+var import_express9 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -57920,16 +57920,241 @@ router7.delete("/media/:id", async (req, res) => {
 });
 var media_default = router7;
 
-// src/routes/index.ts
+// src/routes/migrate.ts
+import { createHash as createHash2 } from "crypto";
+var import_express8 = __toESM(require_express2(), 1);
 var router8 = (0, import_express8.Router)();
-router8.use(health_default);
-router8.use(leads_default);
-router8.use(admin_default);
-router8.use(content_default);
-router8.use(notifications_default);
-router8.use(siteItems_default);
-router8.use(media_default);
-var routes_default = router8;
+var CLOUDINARY_FOLDER2 = "biz-connect";
+var SUPABASE_BUCKET2 = "videos";
+function getCloudinaryConfig2() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloudName || !apiKey || !apiSecret) return null;
+  return { cloudName, apiKey, apiSecret };
+}
+function signParams2(params, apiSecret) {
+  const toSign = Object.keys(params).sort().map((k) => `${k}=${params[k]}`).join("&");
+  return createHash2("sha1").update(toSign + apiSecret).digest("hex");
+}
+async function destroyCloudinaryAsset2(config2, publicId, resourceType) {
+  const timestamp2 = Math.floor(Date.now() / 1e3);
+  const signature = signParams2({ public_id: publicId, timestamp: timestamp2 }, config2.apiSecret);
+  const form = new FormData();
+  form.append("public_id", publicId);
+  form.append("timestamp", String(timestamp2));
+  form.append("api_key", config2.apiKey);
+  form.append("signature", signature);
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${config2.cloudName}/${resourceType}/destroy`,
+    { method: "POST", body: form }
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.result ?? null;
+}
+function getSupabaseConfig2() {
+  const url2 = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url2 || !serviceKey) return null;
+  return { url: url2, serviceKey };
+}
+function supabaseHeaders2(serviceKey) {
+  return { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey };
+}
+async function ensureVideoBucket2(config2) {
+  const headers = { ...supabaseHeaders2(config2.serviceKey), "Content-Type": "application/json" };
+  const res = await fetch(`${config2.url}/storage/v1/bucket/${SUPABASE_BUCKET2}`, { headers });
+  if (res.ok) {
+    const bucket = await res.json();
+    if (!bucket.public) {
+      await fetch(`${config2.url}/storage/v1/bucket/${SUPABASE_BUCKET2}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify({ public: true })
+      });
+    }
+    return;
+  }
+  const create = await fetch(`${config2.url}/storage/v1/bucket`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ id: SUPABASE_BUCKET2, name: SUPABASE_BUCKET2, public: true })
+  });
+  if (!create.ok) {
+    const text2 = await create.text();
+    if (!text2.includes("already exists")) {
+      throw new Error(`Impossible de cr\xE9er le bucket Supabase : ${text2}`);
+    }
+  }
+}
+async function updateContentReferences(oldUrl, newUrl) {
+  let updated = 0;
+  const [sc] = await db.select({ id: siteContentTable.id, videoUrl: siteContentTable.videoUrl }).from(siteContentTable);
+  if (sc && sc.videoUrl === oldUrl) {
+    await db.update(siteContentTable).set({ videoUrl: newUrl }).where(eq(siteContentTable.id, sc.id));
+    updated++;
+  }
+  const testimonialRows = await db.select({ id: testimonialsTable.id }).from(testimonialsTable).where(
+    and(
+      eq(testimonialsTable.mediaUrl, oldUrl),
+      eq(testimonialsTable.mediaType, "video")
+    )
+  );
+  for (const row of testimonialRows) {
+    await db.update(testimonialsTable).set({ mediaUrl: newUrl }).where(eq(testimonialsTable.id, row.id));
+    updated++;
+  }
+  const stRows = await db.select({ id: serviceTestimonialsTable.id }).from(serviceTestimonialsTable).where(
+    and(
+      eq(serviceTestimonialsTable.mediaUrl, oldUrl),
+      eq(serviceTestimonialsTable.mediaType, "video")
+    )
+  );
+  for (const row of stRows) {
+    await db.update(serviceTestimonialsTable).set({ mediaUrl: newUrl }).where(eq(serviceTestimonialsTable.id, row.id));
+    updated++;
+  }
+  const hvRows = await db.select({ id: helpVideosTable.id }).from(helpVideosTable).where(eq(helpVideosTable.videoUrl, oldUrl));
+  for (const row of hvRows) {
+    await db.update(helpVideosTable).set({ videoUrl: newUrl }).where(eq(helpVideosTable.id, row.id));
+    updated++;
+  }
+  return updated;
+}
+router8.post("/admin/migrate-cloudinary-videos", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const cloudCfg = getCloudinaryConfig2();
+  if (!cloudCfg) {
+    res.status(500).json({ error: "Cloudinary non configur\xE9" });
+    return;
+  }
+  const supaCfg = getSupabaseConfig2();
+  if (!supaCfg) {
+    res.status(500).json({ error: "Supabase non configur\xE9" });
+    return;
+  }
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+  const send = (data) => {
+    res.write(`data: ${JSON.stringify(data)}
+
+`);
+  };
+  try {
+    await ensureVideoBucket2(supaCfg);
+    const cloudinaryVideos = await db.select().from(mediaTable).where(
+      and(
+        eq(mediaTable.resourceType, "video"),
+        like(mediaTable.publicId, `${CLOUDINARY_FOLDER2}/%`)
+      )
+    );
+    send({ type: "start", total: cloudinaryVideos.length });
+    if (cloudinaryVideos.length === 0) {
+      send({ type: "done", migrated: 0, skipped: 0, errors: 0 });
+      res.end();
+      return;
+    }
+    let migrated = 0;
+    let errors = 0;
+    for (const media of cloudinaryVideos) {
+      send({ type: "processing", id: media.id, name: media.name, publicId: media.publicId });
+      try {
+        send({ type: "step", id: media.id, step: "download" });
+        const dlRes = await fetch(media.url);
+        if (!dlRes.ok) {
+          throw new Error(`T\xE9l\xE9chargement Cloudinary \xE9chou\xE9 (HTTP ${dlRes.status})`);
+        }
+        const contentType = dlRes.headers.get("content-type") ?? "video/mp4";
+        const videoBuffer = Buffer.from(await dlRes.arrayBuffer());
+        const cloudFilename = media.publicId.split("/").pop() ?? media.id.toString();
+        const ext = contentType.split("/")[1]?.replace("quicktime", "mov") ?? "mp4";
+        const objectPath = `migrated-${Date.now()}-${cloudFilename}.${ext}`;
+        send({ type: "step", id: media.id, step: "upload", bytes: videoBuffer.length });
+        const uploadRes = await fetch(
+          `${supaCfg.url}/storage/v1/object/${SUPABASE_BUCKET2}/${objectPath}`,
+          {
+            method: "POST",
+            headers: {
+              ...supabaseHeaders2(supaCfg.serviceKey),
+              "Content-Type": contentType
+            },
+            body: videoBuffer
+          }
+        );
+        if (!uploadRes.ok) {
+          const errText = await uploadRes.text();
+          throw new Error(`Upload Supabase \xE9chou\xE9 (HTTP ${uploadRes.status}): ${errText}`);
+        }
+        const newPublicId = `${SUPABASE_BUCKET2}/${objectPath}`;
+        const newUrl = `${supaCfg.url}/storage/v1/object/public/${SUPABASE_BUCKET2}/${objectPath}`;
+        const oldUrl = media.url;
+        send({ type: "step", id: media.id, step: "update_db" });
+        await db.update(mediaTable).set({ url: newUrl, publicId: newPublicId }).where(eq(mediaTable.id, media.id));
+        const refsUpdated = await updateContentReferences(oldUrl, newUrl);
+        if (refsUpdated > 0) {
+          send({ type: "refs_updated", id: media.id, count: refsUpdated });
+        }
+        send({ type: "step", id: media.id, step: "delete_cloudinary" });
+        const destroyResult = await destroyCloudinaryAsset2(cloudCfg, media.publicId, media.resourceType);
+        if (destroyResult !== "ok" && destroyResult !== "not found") {
+          send({
+            type: "warning",
+            id: media.id,
+            message: `Suppression Cloudinary incompl\xE8te (result: ${destroyResult}) \u2014 l'asset restera sur Cloudinary mais la migration est faite.`
+          });
+        }
+        send({
+          type: "migrated",
+          id: media.id,
+          name: media.name,
+          newUrl,
+          newPublicId,
+          refsUpdated
+        });
+        migrated++;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        send({ type: "error", id: media.id, name: media.name, message });
+        errors++;
+      }
+    }
+    send({ type: "done", migrated, skipped: 0, errors });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    send({ type: "fatal", message });
+  }
+  res.end();
+});
+router8.get("/admin/migrate-cloudinary-videos/status", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const rows = await db.select({ id: mediaTable.id, name: mediaTable.name, publicId: mediaTable.publicId, url: mediaTable.url }).from(mediaTable).where(
+      and(
+        eq(mediaTable.resourceType, "video"),
+        like(mediaTable.publicId, `${CLOUDINARY_FOLDER2}/%`)
+      )
+    );
+    res.json({ pending: rows.length, videos: rows });
+  } catch (err) {
+    res.status(500).json({ error: "Erreur DB" });
+  }
+});
+var migrate_default = router8;
+
+// src/routes/index.ts
+var router9 = (0, import_express9.Router)();
+router9.use(health_default);
+router9.use(leads_default);
+router9.use(admin_default);
+router9.use(content_default);
+router9.use(notifications_default);
+router9.use(siteItems_default);
+router9.use(media_default);
+router9.use(migrate_default);
+var routes_default = router9;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -57950,7 +58175,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express9.default)();
+var app = (0, import_express10.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -57971,15 +58196,15 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express9.default.json());
-app.use(import_express9.default.urlencoded({ extended: true }));
+app.use(import_express10.default.json());
+app.use(import_express10.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 if (process.env.NODE_ENV === "production") {
   const publicDir = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "public"
   );
-  app.use(import_express9.default.static(publicDir));
+  app.use(import_express10.default.static(publicDir));
   app.get(/^\/(?!api(\/|$)).*/, (_req, res) => {
     res.sendFile(path.join(publicDir, "index.html"));
   });
