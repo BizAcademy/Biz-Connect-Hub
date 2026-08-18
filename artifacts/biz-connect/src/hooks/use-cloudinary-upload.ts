@@ -19,42 +19,6 @@ export function useCloudinaryUpload(pwd: string) {
   ): Promise<MediaItem | null> => {
     setIsUploading(true);
     try {
-      // Les vidéos sont stockées sur Supabase Storage (pas de limite 100 Mo Cloudinary)
-      if (file.type.startsWith('video/')) {
-        const sigRes = await fetch('/api/media/uploads/supabase-signed-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-admin-password': pwd },
-          body: JSON.stringify({ fileName: file.name }),
-        });
-        if (!sigRes.ok) {
-          console.error('Supabase signed url failed', await sigRes.text());
-          return null;
-        }
-        const sig2 = (await sigRes.json()) as {
-          uploadUrl: string;
-          publicUrl: string;
-          publicId: string;
-        };
-        const up = await fetch(sig2.uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': file.type || 'application/octet-stream' },
-          body: file,
-        });
-        if (!up.ok) {
-          console.error('Supabase upload failed', await up.text());
-          return null;
-        }
-        return await createMedia(
-          {
-            name: file.name,
-            url: sig2.publicUrl,
-            publicId: sig2.publicId,
-            resourceType: 'video',
-          },
-          adminReq(pwd),
-        );
-      }
-
       // 1. Obtenir la signature auprès de notre serveur
       const sig = await getMediaUploadSignature(
         { removeBackground: opts?.removeBackground ?? false },
