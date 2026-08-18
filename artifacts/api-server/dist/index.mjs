@@ -57589,7 +57589,7 @@ var import_express7 = __toESM(require_express2(), 1);
 var router7 = (0, import_express7.Router)();
 var CLOUDINARY_FOLDER = "biz-connect";
 var BACKGROUND_REMOVAL = "cloudinary_ai";
-var MAX_BYTES = 50 * 1024 * 1024;
+var MAX_BYTES = 500 * 1024 * 1024;
 function getCloudinaryConfig() {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
   const apiKey = process.env.CLOUDINARY_API_KEY;
@@ -57635,6 +57635,74 @@ async function destroyCloudinaryAsset(config2, publicId, resourceType) {
   const data = await res.json();
   return data.result ?? null;
 }
+var SUPABASE_BUCKET = "videos";
+function getSupabaseConfig() {
+  const url2 = process.env.SUPABASE_URL?.replace(/\/+$/, "");
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url2 || !serviceKey) return null;
+  return { url: url2, serviceKey };
+}
+function supabaseHeaders(serviceKey) {
+  return { Authorization: `Bearer ${serviceKey}`, apikey: serviceKey };
+}
+var bucketEnsured = false;
+async function ensureVideoBucket(config2) {
+  if (bucketEnsured) return;
+  const headers = { ...supabaseHeaders(config2.serviceKey), "Content-Type": "application/json" };
+  const res = await fetch(`${config2.url}/storage/v1/bucket/${SUPABASE_BUCKET}`, { headers });
+  if (res.ok) {
+    bucketEnsured = true;
+    return;
+  }
+  const create = await fetch(`${config2.url}/storage/v1/bucket`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ id: SUPABASE_BUCKET, name: SUPABASE_BUCKET, public: true })
+  });
+  if (!create.ok) {
+    const text2 = await create.text();
+    if (!text2.includes("already exists")) {
+      throw new Error(`Cr\xE9ation du bucket Supabase impossible: ${text2}`);
+    }
+  }
+  bucketEnsured = true;
+}
+router7.post("/media/uploads/supabase-signed-url", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const config2 = getSupabaseConfig();
+  if (!config2) {
+    res.status(500).json({ error: "Supabase n'est pas configur\xE9 (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY)" });
+    return;
+  }
+  const fileName = String(req.body?.fileName ?? "video");
+  const safeName = fileName.toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "").slice(-80) || "video";
+  const objectPath = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+  try {
+    await ensureVideoBucket(config2);
+    const sign = await fetch(
+      `${config2.url}/storage/v1/object/upload/sign/${SUPABASE_BUCKET}/${objectPath}`,
+      {
+        method: "POST",
+        headers: { ...supabaseHeaders(config2.serviceKey), "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      }
+    );
+    if (!sign.ok) {
+      req.log.error({ status: sign.status, body: await sign.text() }, "Supabase sign failed");
+      res.status(502).json({ error: "Impossible d'obtenir une URL d'upload Supabase" });
+      return;
+    }
+    const data = await sign.json();
+    res.json({
+      uploadUrl: `${config2.url}/storage/v1${data.url}`,
+      publicUrl: `${config2.url}/storage/v1/object/public/${SUPABASE_BUCKET}/${objectPath}`,
+      publicId: `${SUPABASE_BUCKET}/${objectPath}`
+    });
+  } catch (error40) {
+    req.log.error({ err: error40 }, "Error creating Supabase signed URL");
+    res.status(500).json({ error: "Erreur Supabase" });
+  }
+});
 router7.post("/media/uploads/signature", (req, res) => {
   if (!requireAdmin(req, res)) return;
   const config2 = getCloudinaryConfig();
@@ -57686,6 +57754,35 @@ router7.post("/media", async (req, res) => {
     return;
   }
   const { publicId } = parsed.data;
+  if (publicId.startsWith(`${SUPABASE_BUCKET}/`)) {
+    const supa = getSupabaseConfig();
+    if (!supa) {
+      res.status(500).json({ error: "Supabase n'est pas configur\xE9" });
+      return;
+    }
+    const objectPath = publicId.slice(SUPABASE_BUCKET.length + 1);
+    try {
+      const info = await fetch(
+        `${supa.url}/storage/v1/object/info/${SUPABASE_BUCKET}/${objectPath}`,
+        { headers: supabaseHeaders(supa.serviceKey) }
+      );
+      if (!info.ok) {
+        res.status(400).json({ error: "Vid\xE9o introuvable sur Supabase" });
+        return;
+      }
+      const [row] = await db.insert(mediaTable).values({
+        name: parsed.data.name ?? "",
+        url: `${supa.url}/storage/v1/object/public/${SUPABASE_BUCKET}/${objectPath}`,
+        publicId,
+        resourceType: "video"
+      }).returning();
+      res.status(201).json({ ...row, createdAt: row.createdAt.toISOString() });
+    } catch (error40) {
+      req.log.error({ err: error40 }, "Error creating Supabase media");
+      res.status(500).json({ error: "Failed to create media" });
+    }
+    return;
+  }
   if (!publicId.startsWith(`${CLOUDINARY_FOLDER}/`)) {
     res.status(400).json({ error: "publicId hors du dossier autoris\xE9" });
     return;
@@ -57727,7 +57824,7 @@ router7.post("/media", async (req, res) => {
     }
     if (resource.bytes > MAX_BYTES) {
       await destroyCloudinaryAsset(config2, publicId, resource.resource_type);
-      res.status(400).json({ error: "Fichier trop volumineux (max 50 Mo)" });
+      res.status(400).json({ error: "Fichier trop volumineux (max 500 Mo)" });
       return;
     }
     const [row] = await db.insert(mediaTable).values({
@@ -57749,15 +57846,35 @@ router7.delete("/media/:id", async (req, res) => {
     res.status(400).json({ error: "Invalid id" });
     return;
   }
-  const config2 = getCloudinaryConfig();
-  if (!config2) {
-    res.status(500).json({ error: "Cloudinary n'est pas configur\xE9" });
-    return;
-  }
   try {
     const [row] = await db.select().from(mediaTable).where(eq(mediaTable.id, id));
     if (!row) {
       res.status(404).json({ error: "Media not found" });
+      return;
+    }
+    if (row.publicId.startsWith(`${SUPABASE_BUCKET}/`)) {
+      const supa = getSupabaseConfig();
+      if (!supa) {
+        res.status(500).json({ error: "Supabase n'est pas configur\xE9" });
+        return;
+      }
+      const objectPath = row.publicId.slice(SUPABASE_BUCKET.length + 1);
+      const del = await fetch(
+        `${supa.url}/storage/v1/object/${SUPABASE_BUCKET}/${objectPath}`,
+        { method: "DELETE", headers: supabaseHeaders(supa.serviceKey) }
+      );
+      if (!del.ok && del.status !== 404) {
+        req.log.error({ status: del.status, publicId: row.publicId }, "Supabase delete failed");
+        res.status(502).json({ error: "\xC9chec de la suppression sur Supabase" });
+        return;
+      }
+      await db.delete(mediaTable).where(eq(mediaTable.id, id));
+      res.json({ success: true });
+      return;
+    }
+    const config2 = getCloudinaryConfig();
+    if (!config2) {
+      res.status(500).json({ error: "Cloudinary n'est pas configur\xE9" });
       return;
     }
     const result = await destroyCloudinaryAsset(config2, row.publicId, row.resourceType);
