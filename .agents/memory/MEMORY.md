@@ -1,3 +1,3 @@
 - [Biz Connect Hub setup](biz-connect-setup.md) — projet cloné depuis GitHub, artifact enregistré, db schema pushé, deux workflows actifs.
-- [Vidéos sur Supabase](biz-connect-videos-supabase.md) — vidéos → Supabase Storage (bucket `videos`), images → Cloudinary ; prod Plesk exige SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.
+- [Stockage vidéos](biz-connect-videos-supabase.md) — uploads vidéo revenus sur Cloudinary (choix utilisateur) ; Supabase gardé en lecture/suppression ; >100 Mo → YouTube non répertoriée.
 - [Biz Connect déploiement](biz-connect-deploy.md) — la prod sert le dist/public COMMITÉ ; après toute modif frontend, rebuild + copie vers api-server/dist/public avant de pousser.
