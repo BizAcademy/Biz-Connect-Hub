@@ -13,6 +13,11 @@ export interface SiteContentInput {
   memberCount?: string;
   memberCountLabel?: string;
   geoAvailability?: string;
+  promoTitle?: string;
+  promoDescription?: string;
+  promoVideoUrl?: string;
+  promoPosterUrl?: string;
+  promoCtaText?: string;
   videoUrl?: string;
   offerPrice?: string;
   offerOriginalPrice?: string;

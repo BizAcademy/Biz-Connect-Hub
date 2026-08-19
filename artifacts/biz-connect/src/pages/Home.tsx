@@ -9,6 +9,7 @@ import {
 import { NotificationWidget } from '@/components/NotificationWidget';
 import { Navbar } from '@/components/Navbar';
 import { InfiniteSlider } from '@/components/InfiniteSlider';
+import { PublicVideo } from '@/components/PublicVideo';
 import {
   ArrowRight, Users, Globe2, TrendingUp, ShieldCheck,
   Briefcase, GraduationCap, ChevronRight, CheckCircle2, Lock,
@@ -140,31 +141,60 @@ export default function Home() {
                 </SignupLink>
               </motion.div>
 
+              {/* SECTION PROMOTIONNELLE (si présente) */}
+              {(content.promoTitle || content.promoVideoUrl) && (
+                <motion.div variants={fadeIn} className="mt-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-3xl p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden">
+                  {/* Decorative blur elements */}
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/30 rounded-full blur-xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none" />
+
+                  <div className="relative z-10 flex flex-col items-center text-center">
+                    {content.promoTitle && (
+                      <h2 className="text-2xl sm:text-3xl font-black mb-4 leading-tight shadow-sm">
+                        {content.promoTitle.split(/(payé|statut WhatsApp)/gi).map((part, index) => {
+                          const normalized = part.toLowerCase();
+                          const color = normalized === 'payé'
+                            ? 'text-amber-300'
+                            : normalized === 'statut whatsapp'
+                              ? 'text-lime-300'
+                              : '';
+                          return <span key={`${part}-${index}`} className={color}>{part}</span>;
+                        })}
+                      </h2>
+                    )}
+                    {content.promoDescription && (
+                      <p className="text-sm sm:text-base text-blue-100 mb-6 max-w-lg leading-relaxed shadow-sm">
+                        {content.promoDescription}
+                      </p>
+                    )}
+
+                    {content.promoVideoUrl && (
+                      <div className="w-full max-w-sm mb-6 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
+                        <PublicVideo
+                          url={content.promoVideoUrl}
+                          posterUrl={content.promoPosterUrl}
+                          title="Vidéo Promotionnelle"
+                          className="aspect-video object-cover"
+                        />
+                      </div>
+                    )}
+
+                    <SignupLink
+                      href={signupUrl}
+                      className="btn-blink-gold px-8 py-3.5 bg-[#f59e0b] hover:bg-[#d97706] text-white font-bold rounded-xl shadow-lg transition-colors w-full sm:w-auto text-center"
+                    >
+                      {content.promoCtaText || "Je m'inscris maintenant"}
+                    </SignupLink>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Vidéo de présentation (déplacée ici) */}
-              <motion.div variants={fadeIn} className="mt-8">
+              <motion.div variants={fadeIn} className="mt-12">
                 <h2 className="text-2xl font-bold text-green-600 mb-2">Découvrez Biz Connect Academy</h2>
                 <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
-                <div className="bg-slate-900 p-2.5 rounded-2xl shadow-xl w-full max-w-lg">
-                  {/youtube\.com|youtu\.be|vimeo\.com/.test(content.videoUrl) ? (
-                    <div className="aspect-video w-full rounded-xl overflow-hidden">
-                      <iframe
-                        src={content.videoUrl}
-                        title="Biz Connect Academy — présentation"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full"
-                      />
-                    </div>
-                  ) : (
-                    // La vidéo garde son format d'origine (horizontal ou vertical) et s'affiche entièrement
-                    <video
-                      src={content.videoUrl}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      className="w-auto h-auto max-w-full max-h-[70vh] mx-auto rounded-xl bg-black"
-                    />
-                  )}
+                <div className="bg-blue-100 p-2.5 rounded-2xl shadow-xl w-full max-w-lg mx-auto lg:mx-0">
+                  <PublicVideo url={content.videoUrl} title="Biz Connect Academy — présentation" />
                 </div>
               </motion.div>
             </motion.div>
@@ -249,7 +279,7 @@ export default function Home() {
             </motion.div>
             <div className="hidden sm:block w-px h-12 bg-border" />
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">29</div>
+              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">+20</div>
               <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pays d'Afrique</div>
             </motion.div>
             <div className="hidden sm:block w-px h-12 bg-border" />
@@ -274,7 +304,7 @@ export default function Home() {
             ) : (
               <Globe2 className="w-10 h-10 text-primary mx-auto mb-4" />
             )}
-            <h2 className="text-3xl font-bold mb-3 text-green-600">Disponible dans {countries.length} pays d'Afrique</h2>
+            <h2 className="text-3xl font-bold mb-3 text-green-600">Disponible dans plus de 20 pays d'Afrique</h2>
             <p className="text-muted-foreground">La BCA est présente dans tous les pays francophones d'Afrique</p>
           </motion.div>
         </div>
@@ -370,7 +400,7 @@ export default function Home() {
                         {sTestimonials.map((t) => (
                           <div key={t.id} className="snap-start shrink-0 w-48 rounded-xl border border-border bg-background overflow-hidden">
                             {t.mediaType === 'video' ? (
-                              <video src={t.mediaUrl} controls className="w-full h-40 object-cover bg-black" />
+                              <PublicVideo url={t.mediaUrl} className="w-full h-40 object-cover bg-black" />
                             ) : (
                               <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-cover" />
                             )}
@@ -523,7 +553,7 @@ export default function Home() {
                   </div>
                   {t.mediaUrl && (
                     t.mediaType === 'video' ? (
-                      <video src={t.mediaUrl} controls className="w-full h-64 object-cover bg-black" />
+                      <PublicVideo url={t.mediaUrl} className="w-full h-64 object-cover bg-black" />
                     ) : (
                       <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-64 object-cover" />
                     )
@@ -729,13 +759,12 @@ export default function Home() {
           <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight text-green-300">
             Tu veux commencer ?
           </h2>
-          <p className="text-xl mb-4 font-semibold">
+          <p className="text-xl mb-10 font-semibold">
             Tu as juste besoin de <span className="font-black">{content.offerPrice}</span> pour créer ton compte
           </p>
-          <p className="text-base mb-10 opacity-80">Je prends la décision aujourd'hui de transformer ma vie avec la BCA</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <SignupLink href={signupUrl} className="btn-blink px-8 py-4 bg-background text-foreground font-black rounded-xl shadow-2xl hover:scale-105 transition-transform w-full sm:w-auto text-base">
-              Je m'inscris maintenant
+            <SignupLink href={signupUrl} className="btn-blink px-6 py-4 bg-background text-foreground font-black rounded-xl shadow-2xl hover:scale-105 transition-transform w-full sm:w-auto text-sm sm:text-base whitespace-normal break-words leading-snug text-center">
+              Aujourd'hui je prends la décision de transformer ma vie avec la BCA
             </SignupLink>
             <Link href="/contact"
               className="px-8 py-4 border-2 border-primary-foreground/40 text-primary-foreground font-bold rounded-xl hover:bg-primary-foreground/10 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto text-base"

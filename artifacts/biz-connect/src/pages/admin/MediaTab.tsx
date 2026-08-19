@@ -139,7 +139,7 @@ function MigrationPanel({ pwd, onDone }: { pwd: string; onDone: () => void }) {
         }
       }
     } catch (err) {
-      addLog(`❌ Erreur réseau : ${err instanceof Error ? err.message : String(err)}`);
+      setLog((prev: string[]) => [...prev, `❌ Erreur réseau : ${err instanceof Error ? err.message : String(err)}`]);
     } finally {
       setMigrating(false);
     }

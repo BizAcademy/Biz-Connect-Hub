@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, PlayCircle } from 'lucide-react';
 import { useListHelpVideos, useGetContent } from '@workspace/api-client-react';
 import { Navbar } from '@/components/Navbar';
+import { PublicVideo } from '@/components/PublicVideo';
 
 // Bouton d'inscription (gère les liens externes configurés dans l'admin)
 function SignupButton({ href }: { href: string }) {
@@ -19,35 +20,6 @@ function SignupButton({ href }: { href: string }) {
       S'inscrire maintenant <ArrowRight size={15} />
     </Link>
   );
-}
-
-// Convertit les URLs YouTube/Vimeo classiques en URLs intégrables (embed)
-function toEmbedUrl(url: string): string | null {
-  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`;
-  const dm = url.match(/dailymotion\.com\/(?:video|embed\/video)\/([A-Za-z0-9]+)/i);
-  if (dm) return `https://www.dailymotion.com/embed/video/${dm[1]}`;
-  return null;
-}
-
-function VideoPlayer({ url, title }: { url: string; title: string }) {
-  const embedUrl = toEmbedUrl(url);
-  if (embedUrl) {
-    return (
-      <div className="aspect-video w-full rounded-xl overflow-hidden bg-black">
-        <iframe
-          src={embedUrl}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full"
-        />
-      </div>
-    );
-  }
-  return <video src={url} controls className="w-full rounded-xl bg-black aspect-video" />;
 }
 
 export default function Aide() {
@@ -89,7 +61,7 @@ export default function Aide() {
                 >
                   <h2 className="text-xl font-bold mb-2">{v.title}</h2>
                   {v.description && <p className="text-muted-foreground text-sm mb-4">{v.description}</p>}
-                  <VideoPlayer url={v.videoUrl} title={v.title} />
+                  <PublicVideo url={v.videoUrl} title={v.title} className="aspect-video" />
                   <div className="mt-4 text-center">
                     <SignupButton href={signupUrl} />
                   </div>

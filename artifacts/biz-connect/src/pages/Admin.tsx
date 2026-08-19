@@ -41,6 +41,11 @@ const contentSchema = z.object({
   memberCount: z.string().min(1),
   memberCountLabel: z.string().min(1),
   geoAvailability: z.string().min(1),
+  promoTitle: z.string(),
+  promoDescription: z.string(),
+  promoVideoUrl: z.string(),
+  promoPosterUrl: z.string(),
+  promoCtaText: z.string(),
   videoUrl: z.string().min(1),
   offerPrice: z.string().min(1),
   offerOriginalPrice: z.string().min(1),
@@ -67,7 +72,7 @@ function ImageUploadField({
   form, name, label, uploadFile, isUploading,
 }: {
   form: ReturnType<typeof useForm<z.infer<typeof contentSchema>>>;
-  name: 'communityImageUrl' | 'countriesIconUrl' | 'gainsPosterUrl';
+  name: 'communityImageUrl' | 'countriesIconUrl' | 'gainsPosterUrl' | 'promoPosterUrl';
   label: string;
   uploadFile: (file: File, opts?: { removeBackground?: boolean }) => Promise<string | null>;
   isUploading: boolean;
@@ -512,6 +517,51 @@ function ContentTab({ pwd }: { pwd: string }) {
               </div>
               <ImageUploadField form={form} name="communityImageUrl" label="Image des membres (sous le bouton d'inscription)" uploadFile={uploadFile} isUploading={isUploading} />
               <ImageUploadField form={form} name="countriesIconUrl" label="Icône de la section « Disponible dans X pays »" uploadFile={uploadFile} isUploading={isUploading} />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">
+              <div className="col-span-2"><h3 className="font-bold text-lg mb-2">Section Promotionnelle (Optionnelle)</h3></div>
+              <FormField control={form.control} name="promoTitle" render={({ field }) => (
+                <FormItem className="col-span-2"><FormLabel>Titre de la promotion</FormLabel><FormControl><Input {...field} placeholder="Ex: Sois payé pour publier du contenu sur ton statut WhatsApp" /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="promoDescription" render={({ field }) => (
+                <FormItem className="col-span-2"><FormLabel>Description</FormLabel><FormControl><Input {...field} placeholder="Ex: Avec la nouvelle fonctionnalité..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="promoCtaText" render={({ field }) => (
+                <FormItem className="col-span-2"><FormLabel>Texte Bouton CTA</FormLabel><FormControl><Input {...field} placeholder="Ex: Je m'inscris maintenant" /></FormControl></FormItem>
+              )} />
+
+              <div className="col-span-2 space-y-2">
+                <Label>Vidéo Promotionnelle</Label>
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
+                    {isUploadingVideo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                    {isUploadingVideo ? 'Envoi en cours…' : 'Uploader une vidéo'}
+                    <input type="file" accept="video/*" className="hidden" disabled={isUploadingVideo}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const media = await uploadVideo(file);
+                        if (media) {
+                          form.setValue('promoVideoUrl', media.url, { shouldDirty: true });
+                          toast({ title: 'Vidéo envoyée', description: "N'oubliez pas d'enregistrer." });
+                        } else {
+                          toast({ title: 'Erreur', description: "Échec de l'envoi de la vidéo", variant: 'destructive' });
+                        }
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                  {form.watch('promoVideoUrl') && !/youtube\.com|youtu\.be|vimeo\.com/.test(form.watch('promoVideoUrl')) && (
+                    <video src={form.watch('promoVideoUrl')} className="h-24 rounded-md border border-border bg-black" controls preload="metadata" />
+                  )}
+                </div>
+                <FormField control={form.control} name="promoVideoUrl" render={({ field }) => (
+                  <FormItem><FormControl><Input {...field} placeholder="…ou collez une URL de vidéo" /></FormControl></FormItem>
+                )} />
+              </div>
+
+              <ImageUploadField form={form} name="promoPosterUrl" label="Bannière d'aperçu de la vidéo (Image)" uploadFile={uploadFile} isUploading={isUploading} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">

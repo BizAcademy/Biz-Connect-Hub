@@ -1498,7 +1498,7 @@ components:
 
     SiteContent:
       type: object
-      required: [id, heroTitle, heroSubtitle, heroCtaText, memberCount, memberCountLabel, geoAvailability, videoUrl, offerPrice, offerOriginalPrice, offerLabel, level1Name, level1Amount, level2Name, level2Amount, level3Name, level3Amount, whatsappNumber, updatedAt]
+      required: [id, heroTitle, heroSubtitle, heroCtaText, memberCount, memberCountLabel, geoAvailability, promoTitle, promoDescription, promoVideoUrl, promoPosterUrl, promoCtaText, videoUrl, offerPrice, offerOriginalPrice, offerLabel, level1Name, level1Amount, level2Name, level2Amount, level3Name, level3Amount, whatsappNumber, updatedAt]
       properties:
         id:
           type: number
@@ -1513,6 +1513,16 @@ components:
         memberCountLabel:
           type: string
         geoAvailability:
+          type: string
+        promoTitle:
+          type: string
+        promoDescription:
+          type: string
+        promoVideoUrl:
+          type: string
+        promoPosterUrl:
+          type: string
+        promoCtaText:
           type: string
         videoUrl:
           type: string
@@ -1569,6 +1579,16 @@ components:
         memberCountLabel:
           type: string
         geoAvailability:
+          type: string
+        promoTitle:
+          type: string
+        promoDescription:
+          type: string
+        promoVideoUrl:
+          type: string
+        promoPosterUrl:
+          type: string
+        promoCtaText:
           type: string
         videoUrl:
           type: string
