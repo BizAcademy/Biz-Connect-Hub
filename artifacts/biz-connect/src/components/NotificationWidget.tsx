@@ -111,19 +111,19 @@ export function NotificationWidget() {
           animate={{ opacity: 1, y: 0, x: '-50%' }}
           exit={{ opacity: 0, y: 20, x: '-50%' }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="fixed bottom-5 left-1/2 z-50 flex w-[min(92vw,31rem)] items-center gap-3 rounded-[1.6rem] border border-slate-100 bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.18)] sm:gap-4 sm:px-5 sm:py-5"
+          className="fixed bottom-5 left-1/2 z-50 flex w-[52vw] max-w-[13rem] items-center gap-2 rounded-[1.35rem] border border-slate-100 bg-white px-3 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.18)] sm:w-[min(70vw,31rem)] sm:max-w-none sm:gap-4 sm:rounded-[1.6rem] sm:px-5 sm:py-5"
         >
           {/* BCA logo */}
-          <img src="/logo-bca.png" alt="Biz Connect Academy" className="h-auto w-20 shrink-0 object-contain sm:w-28" />
+          <img src="/logo-bca.png" alt="Biz Connect Academy" className="h-auto w-12 shrink-0 object-contain sm:w-28" />
 
-          <div className="min-w-0 flex-1 pr-7">
-            <p className="flex items-center gap-1.5 text-lg font-bold leading-tight text-slate-800 sm:text-2xl">
+          <div className="min-w-0 flex-1 pr-5 sm:pr-7">
+            <p className="flex items-center gap-1 text-sm font-bold leading-tight text-slate-800 sm:gap-1.5 sm:text-2xl">
               <span className="truncate">{current.name}</span>
-              <span className="shrink-0 text-xl sm:text-2xl" aria-label={current.country.name}>
+              <span className="shrink-0 text-base sm:text-2xl" aria-label={current.country.name}>
                 {current.country.flag}
               </span>
             </p>
-            <p className="mt-1 text-base font-medium leading-tight text-slate-400 sm:text-xl">
+            <p className="mt-0.5 text-xs font-medium leading-tight text-slate-400 sm:mt-1 sm:text-xl">
               Vient de s'inscrire
             </p>
           </div>
@@ -131,9 +131,9 @@ export function NotificationWidget() {
           <button
             onClick={() => setDismissed(true)}
             aria-label="Fermer la notification"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-300 hover:text-slate-700 transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-300 hover:text-slate-700 transition-colors sm:right-3"
           >
-            <X size={30} strokeWidth={1.6} />
+            <X className="h-5 w-5 sm:h-[30px] sm:w-[30px]" strokeWidth={1.6} />
           </button>
         </motion.div>
       )}
