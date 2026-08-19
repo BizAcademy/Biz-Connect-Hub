@@ -116,14 +116,6 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text */}
             <motion.div initial="hidden" animate="visible" variants={stagger}>
-              <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-6 border border-primary/20 uppercase tracking-wide">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-                </span>
-                Le réseau business #1 en Afrique francophone
-              </motion.div>
-
               <motion.h1 variants={fadeIn} className="text-3xl lg:text-5xl font-extrabold tracking-tight mb-6 leading-tight text-green-600">
                 {content.heroTitle}
               </motion.h1>
@@ -139,63 +131,6 @@ export default function Home() {
                 >
                   {content.heroCtaText} <ArrowRight size={20} />
                 </SignupLink>
-              </motion.div>
-
-              {/* SECTION PROMOTIONNELLE (si présente) */}
-              {(content.promoTitle || content.promoVideoUrl) && (
-                <motion.div variants={fadeIn} className="mt-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-3xl p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden">
-                  {/* Decorative blur elements */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/30 rounded-full blur-xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none" />
-
-                  <div className="relative z-10 flex flex-col items-center text-center">
-                    {content.promoTitle && (
-                      <h2 className="text-2xl sm:text-3xl font-black mb-4 leading-tight shadow-sm">
-                        {content.promoTitle.split(/(payé|statut WhatsApp)/gi).map((part, index) => {
-                          const normalized = part.toLowerCase();
-                          const color = normalized === 'payé'
-                            ? 'text-amber-300'
-                            : normalized === 'statut whatsapp'
-                              ? 'text-lime-300'
-                              : '';
-                          return <span key={`${part}-${index}`} className={color}>{part}</span>;
-                        })}
-                      </h2>
-                    )}
-                    {content.promoDescription && (
-                      <p className="text-sm sm:text-base text-blue-100 mb-6 max-w-lg leading-relaxed shadow-sm">
-                        {content.promoDescription}
-                      </p>
-                    )}
-
-                    {content.promoVideoUrl && (
-                      <div className="w-full max-w-sm mb-6 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white/10">
-                        <PublicVideo
-                          url={content.promoVideoUrl}
-                          posterUrl={content.promoPosterUrl}
-                          title="Vidéo Promotionnelle"
-                          className="aspect-video object-cover"
-                        />
-                      </div>
-                    )}
-
-                    <SignupLink
-                      href={signupUrl}
-                      className="btn-blink-gold px-8 py-3.5 bg-[#f59e0b] hover:bg-[#d97706] text-white font-bold rounded-xl shadow-lg transition-colors w-full sm:w-auto text-center"
-                    >
-                      {content.promoCtaText || "Je m'inscris maintenant"}
-                    </SignupLink>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Vidéo de présentation (déplacée ici) */}
-              <motion.div variants={fadeIn} className="mt-12">
-                <h2 className="text-2xl font-bold text-green-600 mb-2">Découvrez Biz Connect Academy</h2>
-                <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
-                <div className="bg-blue-100 p-2.5 rounded-2xl shadow-xl w-full max-w-lg mx-auto lg:mx-0">
-                  <PublicVideo url={content.videoUrl} title="Biz Connect Academy — présentation" />
-                </div>
               </motion.div>
             </motion.div>
 
@@ -264,6 +199,74 @@ export default function Home() {
               )}
             </motion.div>
           </div>
+
+          {/* SECTION PROMOTIONNELLE (si présente) */}
+          {(content.promoTitle || content.promoVideoUrl) && (
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeIn}
+              className="mt-12 bg-gradient-to-br from-blue-600 to-blue-500 rounded-3xl p-4 sm:p-8 shadow-2xl text-white relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl transform translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/30 rounded-full blur-xl transform -translate-x-1/2 translate-y-1/2 pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col items-center text-center">
+                {content.promoTitle && (
+                  <h2 className="text-2xl sm:text-3xl font-black mb-4 leading-tight shadow-sm">
+                    {content.promoTitle.split(/(payé|statut WhatsApp)/gi).map((part, index) => {
+                      const normalized = part.toLowerCase();
+                      const color = normalized === 'payé'
+                        ? 'text-amber-300'
+                        : normalized === 'statut whatsapp'
+                          ? 'text-lime-300'
+                          : '';
+                      return <span key={`${part}-${index}`} className={color}>{part}</span>;
+                    })}
+                  </h2>
+                )}
+                {content.promoDescription && (
+                  <p className="text-sm sm:text-base text-blue-100 mb-6 max-w-3xl leading-relaxed shadow-sm">
+                    {content.promoDescription}
+                  </p>
+                )}
+
+                {content.promoVideoUrl && (
+                  <div className="w-full max-w-5xl mb-6 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/10">
+                    <PublicVideo
+                      url={content.promoVideoUrl}
+                      posterUrl={content.promoPosterUrl}
+                      title="Vidéo Promotionnelle"
+                      className="max-h-[85vh]"
+                    />
+                  </div>
+                )}
+
+                <SignupLink
+                  href={signupUrl}
+                  className="btn-blink-gold px-8 py-3.5 bg-[#f59e0b] hover:bg-[#d97706] text-white font-bold rounded-xl shadow-lg transition-colors w-full sm:w-auto text-center"
+                >
+                  {content.promoCtaText || "Je m'inscris maintenant"}
+                </SignupLink>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Vidéo de présentation */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
+            className="mt-12 max-w-4xl mx-auto"
+          >
+            <h2 className="text-2xl font-bold text-green-600 mb-2">Découvrez Biz Connect Academy</h2>
+            <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
+            <div className="bg-blue-100 p-2.5 rounded-2xl shadow-xl w-full">
+              <PublicVideo url={content.videoUrl} title="Biz Connect Academy — présentation" />
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -404,7 +407,7 @@ export default function Home() {
                         {sTestimonials.map((t) => (
                           <div key={t.id} className="snap-start shrink-0 w-48 rounded-xl border border-border bg-background overflow-hidden">
                             {t.mediaType === 'video' ? (
-                              <PublicVideo url={t.mediaUrl} className="w-full h-40 object-cover bg-black" />
+                               <PublicVideo url={t.mediaUrl} className="w-full max-h-64" />
                             ) : (
                               <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-cover" />
                             )}
@@ -557,7 +560,7 @@ export default function Home() {
                   </div>
                   {t.mediaUrl && (
                     t.mediaType === 'video' ? (
-                      <PublicVideo url={t.mediaUrl} className="w-full h-64 object-cover bg-black" />
+                       <PublicVideo url={t.mediaUrl} className="w-full max-h-[32rem]" />
                     ) : (
                       <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-64 object-cover" />
                     )
