@@ -279,12 +279,16 @@ export default function Home() {
             </motion.div>
             <div className="hidden sm:block w-px h-12 bg-border" />
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">+20</div>
+              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">
+                +<AnimatedCounter end={20} />
+              </div>
               <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pays d'Afrique</div>
             </motion.div>
             <div className="hidden sm:block w-px h-12 bg-border" />
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">3</div>
+              <div className="text-4xl lg:text-5xl font-black text-foreground mb-1">
+                <AnimatedCounter end={3} />
+              </div>
               <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Niveaux de commission</div>
             </motion.div>
           </div>
