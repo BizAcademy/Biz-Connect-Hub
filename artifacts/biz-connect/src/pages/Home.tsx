@@ -583,11 +583,11 @@ export default function Home() {
           </div>
 
           {testimonials && testimonials.length > 0 ? (
-            <InfiniteSlider speed={30} direction="left" gap={16}>
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3">
               {testimonials.map((t) => (
                 <div
                   key={t.id}
-                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-[18rem] shrink-0 sm:w-80"
+                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-full max-w-[40rem] shrink-0 snap-center"
                 >
                   <div className="p-3 pb-2 sm:p-4 sm:pb-3">
                     <div className="font-bold text-xs leading-snug sm:text-sm">
@@ -610,11 +610,11 @@ export default function Home() {
                   </div>
                   {t.mediaUrl && (
                     t.mediaType === 'video' ? (
-                       <div className="mx-2 mb-3 flex h-40 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-60">
+                       <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
                          <PublicVideo url={t.mediaUrl} className="h-full w-full max-h-full rounded-xl" />
                        </div>
                     ) : (
-                       <div className="mx-2 mb-3 flex h-40 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-60">
+                        <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
                          <img
                            src={t.mediaUrl}
                            alt={`Témoignage de ${t.name}`}
@@ -625,7 +625,7 @@ export default function Home() {
                   )}
                 </div>
               ))}
-            </InfiniteSlider>
+            </div>
           ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {GAINS.map((g, i) => (
