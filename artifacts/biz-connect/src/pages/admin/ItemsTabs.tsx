@@ -246,7 +246,15 @@ export function TrainingsTab({ pwd }: { pwd: string }) {
       <div className="grid md:grid-cols-2 gap-4">
         {(items ?? []).map((t) => (
           <div key={t.id} className="border border-border rounded-xl overflow-hidden">
-            {t.bannerUrl && <img src={t.bannerUrl} alt={t.title} className="w-full h-32 object-contain bg-white" />}
+            {t.bannerUrl && (
+              <div className="h-32 bg-white p-1.5">
+                <img
+                  src={t.bannerUrl}
+                  alt={t.title}
+                  className="w-full h-full rounded-xl object-contain shadow-[0_5px_0_rgba(30,64,175,0.14),0_10px_16px_rgba(15,23,42,0.18),inset_0_1px_0_rgba(255,255,255,0.9)]"
+                />
+              </div>
+            )}
             <div className="p-3 flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-semibold text-sm truncate">{t.title}</div>

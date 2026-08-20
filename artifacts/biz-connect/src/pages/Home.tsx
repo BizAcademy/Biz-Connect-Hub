@@ -719,11 +719,15 @@ export default function Home() {
                 <motion.div
                   key={course.id}
                   initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-                  className="bg-card rounded-2xl border border-border overflow-hidden group hover:border-primary/50 transition-colors flex flex-col"
+                  className="bg-card rounded-2xl border border-border overflow-hidden group hover:border-primary/50 hover:-translate-y-1 transition-all duration-300 flex flex-col shadow-[0_10px_24px_rgba(15,23,42,0.12)] hover:shadow-[0_18px_34px_rgba(15,23,42,0.2)]"
                 >
-                  <div className="h-40 bg-white relative overflow-hidden">
+                  <div className="h-40 bg-white relative overflow-hidden rounded-t-2xl p-1.5">
                     {course.bannerUrl ? (
-                      <img src={course.bannerUrl} alt={course.title} className="w-full h-full object-contain transition-transform" />
+                      <img
+                        src={course.bannerUrl}
+                        alt={course.title}
+                        className="w-full h-full rounded-xl object-contain transition-transform duration-300 group-hover:-translate-y-0.5 shadow-[0_6px_0_rgba(30,64,175,0.14),0_12px_20px_rgba(15,23,42,0.2),inset_0_1px_0_rgba(255,255,255,0.9)]"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Lock className="text-white/30 w-10 h-10" />
