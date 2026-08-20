@@ -492,7 +492,11 @@ export default function Home() {
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-3 text-green-600">Tes gains par affiliation</h2>
-            <p className="text-muted-foreground">Calcule ce que tu peux gagner en parrainant d'autres membres.</p>
+            <p className="text-muted-foreground">
+              Calcule ce que tu peux gagner en recommandant la{' '}
+              <span className="font-semibold text-green-600">Biz Connect Academy</span>
+              {' '}à d'autres membres.
+            </p>
           </div>
 
           {content.gainsPosterUrl ? (
