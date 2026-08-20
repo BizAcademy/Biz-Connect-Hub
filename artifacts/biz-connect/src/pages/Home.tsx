@@ -573,24 +573,24 @@ export default function Home() {
       </section>
 
       {/* ===== SOCIAL PROOF — jeunes africains qui ont généré des millions ===== */}
-      <section className="py-14 px-6 bg-background">
+      <section className="py-8 px-4 bg-background sm:py-14 sm:px-6">
         <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-8">
-            <Award className="w-10 h-10 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">
+          <div className="text-center mb-6 sm:mb-8">
+            <Award className="w-8 h-8 text-primary mx-auto mb-3 sm:w-10 sm:h-10 sm:mb-4" />
+            <h2 className="text-2xl font-bold leading-tight mb-3 uppercase text-green-600 sm:text-3xl">
               De nombreux jeunes venant de plusieurs pays se sont lancés et voilà leurs résultats et témoignages
             </h2>
           </div>
 
           {testimonials && testimonials.length > 0 ? (
-            <InfiniteSlider speed={30} direction="left" gap={24}>
+            <InfiniteSlider speed={30} direction="left" gap={16}>
               {testimonials.map((t) => (
                 <div
                   key={t.id}
-                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-80 shrink-0"
+                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-[18rem] shrink-0 sm:w-80"
                 >
-                  <div className="p-4 pb-3">
-                    <div className="font-bold text-sm leading-snug">
+                  <div className="p-3 pb-2 sm:p-4 sm:pb-3">
+                    <div className="font-bold text-xs leading-snug sm:text-sm">
                       {t.name}
                       {t.country && (
                         <>
@@ -601,24 +601,24 @@ export default function Home() {
                         </>
                       )}
                     </div>
-                    {t.duration && <div className="text-xs text-primary font-semibold">Résultat en {t.duration}</div>}
+                    {t.duration && <div className="text-[11px] text-primary font-semibold sm:text-xs">Résultat en {t.duration}</div>}
                     {t.text && (
-                      <p className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap break-words leading-relaxed">
+                      <p className="mt-1.5 whitespace-pre-wrap break-words text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
                         {renderTestimonialText(t.text)}
                       </p>
                     )}
                   </div>
                   {t.mediaUrl && (
                     t.mediaType === 'video' ? (
-                       <div className="mx-3 mb-4 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)]">
-                         <PublicVideo url={t.mediaUrl} className="w-full max-h-[32rem] rounded-xl" />
+                       <div className="mx-2 mb-3 flex h-40 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-60">
+                         <PublicVideo url={t.mediaUrl} className="h-full w-full max-h-full rounded-xl" />
                        </div>
                     ) : (
-                       <div className="mx-3 mb-4 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)]">
+                       <div className="mx-2 mb-3 flex h-40 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-60">
                          <img
                            src={t.mediaUrl}
                            alt={`Témoignage de ${t.name}`}
-                           className="block w-full h-auto max-h-[34rem] rounded-xl object-contain bg-muted"
+                           className="block h-full w-full rounded-xl bg-muted object-contain"
                          />
                        </div>
                     )
