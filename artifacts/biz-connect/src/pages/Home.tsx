@@ -349,6 +349,13 @@ export default function Home() {
                       </div>
                     )
                   )}
+                  <div
+                    className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
+                    aria-label="Zapper vers le témoignage suivant"
+                  >
+                    <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
+                    <span>ZAPPER</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -372,6 +379,13 @@ export default function Home() {
                     <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
                       <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
                     </div>
+                  </div>
+                  <div
+                    className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
+                    aria-label="Zapper vers le témoignage suivant"
+                  >
+                    <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
+                    <span>ZAPPER</span>
                   </div>
                 </motion.div>
               ))}
