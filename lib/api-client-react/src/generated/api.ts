@@ -26,6 +26,8 @@ import type {
   AmbassadorInput,
   DeleteResult,
   ErrorResponse,
+  Faq,
+  FaqInput,
   FeatureItem,
   FeatureItemInput,
   HealthStatus,
@@ -3307,6 +3309,297 @@ export const useDeleteFeatureItem = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getDeleteFeatureItemMutationOptions(options));
+    }
+
+export const getListFaqsUrl = () => {
+
+
+
+
+  return `/api/faqs`
+}
+
+/**
+ * @summary List frequently asked questions
+ */
+export const listFaqs = async ( options?: Parameters<typeof customFetch>[1]): Promise<Faq[]> => {
+
+  return customFetch<Faq[]>(getListFaqsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFaqsQueryKey = () => {
+    return [
+    `/api/faqs`
+    ] as const;
+    }
+
+
+export const getListFaqsQueryOptions = <TData = Awaited<ReturnType<typeof listFaqs>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFaqs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFaqsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFaqs>>> = ({ signal }) => listFaqs({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFaqs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListFaqsQueryResult = NonNullable<Awaited<ReturnType<typeof listFaqs>>>
+export type ListFaqsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List frequently asked questions
+ */
+
+export function useListFaqs<TData = Awaited<ReturnType<typeof listFaqs>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFaqs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListFaqsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateFaqUrl = () => {
+
+
+
+
+  return `/api/faqs`
+}
+
+/**
+ * @summary Create a frequently asked question (admin only)
+ */
+export const createFaq = async (faqInput: FaqInput, options?: Parameters<typeof customFetch>[1]): Promise<Faq> => {
+
+  return customFetch<Faq>(getCreateFaqUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(faqInput)
+  }
+);}
+
+
+
+
+
+export const getCreateFaqMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFaq>>, TError,{data: BodyType<FaqInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createFaq>>, TError,{data: BodyType<FaqInput>}, TContext> => {
+
+const mutationKey = ['createFaq'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createFaq>>, {data: BodyType<FaqInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createFaq(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateFaqMutationResult = NonNullable<Awaited<ReturnType<typeof createFaq>>>
+    export type CreateFaqMutationBody = BodyType<FaqInput>
+    export type CreateFaqMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a frequently asked question (admin only)
+ */
+export const useCreateFaq = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFaq>>, TError,{data: BodyType<FaqInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createFaq>>,
+        TError,
+        {data: BodyType<FaqInput>},
+        TContext
+      > => {
+      return useMutation(getCreateFaqMutationOptions(options));
+    }
+
+export const getUpdateFaqUrl = (id: number,) => {
+
+
+
+
+  return `/api/faqs/${id}`
+}
+
+/**
+ * @summary Update a frequently asked question (admin only)
+ */
+export const updateFaq = async (id: number,
+    faqInput: FaqInput, options?: Parameters<typeof customFetch>[1]): Promise<Faq> => {
+
+  return customFetch<Faq>(getUpdateFaqUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(faqInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateFaqMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFaq>>, TError,{id: number;data: BodyType<FaqInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateFaq>>, TError,{id: number;data: BodyType<FaqInput>}, TContext> => {
+
+const mutationKey = ['updateFaq'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFaq>>, {id: number;data: BodyType<FaqInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateFaq(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateFaqMutationResult = NonNullable<Awaited<ReturnType<typeof updateFaq>>>
+    export type UpdateFaqMutationBody = BodyType<FaqInput>
+    export type UpdateFaqMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Update a frequently asked question (admin only)
+ */
+export const useUpdateFaq = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFaq>>, TError,{id: number;data: BodyType<FaqInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateFaq>>,
+        TError,
+        {id: number;data: BodyType<FaqInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateFaqMutationOptions(options));
+    }
+
+export const getDeleteFaqUrl = (id: number,) => {
+
+
+
+
+  return `/api/faqs/${id}`
+}
+
+/**
+ * @summary Delete a frequently asked question (admin only)
+ */
+export const deleteFaq = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<DeleteResult> => {
+
+  return customFetch<DeleteResult>(getDeleteFaqUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteFaqMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteFaq>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteFaq>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteFaq'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteFaq>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteFaq(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteFaqMutationResult = NonNullable<Awaited<ReturnType<typeof deleteFaq>>>
+
+    export type DeleteFaqMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Delete a frequently asked question (admin only)
+ */
+export const useDeleteFaq = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteFaq>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteFaq>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteFaqMutationOptions(options));
     }
 
 export const getListHelpVideosUrl = () => {

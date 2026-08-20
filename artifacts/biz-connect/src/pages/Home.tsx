@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import {
   useGetContent, useListTrainings, useListTestimonials,
   useListAmbassadors, useListPartners, useListPaymentMethods,
-  useListServices, useListFeatureItems, useListServiceTestimonials,
+  useListServices, useListFeatureItems, useListServiceTestimonials, useListFaqs,
 } from '@workspace/api-client-react';
 import { NotificationWidget } from '@/components/NotificationWidget';
 import { Navbar } from '@/components/Navbar';
@@ -74,6 +74,7 @@ export default function Home() {
   const { data: services } = useListServices();
   const { data: featureItems } = useListFeatureItems();
   const { data: serviceTestimonials } = useListServiceTestimonials();
+  const { data: faqItems } = useListFaqs();
   const [openServiceId, setOpenServiceId] = useState<number | null>(null);
 
   if (isLoading || !content) {
@@ -93,6 +94,14 @@ export default function Home() {
   const fmt = (n: number) => `${n.toLocaleString('fr-FR')} FCFA`;
   const offerFeatures = (featureItems ?? []).filter(f => f.section === 'offer');
   const communityImage = content.communityImageUrl || '/membres-bca.jpg';
+  const faqs = faqItems && faqItems.length > 0 ? faqItems : [
+    { question: "C'est quoi Biz Connect Academy ?", answer: "C'est un réseau d'affaires exclusif pour les entrepreneurs africains. Tu accèdes à un système d'affiliation sur 3 niveaux, un portefeuille digital, une marketplace, et des formations premium gratuites." },
+    { question: "Comment fonctionne l'affiliation sur 3 niveaux ?", answer: `Tu touches ${fmt(lvl1)} sur chaque vente directe (Niveau 1), ${fmt(lvl2)} sur les ventes de tes filleuls (Niveau 2), et ${fmt(lvl3)} sur les ventes des filleuls de tes filleuls. Même si tu ne connais pas ces personnes, tu es payé !` },
+    { question: "Combien ça coûte pour rejoindre ?", answer: `Un seul tarif : ${content.offerPrice} pour un accès complet à vie à la plateforme, incluant les formations, l'affiliation et le portefeuille digital.` },
+    { question: "Quels sont les moyens de paiement acceptés ?", answer: "Mobile Money, Orange Money, MTN Money, Wave, Visa, Mastercard, selon ton pays de résidence." },
+    { question: "Ai-je besoin d'expérience pour commencer ?", answer: "Non ! Nos formations intégrées t'accompagnent de A à Z. Même si tu pars de zéro, tu seras guidé pour réussir rapidement." },
+    { question: "C'est légal et sécurisé ?", answer: "Oui, Biz Connect Academy est une plateforme légale, enregistrée et opérationnelle au Cameroun et au Bénin. Tous les paiements sont sécurisés." },
+  ];
 
   return (
     <div className="home-emphasis min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans overflow-hidden">
@@ -783,17 +792,10 @@ export default function Home() {
             </Link>
           </div>
           <Accordion type="single" collapsible className="w-full space-y-3">
-            {[
-              { q: "C'est quoi Biz Connect Academy ?", a: "C'est un réseau d'affaires exclusif pour les entrepreneurs africains. Tu accèdes à un système d'affiliation sur 3 niveaux, un portefeuille digital, une marketplace, et des formations premium gratuites." },
-              { q: "Comment fonctionne l'affiliation sur 3 niveaux ?", a: `Tu touches ${fmt(lvl1)} sur chaque vente directe (Niveau 1), ${fmt(lvl2)} sur les ventes de tes filleuls (Niveau 2), et ${fmt(lvl3)} sur les ventes des filleuls de tes filleuls (Niveau 3). Même si tu ne connais pas ces personnes, tu es payé !` },
-              { q: "Combien ça coûte pour rejoindre ?", a: `Un seul tarif : ${content.offerPrice} pour un accès complet à vie à la plateforme, incluant les formations, l'affiliation et le portefeuille digital.` },
-              { q: "Quels sont les moyens de paiement acceptés ?", a: "Mobile Money, Orange Money, MTN Money, Wave, Visa, Mastercard, selon ton pays de résidence." },
-              { q: "Ai-je besoin d'expérience pour commencer ?", a: "Non ! Nos formations intégrées t'accompagnent de A à Z. Même si tu pars de zéro, tu seras guidé pour réussir rapidement." },
-              { q: "C'est légal et sécurisé ?", a: "Oui, Biz Connect Academy est une plateforme légale, enregistrée et opérationnelle au Cameroun et au Bénin. Tous les paiements sont sécurisés." },
-            ].map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="bg-card border border-border rounded-xl px-6 data-[state=open]:border-primary transition-colors">
-                <AccordionTrigger className="text-left font-bold text-base hover:no-underline py-5">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-sm">{faq.a}</AccordionContent>
+            {faqs.map((faq, i) => (
+              <AccordionItem key={faq.question} value={`item-${i}`} className="bg-card border border-border rounded-xl px-6 data-[state=open]:border-primary transition-colors">
+                <AccordionTrigger className="text-left font-bold text-base hover:no-underline py-5">{faq.question}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pb-5 text-sm">{faq.answer}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>

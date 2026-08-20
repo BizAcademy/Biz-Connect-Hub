@@ -1160,6 +1160,114 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /faqs:
+    get:
+      operationId: listFaqs
+      tags: [items]
+      summary: List frequently asked questions
+      responses:
+        "200":
+          description: Frequently asked questions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Faq"
+    post:
+      operationId: createFaq
+      tags: [items]
+      summary: Create a frequently asked question (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaqInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Faq"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /faqs/{id}:
+    put:
+      operationId: updateFaq
+      tags: [items]
+      summary: Update a frequently asked question (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaqInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Faq"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteFaq
+      tags: [items]
+      summary: Delete a frequently asked question (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /help-videos:
     get:
       operationId: listHelpVideos
@@ -1923,6 +2031,32 @@ components:
         section:
           type: string
         label:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: number
+
+    Faq:
+      type: object
+      required: [id, question, answer, sortOrder]
+      properties:
+        id:
+          type: number
+        question:
+          type: string
+        answer:
+          type: string
+        sortOrder:
+          type: number
+
+    FaqInput:
+      type: object
+      required: [question, answer]
+      properties:
+        question:
+          type: string
+          minLength: 1
+        answer:
           type: string
           minLength: 1
         sortOrder:

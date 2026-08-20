@@ -289,6 +289,21 @@ export interface FeatureItemInput {
   sortOrder?: number;
 }
 
+export interface Faq {
+  id: number;
+  question: string;
+  answer: string;
+  sortOrder: number;
+}
+
+export interface FaqInput {
+  /** @minLength 1 */
+  question: string;
+  /** @minLength 1 */
+  answer: string;
+  sortOrder?: number;
+}
+
 export interface HelpVideo {
   id: number;
   title: string;

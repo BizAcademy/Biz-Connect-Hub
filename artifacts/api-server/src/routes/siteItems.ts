@@ -12,6 +12,7 @@ import {
   serviceTestimonialsTable,
   featureItemsTable,
   helpVideosTable,
+  faqsTable,
 } from "@workspace/db";
 import { requireAdmin } from "../lib/adminAuth";
 import {
@@ -34,6 +35,8 @@ import {
   UpdateFeatureItemBody,
   CreateHelpVideoBody,
   UpdateHelpVideoBody,
+  CreateFaqBody,
+  UpdateFaqBody,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -535,6 +538,55 @@ router.delete("/help-videos/:id", async (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
   await db.delete(helpVideosTable).where(eq(helpVideosTable.id, id));
+  res.json({ success: true });
+});
+
+// ---------- Frequently asked questions ----------
+router.get("/faqs", async (_req, res) => {
+  const rows = await db
+    .select()
+    .from(faqsTable)
+    .orderBy(asc(faqsTable.sortOrder), asc(faqsTable.id));
+  res.json(rows);
+});
+
+router.post("/faqs", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const parsed = CreateFaqBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(faqsTable).values(parsed.data).returning();
+  res.status(201).json(created);
+});
+
+router.put("/faqs/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdateFaqBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db
+    .update(faqsTable)
+    .set(parsed.data)
+    .where(eq(faqsTable.id, id))
+    .returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
+});
+
+router.delete("/faqs/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  await db.delete(faqsTable).where(eq(faqsTable.id, id));
   res.json({ success: true });
 });
 

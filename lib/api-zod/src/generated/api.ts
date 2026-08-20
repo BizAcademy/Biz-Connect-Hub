@@ -973,6 +973,88 @@ export const DeleteFeatureItemResponse = zod.object({
 
 
 /**
+ * @summary List frequently asked questions
+ */
+export const ListFaqsResponseItem = zod.object({
+  "id": zod.number(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
+})
+export const ListFaqsResponse = zod.array(ListFaqsResponseItem)
+
+
+/**
+ * @summary Create a frequently asked question (admin only)
+ */
+export const CreateFaqHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const CreateFaqBody = zod.object({
+  "question": zod.string().min(1),
+  "answer": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const CreateFaqResponse = zod.object({
+  "id": zod.number(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Update a frequently asked question (admin only)
+ */
+export const UpdateFaqParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateFaqHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+
+
+
+
+export const UpdateFaqBody = zod.object({
+  "question": zod.string().min(1),
+  "answer": zod.string().min(1),
+  "sortOrder": zod.number().optional()
+})
+
+export const UpdateFaqResponse = zod.object({
+  "id": zod.number(),
+  "question": zod.string(),
+  "answer": zod.string(),
+  "sortOrder": zod.number()
+})
+
+
+/**
+ * @summary Delete a frequently asked question (admin only)
+ */
+export const DeleteFaqParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteFaqHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const DeleteFaqResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
  * @summary List help center videos
  */
 export const ListHelpVideosResponseItem = zod.object({

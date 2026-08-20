@@ -103,18 +103,30 @@ export const helpVideosTable = pgTable("help_videos", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+// Questions fréquentes affichées sur la page d'accueil
+export const faqsTable = pgTable("faqs", {
+  id: serial("id").primaryKey(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertServiceSchema = createInsertSchema(servicesTable).omit({ id: true, createdAt: true });
 export const insertServiceTestimonialSchema = createInsertSchema(serviceTestimonialsTable).omit({ id: true, createdAt: true });
 export type ServiceTestimonial = typeof serviceTestimonialsTable.$inferSelect;
 export type InsertServiceTestimonial = z.infer<typeof insertServiceTestimonialSchema>;
 export const insertFeatureItemSchema = createInsertSchema(featureItemsTable).omit({ id: true, createdAt: true });
 export const insertHelpVideoSchema = createInsertSchema(helpVideosTable).omit({ id: true, createdAt: true });
+export const insertFaqSchema = createInsertSchema(faqsTable).omit({ id: true, createdAt: true });
 export type Service = typeof servicesTable.$inferSelect;
 export type FeatureItem = typeof featureItemsTable.$inferSelect;
 export type HelpVideo = typeof helpVideosTable.$inferSelect;
+export type Faq = typeof faqsTable.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 export type InsertFeatureItem = z.infer<typeof insertFeatureItemSchema>;
 export type InsertHelpVideo = z.infer<typeof insertHelpVideoSchema>;
+export type InsertFaq = z.infer<typeof insertFaqSchema>;
 
 export const insertTrainingSchema = createInsertSchema(trainingsTable).omit({ id: true, createdAt: true });
 export const insertTestimonialSchema = createInsertSchema(testimonialsTable).omit({ id: true, createdAt: true });

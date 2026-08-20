@@ -9,12 +9,14 @@ import {
   useListServices, useCreateService, useUpdateService, useDeleteService,
   useListFeatureItems, useCreateFeatureItem, useUpdateFeatureItem, useDeleteFeatureItem,
   useListHelpVideos, useCreateHelpVideo, useUpdateHelpVideo, useDeleteHelpVideo,
+  useListFaqs, useCreateFaq, useUpdateFaq, useDeleteFaq,
   useListServiceTestimonials, useCreateServiceTestimonial, useUpdateServiceTestimonial, useDeleteServiceTestimonial,
   useListMedia,
 } from '@workspace/api-client-react';
 import { Loader2, Plus, Trash2, Upload, Images, Pencil, MessageSquareQuote } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -971,6 +973,83 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
           <option value="offer">Carte de prix (offre)</option>
         </select>
         <Input placeholder="Texte de l'avantage" value={eLabel} onChange={(e) => setELabel(e.target.value)} />
+      </EditDialog>
+    </SectionCard>
+  );
+}
+
+// --------------------------------------------------------
+// QUESTIONS FRÉQUENTES (page d'accueil)
+// --------------------------------------------------------
+export function FaqsTab({ pwd }: { pwd: string }) {
+  const qc = useQueryClient();
+  const { toast } = useToast();
+  const { data: items, isLoading } = useListFaqs();
+  const create = useCreateFaq(adminReq(pwd));
+  const update = useUpdateFaq(adminReq(pwd));
+  const del = useDeleteFaq(adminReq(pwd));
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [editId, setEditId] = useState<number | null>(null);
+  const [eQuestion, setEQuestion] = useState('');
+  const [eAnswer, setEAnswer] = useState('');
+
+  const refresh = () => qc.invalidateQueries();
+
+  if (isLoading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
+
+  return (
+    <SectionCard title="Questions fréquentes" desc="Modifie les questions et les réponses affichées dans la FAQ de la page d'accueil">
+      <div className="grid md:grid-cols-2 gap-4 p-4 rounded-xl border border-border bg-muted/10">
+        <Input placeholder="Question" value={question} onChange={(e) => setQuestion(e.target.value)} />
+        <div className="hidden md:block" />
+        <Textarea className="md:col-span-2 min-h-28" placeholder="Réponse" value={answer} onChange={(e) => setAnswer(e.target.value)} />
+        <Button
+          disabled={!question.trim() || !answer.trim() || create.isPending}
+          onClick={() =>
+            create.mutate({ data: { question: question.trim(), answer: answer.trim() } }, {
+              onSuccess: () => { setQuestion(''); setAnswer(''); refresh(); toast({ title: 'Question ajoutée' }); },
+              onError: () => toast({ title: 'Erreur', description: "La question n'a pas pu être ajoutée.", variant: 'destructive' }),
+            })
+          }
+        >
+          {create.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />} Ajouter une question
+        </Button>
+      </div>
+
+      <div className="space-y-2">
+        {(items ?? []).map((faq) => (
+          <div key={faq.id} className="border border-border rounded-lg px-3 py-3 flex items-start justify-between gap-2 text-sm">
+            <div className="min-w-0">
+              <div className="font-semibold">{faq.question}</div>
+              <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{faq.answer}</div>
+            </div>
+            <div className="flex items-center shrink-0">
+              <EditButton onClick={() => { setEditId(faq.id); setEQuestion(faq.question); setEAnswer(faq.answer); }} />
+              <Button variant="ghost" size="icon" aria-label={`Supprimer ${faq.question}`} onClick={() => del.mutate({ id: faq.id }, { onSuccess: () => { refresh(); toast({ title: 'Question supprimée' }); }, onError: () => toast({ title: 'Erreur', variant: 'destructive' }) })}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+          </div>
+        ))}
+        {(items ?? []).length === 0 && <p className="text-sm text-muted-foreground">Aucune question pour le moment.</p>}
+      </div>
+
+      <EditDialog
+        open={editId !== null}
+        onOpenChange={(open) => !open && setEditId(null)}
+        title="Modifier la question fréquente"
+        isSaving={update.isPending}
+        canSave={!!eQuestion.trim() && !!eAnswer.trim()}
+        onSave={() =>
+          update.mutate({ id: editId!, data: { question: eQuestion.trim(), answer: eAnswer.trim() } }, {
+            onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Question modifiée' }); },
+            onError: () => toast({ title: 'Erreur', description: "La question n'a pas pu être modifiée.", variant: 'destructive' }),
+          })
+        }
+      >
+        <Input placeholder="Question" value={eQuestion} onChange={(e) => setEQuestion(e.target.value)} />
+        <Textarea className="min-h-32" placeholder="Réponse" value={eAnswer} onChange={(e) => setEAnswer(e.target.value)} />
       </EditDialog>
     </SectionCard>
   );

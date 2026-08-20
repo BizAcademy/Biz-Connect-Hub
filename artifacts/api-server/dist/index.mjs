@@ -38330,6 +38330,53 @@ var DeleteFeatureItemHeader = objectType({
 var DeleteFeatureItemResponse = objectType({
   "success": booleanType()
 });
+var ListFaqsResponseItem = objectType({
+  "id": numberType(),
+  "question": stringType(),
+  "answer": stringType(),
+  "sortOrder": numberType()
+});
+var ListFaqsResponse = arrayType(ListFaqsResponseItem);
+var CreateFaqHeader = objectType({
+  "x-admin-password": stringType()
+});
+var CreateFaqBody = objectType({
+  "question": stringType().min(1),
+  "answer": stringType().min(1),
+  "sortOrder": numberType().optional()
+});
+var CreateFaqResponse = objectType({
+  "id": numberType(),
+  "question": stringType(),
+  "answer": stringType(),
+  "sortOrder": numberType()
+});
+var UpdateFaqParams = objectType({
+  "id": coerce.number()
+});
+var UpdateFaqHeader = objectType({
+  "x-admin-password": stringType()
+});
+var UpdateFaqBody = objectType({
+  "question": stringType().min(1),
+  "answer": stringType().min(1),
+  "sortOrder": numberType().optional()
+});
+var UpdateFaqResponse = objectType({
+  "id": numberType(),
+  "question": stringType(),
+  "answer": stringType(),
+  "sortOrder": numberType()
+});
+var DeleteFaqParams = objectType({
+  "id": coerce.number()
+});
+var DeleteFaqHeader = objectType({
+  "x-admin-password": stringType()
+});
+var DeleteFaqResponse = objectType({
+  "success": booleanType()
+});
 var ListHelpVideosResponseItem = objectType({
   "id": numberType(),
   "title": stringType(),
@@ -45431,9 +45478,11 @@ function drizzle(...params) {
 var schema_exports = {};
 __export(schema_exports, {
   ambassadorsTable: () => ambassadorsTable,
+  faqsTable: () => faqsTable,
   featureItemsTable: () => featureItemsTable,
   helpVideosTable: () => helpVideosTable,
   insertAmbassadorSchema: () => insertAmbassadorSchema,
+  insertFaqSchema: () => insertFaqSchema,
   insertFeatureItemSchema: () => insertFeatureItemSchema,
   insertHelpVideoSchema: () => insertHelpVideoSchema,
   insertLeadSchema: () => insertLeadSchema,
@@ -56988,10 +57037,18 @@ var helpVideosTable = pgTable("help_videos", {
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
 });
+var faqsTable = pgTable("faqs", {
+  id: serial("id").primaryKey(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
 var insertServiceSchema = createInsertSchema(servicesTable).omit({ id: true, createdAt: true });
 var insertServiceTestimonialSchema = createInsertSchema(serviceTestimonialsTable).omit({ id: true, createdAt: true });
 var insertFeatureItemSchema = createInsertSchema(featureItemsTable).omit({ id: true, createdAt: true });
 var insertHelpVideoSchema = createInsertSchema(helpVideosTable).omit({ id: true, createdAt: true });
+var insertFaqSchema = createInsertSchema(faqsTable).omit({ id: true, createdAt: true });
 var insertTrainingSchema = createInsertSchema(trainingsTable).omit({ id: true, createdAt: true });
 var insertTestimonialSchema = createInsertSchema(testimonialsTable).omit({ id: true, createdAt: true });
 var insertPortfolioItemSchema = createInsertSchema(portfolioItemsTable).omit({ id: true, createdAt: true });
@@ -57609,6 +57666,43 @@ router6.delete("/help-videos/:id", async (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
   await db.delete(helpVideosTable).where(eq(helpVideosTable.id, id));
+  res.json({ success: true });
+});
+router6.get("/faqs", async (_req, res) => {
+  const rows = await db.select().from(faqsTable).orderBy(asc(faqsTable.sortOrder), asc(faqsTable.id));
+  res.json(rows);
+});
+router6.post("/faqs", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const parsed = CreateFaqBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(faqsTable).values(parsed.data).returning();
+  res.status(201).json(created);
+});
+router6.put("/faqs/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  const parsed = UpdateFaqBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(faqsTable).set(parsed.data).where(eq(faqsTable.id, id)).returning();
+  if (!updated) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
+  res.json(updated);
+});
+router6.delete("/faqs/:id", async (req, res) => {
+  if (!requireAdmin(req, res)) return;
+  const id = parseId(req, res);
+  if (id === null) return;
+  await db.delete(faqsTable).where(eq(faqsTable.id, id));
   res.json({ success: true });
 });
 var siteItems_default = router6;

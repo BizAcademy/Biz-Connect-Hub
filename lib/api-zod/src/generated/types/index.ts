@@ -12,6 +12,8 @@ export * from './ambassador';
 export * from './ambassadorInput';
 export * from './deleteResult';
 export * from './errorResponse';
+export * from './faq';
+export * from './faqInput';
 export * from './featureItem';
 export * from './featureItemInput';
 export * from './healthStatus';
