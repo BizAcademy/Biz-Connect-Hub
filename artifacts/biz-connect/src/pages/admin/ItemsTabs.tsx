@@ -887,7 +887,7 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   const update = useUpdateFeatureItem(adminReq(pwd));
   const del = useDeleteFeatureItem(adminReq(pwd));
   const [label, setLabel] = useState('');
-  const [section, setSection] = useState<'included' | 'offer'>('included');
+  const [section, setSection] = useState<'included' | 'offer'>('offer');
   const [editId, setEditId] = useState<number | null>(null);
   const [eLabel, setELabel] = useState('');
   const [eSection, setESection] = useState<'included' | 'offer'>('included');
@@ -920,7 +920,7 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   );
 
   return (
-    <SectionCard title="Avantages" desc="Listes « Tout ce qui est inclus dans ton accès » et avantages de la carte de prix">
+    <SectionCard title="Avantages de la carte de prix" desc="Modifie ici les six informations affichées dans la carte tarifaire de la page d'accueil. Choisis « Carte de prix (offre) » pour les ajouter ou les modifier.">
       <div className="grid md:grid-cols-3 gap-4 p-4 rounded-xl border border-border bg-muted/10 items-center">
         <select
           className="border border-border rounded-md px-3 py-2 text-sm bg-background"

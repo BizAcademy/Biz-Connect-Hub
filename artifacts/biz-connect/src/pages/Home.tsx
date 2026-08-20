@@ -13,7 +13,7 @@ import { PublicVideo } from '@/components/PublicVideo';
 import {
   ArrowRight, Users, Globe2, TrendingUp, ShieldCheck,
   Briefcase, GraduationCap, ChevronRight, CheckCircle2, Lock,
-  MessageCircle, Star, Award, Zap, BadgeCheck, Phone
+  MessageCircle, Star, Award, Zap, Phone
 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -637,7 +637,7 @@ export default function Home() {
                 Accès complet
               </div>
               <div className="text-6xl font-black mb-2 mt-2">{content.offerPrice}</div>
-              <p className="text-muted-foreground text-sm mb-8">Paiement unique — accès à vie à la plateforme</p>
+              <p className="mb-8 text-sm font-bold text-green-600">Tout ce qui est inclus dans ton accès</p>
               <ul className="space-y-3 mb-8 text-left">
                 {(offerFeatures.length > 0
                   ? offerFeatures.map(f => f.label)
@@ -662,11 +662,6 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Trust badge */}
-          <div className="mt-10 flex items-center justify-center gap-3 text-muted-foreground text-sm">
-            <BadgeCheck className="w-5 h-5 text-green-500" />
-            Biz Connect Academy est une plateforme légale déjà présente dans 2 pays en Afrique : Cameroun et Bénin.
-          </div>
         </div>
       </section>
 
