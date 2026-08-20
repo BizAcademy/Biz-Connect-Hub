@@ -7,4 +7,4 @@ description: Comment le site en prod est servi et le piège du dist/public commi
 - **Procédure après chaque modif frontend** : `cd artifacts/biz-connect && PORT=19698 BASE_PATH=/ pnpm run build`, puis copier `artifacts/biz-connect/dist/public` → `artifacts/api-server/dist/public`, commit et push.
 - Le build vite exige les env vars `PORT` et `BASE_PATH` (prod = `/`).
 - Push GitHub : `git push https://x-access-token:${GITHUB_PAT}@github.com/BizAcademy/Biz-Connect-Hub.git main`.
-- Toute modification de schéma doit aussi être synchronisée sur la base ciblée avant le redémarrage de l'API. **Pourquoi :** l'API sélectionne les nouvelles colonnes dès son lancement ; une base non synchronisée fait échouer le contenu et l'accueil.
+- Toute modification de schéma doit être synchronisée sur la base ciblée avant le redémarrage de l'API. **Pourquoi :** une API qui sélectionne de nouvelles colonnes face à une base non synchronisée rend le contenu et l'accueil indisponibles.

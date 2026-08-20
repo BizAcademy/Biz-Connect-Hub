@@ -29,9 +29,18 @@ Le schéma doit exister dans la base PostgreSQL visée par `DATABASE_URL`. Si c'
 DATABASE_URL=<url de la base Plesk> pnpm --filter @workspace/db push
 ```
 
+Pour chaque mise à jour contenant une migration versionnée, exécuter **avant le déploiement Plesk** depuis Replit ou un environnement de maintenance disposant de `pnpm` :
+
+```
+DATABASE_URL=<url de la base Plesk> pnpm --filter @workspace/db run migrate
+```
+
+Cette commande est sûre à rejouer : elle applique uniquement les migrations non encore enregistrées. Ne redémarrez pas l’API Plesk tant qu’elle n’a pas réussi.
+
 ## Flux de mise à jour
 
 1. Sur Replit : faire les modifications, puis lancer `pnpm run build:plesk` (régénère `artifacts/api-server/dist/`), commit + push sur GitHub.
-2. Sur Plesk : **Pull** depuis GitHub → **Deploy Now** → **Restart App**.
+2. Si la mise à jour comporte une migration, lancer `DATABASE_URL=<url de la base Plesk> pnpm --filter @workspace/db run migrate` depuis Replit ou un environnement de maintenance, et attendre qu’elle réussisse.
+3. Sur Plesk : **Pull** depuis GitHub → **Deploy Now** → **Restart App**.
 
 C'est tout — l'application redémarre avec la nouvelle version sans rebuild.
