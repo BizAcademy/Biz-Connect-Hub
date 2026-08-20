@@ -306,7 +306,7 @@ export default function Home() {
               <img
                 src={content.countriesIconUrl}
                 alt="Pays d'Afrique"
-                className="w-36 h-36 object-cover mx-auto mb-4 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-black/10 transition-transform hover:scale-105"
+                className="w-36 h-36 object-contain bg-white mx-auto mb-4 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-black/10 transition-transform hover:scale-105"
               />
             ) : (
               <Globe2 className="w-10 h-10 text-primary mx-auto mb-4" />
@@ -409,7 +409,7 @@ export default function Home() {
                             {t.mediaType === 'video' ? (
                                <PublicVideo url={t.mediaUrl} className="w-full max-h-64" />
                             ) : (
-                              <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-cover" />
+                              <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-contain bg-muted" />
                             )}
                             <div className="px-3 py-2 text-xs">
                               <span className="font-bold">{t.name}</span>
@@ -580,7 +580,7 @@ export default function Home() {
                     t.mediaType === 'video' ? (
                        <PublicVideo url={t.mediaUrl} className="w-full max-h-[32rem]" />
                     ) : (
-                      <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-64 object-cover" />
+                      <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-64 object-contain bg-muted" />
                     )
                   )}
                 </div>
@@ -721,9 +721,9 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   className="bg-card rounded-2xl border border-border overflow-hidden group hover:border-primary/50 transition-colors flex flex-col"
                 >
-                  <div className="h-40 bg-secondary relative overflow-hidden">
+                  <div className="h-40 bg-white relative overflow-hidden">
                     {course.bannerUrl ? (
-                      <img src={course.bannerUrl} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <img src={course.bannerUrl} alt={course.title} className="w-full h-full object-contain transition-transform" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Lock className="text-white/30 w-10 h-10" />

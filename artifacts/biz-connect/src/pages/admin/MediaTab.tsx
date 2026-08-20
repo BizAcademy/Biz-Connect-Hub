@@ -303,9 +303,9 @@ export function MediaTab({ pwd }: { pwd: string }) {
                 <div key={m.id} className="rounded-lg border border-border overflow-hidden bg-muted/10">
                   <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
                     {m.resourceType === 'video' ? (
-                      <video src={m.url} className="w-full h-full object-cover" muted playsInline />
+                      <video src={m.url} className="w-full h-full object-contain bg-black" muted playsInline />
                     ) : (
-                      <img src={m.url} alt={m.name} className="w-full h-full object-cover" loading="lazy" />
+                      <img src={m.url} alt={m.name} className="w-full h-full object-contain bg-muted" loading="lazy" />
                     )}
                   </div>
                   <div className="p-2 space-y-2">

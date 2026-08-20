@@ -113,9 +113,9 @@ function UploadField({
                     }}
                   >
                     {m.resourceType === 'video' ? (
-                      <video src={m.url} className="w-full aspect-square object-cover" muted playsInline />
+                      <video src={m.url} className="w-full aspect-square object-contain bg-black" muted playsInline />
                     ) : (
-                      <img src={m.url} alt={m.name} className="w-full aspect-square object-cover" loading="lazy" />
+                      <img src={m.url} alt={m.name} className="w-full aspect-square object-contain bg-muted" loading="lazy" />
                     )}
                     <div className="px-2 py-1 text-xs truncate text-muted-foreground">{m.name || m.publicId}</div>
                   </button>
@@ -246,7 +246,7 @@ export function TrainingsTab({ pwd }: { pwd: string }) {
       <div className="grid md:grid-cols-2 gap-4">
         {(items ?? []).map((t) => (
           <div key={t.id} className="border border-border rounded-xl overflow-hidden">
-            {t.bannerUrl && <img src={t.bannerUrl} alt={t.title} className="w-full h-32 object-cover" />}
+            {t.bannerUrl && <img src={t.bannerUrl} alt={t.title} className="w-full h-32 object-contain bg-white" />}
             <div className="p-3 flex items-center justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-semibold text-sm truncate">{t.title}</div>
@@ -357,8 +357,8 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         {(items ?? []).map((t) => (
           <div key={t.id} className="border border-border rounded-xl overflow-hidden">
             {t.mediaUrl && (t.mediaType === 'video'
-              ? <video src={t.mediaUrl} className="w-full h-32 object-cover" muted />
-              : <img src={t.mediaUrl} alt={t.name} className="w-full h-32 object-cover" />
+               ? <video src={t.mediaUrl} className="w-full h-32 object-contain bg-black" muted />
+               : <img src={t.mediaUrl} alt={t.name} className="w-full h-32 object-contain bg-muted" />
             )}
             <div className="p-3 flex items-start justify-between gap-2">
               <div className="min-w-0">
@@ -530,7 +530,7 @@ export function AmbassadorsTab({ pwd }: { pwd: string }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {(items ?? []).map((a) => (
           <div key={a.id} className="border border-border rounded-xl overflow-hidden">
-            <img src={a.imageUrl} alt={a.name} className="w-full h-40 object-cover" />
+            <img src={a.imageUrl} alt={a.name} className="w-full h-40 object-contain bg-white" />
             <div className="p-2 flex items-center justify-between gap-2">
               <span className="text-xs truncate">{a.name}{a.country ? ` · ${a.country}` : ''}</span>
               <div className="flex items-center shrink-0">
@@ -810,9 +810,9 @@ function ServiceTestimonialsDialog({
                 <div key={t.id} className="border border-border rounded-xl p-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     {t.mediaType === 'video' ? (
-                      <video src={t.mediaUrl} className="w-14 h-14 object-cover rounded-md bg-black shrink-0" />
+                      <video src={t.mediaUrl} className="w-14 h-14 object-contain rounded-md bg-black shrink-0" />
                     ) : (
-                      <img src={t.mediaUrl} alt="" className="w-14 h-14 object-cover rounded-md bg-muted shrink-0" />
+                      <img src={t.mediaUrl} alt="" className="w-14 h-14 object-contain rounded-md bg-muted shrink-0" />
                     )}
                     <div className="min-w-0">
                       <div className="font-semibold text-sm truncate">{t.name}</div>
