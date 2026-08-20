@@ -91,7 +91,6 @@ export default function Home() {
   const lvl2 = parseInt(content.level2Amount.replace(/\D/g, ''), 10) || 500;
   const lvl3 = parseInt(content.level3Amount.replace(/\D/g, ''), 10) || 300;
   const fmt = (n: number) => `${n.toLocaleString('fr-FR')} FCFA`;
-  const includedFeatures = (featureItems ?? []).filter(f => f.section === 'included');
   const offerFeatures = (featureItems ?? []).filter(f => f.section === 'offer');
   const communityImage = content.communityImageUrl || '/membres-bca.jpg';
 
@@ -667,35 +666,6 @@ export default function Home() {
           <div className="mt-10 flex items-center justify-center gap-3 text-muted-foreground text-sm">
             <BadgeCheck className="w-5 h-5 text-green-500" />
             Biz Connect Academy est une plateforme légale déjà présente dans 2 pays en Afrique : Cameroun et Bénin.
-          </div>
-        </div>
-      </section>
-
-      {/* ===== 10. LISTE BÉNÉFICES ===== */}
-      <section className="py-10 px-6 bg-background">
-        <div className="container mx-auto max-w-3xl">
-          <h2 className="text-2xl font-bold text-center mb-8 text-green-600">Tout ce qui est inclus dans ton accès</h2>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {(includedFeatures.length > 0
-              ? includedFeatures.map(f => f.label)
-              : [
-                  "Accès au réseau privé Biz Connect",
-                  "Création de ton portefeuille digital",
-                  "Accès complet au système d'affiliation 3 niveaux",
-                  "Catalogue de formations premium inclus",
-                  "Support prioritaire WhatsApp",
-                  "Outils marketing fournis",
-                  "Badge membre visible sur la marketplace",
-                  "Accès aux événements réseau exclusifs",
-                  "Suivi personnalisé chaque semaine",
-                  "Mises à jour gratuites de la plateforme",
-                ]
-            ).map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border text-sm">
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                <span>{item}</span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
