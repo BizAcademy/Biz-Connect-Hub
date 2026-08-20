@@ -47,6 +47,19 @@ const contentSchema = z.object({
   promoPosterUrl: z.string(),
   promoCtaText: z.string(),
   videoUrl: z.string().min(1),
+  presentationTitle: z.string().min(1),
+  countriesTitle: z.string().min(1),
+  benefitsTitle: z.string().min(1),
+  ambassadorsTitle: z.string().min(1),
+  gainsTitle: z.string().min(1),
+  gainsSecondaryTitle: z.string().min(1),
+  testimonialsTitle: z.string().min(1),
+  trainingsTitle: z.string().min(1),
+  ctaTitle: z.string().min(1),
+  faqTitle: z.string().min(1),
+  supportTitle: z.string().min(1),
+  partnersTitle: z.string().min(1),
+  paymentMethodsTitle: z.string().min(1),
   offerPrice: z.string().min(1),
   offerOriginalPrice: z.string().min(1),
   offerLabel: z.string().min(1),
@@ -523,6 +536,52 @@ function ContentTab({ pwd }: { pwd: string }) {
               </div>
               <ImageUploadField form={form} name="communityImageUrl" label="Image des membres (sous le bouton d'inscription)" uploadFile={uploadFile} isUploading={isUploading} />
               <ImageUploadField form={form} name="countriesIconUrl" label="Icône de la section « Disponible dans X pays »" uploadFile={uploadFile} isUploading={isUploading} />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">
+              <div className="col-span-2">
+                <h3 className="font-bold text-lg mb-2">Titres des sections</h3>
+                <p className="text-sm text-muted-foreground">Modifiez les titres globaux affichés sur la page d'accueil.</p>
+              </div>
+              <FormField control={form.control} name="presentationTitle" render={({ field }) => (
+                <FormItem><FormLabel>Vidéo de présentation</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="testimonialsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Résultats et témoignages</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="countriesTitle" render={({ field }) => (
+                <FormItem><FormLabel>Disponibilité par pays</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="benefitsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Ce que vous allez gagner</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="ambassadorsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Ambassadeurs</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="gainsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Gains par affiliation</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="gainsSecondaryTitle" render={({ field }) => (
+                <FormItem><FormLabel>Seconde image des gains</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="trainingsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Catalogue de formations</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="ctaTitle" render={({ field }) => (
+                <FormItem><FormLabel>Appel à l'action final</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="faqTitle" render={({ field }) => (
+                <FormItem><FormLabel>Questions fréquentes</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="supportTitle" render={({ field }) => (
+                <FormItem><FormLabel>Support</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="partnersTitle" render={({ field }) => (
+                <FormItem><FormLabel>Partenaires</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="paymentMethodsTitle" render={({ field }) => (
+                <FormItem><FormLabel>Moyens de paiement</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 p-6 rounded-xl border border-border bg-muted/10">

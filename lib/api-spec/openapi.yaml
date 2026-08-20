@@ -1606,7 +1606,7 @@ components:
 
     SiteContent:
       type: object
-      required: [id, heroTitle, heroSubtitle, heroCtaText, memberCount, memberCountLabel, geoAvailability, promoTitle, promoDescription, promoVideoUrl, promoPosterUrl, promoCtaText, videoUrl, offerPrice, offerOriginalPrice, offerLabel, level1Name, level1Amount, level2Name, level2Amount, level3Name, level3Amount, whatsappNumber, updatedAt]
+      required: [id, heroTitle, heroSubtitle, heroCtaText, memberCount, memberCountLabel, geoAvailability, promoTitle, promoDescription, promoVideoUrl, promoPosterUrl, promoCtaText, videoUrl, presentationTitle, countriesTitle, benefitsTitle, ambassadorsTitle, gainsTitle, gainsSecondaryTitle, testimonialsTitle, trainingsTitle, ctaTitle, faqTitle, supportTitle, partnersTitle, paymentMethodsTitle, offerPrice, offerOriginalPrice, offerLabel, level1Name, level1Amount, level2Name, level2Amount, level3Name, level3Amount, whatsappNumber, updatedAt]
       properties:
         id:
           type: number
@@ -1633,6 +1633,32 @@ components:
         promoCtaText:
           type: string
         videoUrl:
+          type: string
+        presentationTitle:
+          type: string
+        countriesTitle:
+          type: string
+        benefitsTitle:
+          type: string
+        ambassadorsTitle:
+          type: string
+        gainsTitle:
+          type: string
+        gainsSecondaryTitle:
+          type: string
+        testimonialsTitle:
+          type: string
+        trainingsTitle:
+          type: string
+        ctaTitle:
+          type: string
+        faqTitle:
+          type: string
+        supportTitle:
+          type: string
+        partnersTitle:
+          type: string
+        paymentMethodsTitle:
           type: string
         offerPrice:
           type: string
@@ -1701,6 +1727,32 @@ components:
         promoCtaText:
           type: string
         videoUrl:
+          type: string
+        presentationTitle:
+          type: string
+        countriesTitle:
+          type: string
+        benefitsTitle:
+          type: string
+        ambassadorsTitle:
+          type: string
+        gainsTitle:
+          type: string
+        gainsSecondaryTitle:
+          type: string
+        testimonialsTitle:
+          type: string
+        trainingsTitle:
+          type: string
+        ctaTitle:
+          type: string
+        faqTitle:
+          type: string
+        supportTitle:
+          type: string
+        partnersTitle:
+          type: string
+        paymentMethodsTitle:
           type: string
         offerPrice:
           type: string

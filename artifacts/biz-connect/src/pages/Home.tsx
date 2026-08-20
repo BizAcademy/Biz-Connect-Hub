@@ -66,6 +66,18 @@ function renderTestimonialText(text: string) {
   );
 }
 
+function renderGainsSecondaryTitle(title: string) {
+  return title.split(/(Biz Connect Academy|téléphone)/gi).map((part, index) => {
+    const normalized = part.toLowerCase();
+    const color = normalized === 'biz connect academy'
+      ? 'text-green-600'
+      : normalized === 'téléphone'
+        ? 'text-amber-500'
+        : '';
+    return <span key={`${part}-${index}`} className={color}>{part}</span>;
+  });
+}
+
 // CTA that supports external URLs (configured in admin) or internal routes
 function SignupLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
   if (/^https?:\/\//i.test(href)) {
@@ -279,12 +291,98 @@ export default function Home() {
             variants={fadeIn}
             className="mt-12 max-w-4xl mx-auto"
           >
-            <h2 className="text-2xl font-bold text-green-600 mb-2">Découvrez Biz Connect Academy</h2>
+            <h2 className="text-2xl font-bold text-green-600 mb-2">{content.presentationTitle}</h2>
             <p className="text-muted-foreground text-sm mb-4">Comprenez comment notre plateforme va transformer vos revenus.</p>
             <div className="bg-blue-100 p-2.5 rounded-2xl shadow-xl w-full">
               <PublicVideo url={content.videoUrl} title="Biz Connect Academy — présentation" />
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ===== RÉSULTATS & TÉMOIGNAGES — sous la vidéo de présentation ===== */}
+      <section className="py-8 px-4 bg-background sm:py-14 sm:px-6">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-6 sm:mb-8">
+            <Award className="w-8 h-8 text-primary mx-auto mb-3 sm:w-10 sm:h-10 sm:mb-4" />
+            <h2 className="text-2xl font-bold leading-tight mb-3 uppercase text-green-600 sm:text-3xl">{content.testimonialsTitle}</h2>
+          </div>
+
+          {testimonials && testimonials.length > 0 ? (
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3">
+              {testimonials.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-full max-w-[40rem] shrink-0 snap-center"
+                >
+                  <div className="p-3 pb-2 sm:p-4 sm:pb-3">
+                    <div className="font-bold text-xs leading-snug sm:text-sm">
+                      {t.name}
+                      {t.country && (
+                        <>
+                          <span>{` · ${t.country}`}</span>
+                          <span className="ml-1" title={`Drapeau du ${t.country}`} aria-label={`Drapeau du ${t.country}`}>
+                            {COUNTRY_FLAGS[t.country] ?? '🌍'}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {t.duration && <div className="text-[11px] text-primary font-semibold sm:text-xs">Résultat en {t.duration}</div>}
+                    {t.text && (
+                      <p className="mt-1.5 whitespace-pre-wrap break-words text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
+                        {renderTestimonialText(t.text)}
+                      </p>
+                    )}
+                  </div>
+                  {t.mediaUrl && (
+                    t.mediaType === 'video' ? (
+                      <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
+                        <PublicVideo url={t.mediaUrl} className="h-full w-full max-h-full rounded-xl" />
+                      </div>
+                    ) : (
+                      <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
+                        <img
+                          src={t.mediaUrl}
+                          alt={`Témoignage de ${t.name}`}
+                          className="block h-full w-full rounded-xl bg-muted object-contain"
+                        />
+                      </div>
+                    )
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {GAINS.map((g, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md"
+                >
+                  <div className="bg-secondary px-3 py-2 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-red-400" />
+                    <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                    <div className="w-2 h-2 rounded-full bg-green-400" />
+                  </div>
+                  <div className="p-4">
+                    <div className="text-xs text-muted-foreground mb-1">{g.name} · {g.city}</div>
+                    <div className="text-base font-black text-green-600">{g.amount}</div>
+                    <div className="text-xs text-muted-foreground">en {g.days}</div>
+                    <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          <div className="text-center mt-10">
+            <SignupLink href={signupUrl} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
+              Je m'inscris maintenant <ArrowRight size={18} />
+            </SignupLink>
+          </div>
         </div>
       </section>
 
@@ -329,7 +427,7 @@ export default function Home() {
             ) : (
               <Globe2 className="w-10 h-10 text-primary mx-auto mb-4" />
             )}
-            <h2 className="text-3xl font-bold mb-3 text-green-600">Disponible dans plus de 20 pays d'Afrique</h2>
+            <h2 className="text-3xl font-bold mb-3 text-green-600">{content.countriesTitle}</h2>
             <p className="text-muted-foreground">La BCA est présente dans tous les pays francophones d'Afrique</p>
           </motion.div>
         </div>
@@ -385,7 +483,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-green-600">
-              Voici ce que tu vas gagner en nous rejoignant
+              {content.benefitsTitle}
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">Un écosystème complet pour faire de ton téléphone un outil de revenus.</p>
           </div>
@@ -477,7 +575,7 @@ export default function Home() {
       <section id="ambassadeurs" className="py-14 bg-muted/30 border-y border-border overflow-hidden">
         <div className="container mx-auto max-w-6xl px-6">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">Nos ambassadeurs</h2>
+            <h2 className="text-3xl font-bold mb-3 uppercase text-green-600">{content.ambassadorsTitle}</h2>
           </div>
         </div>
         {ambassadors && ambassadors.length > 0 ? (
@@ -509,7 +607,7 @@ export default function Home() {
       <section className="py-14 px-6 bg-background">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3 text-green-600">Tes gains par affiliation</h2>
+            <h2 className="text-3xl font-bold mb-3 text-green-600">{content.gainsTitle}</h2>
             <p className="text-muted-foreground">
               Calcule ce que tu peux gagner en recommandant la{' '}
               <span className="font-semibold text-green-600">Biz Connect Academy</span>
@@ -559,106 +657,15 @@ export default function Home() {
           {content.gainsSecondaryImageUrl && (
             <div className="mt-12">
               <h3 className="mb-6 text-center text-2xl font-bold leading-snug text-foreground sm:text-3xl">
-                À la <span className="text-green-600">Biz Connect Academy</span>, même si tu dors, ton{' '}
-                <span className="text-amber-500">téléphone</span> travaille pour toi.
+                {renderGainsSecondaryTitle(content.gainsSecondaryTitle)}
               </h3>
               <img
                 src={content.gainsSecondaryImageUrl}
-                alt="À la Biz Connect Academy, même si tu dors, ton téléphone travaille pour toi"
+                alt={content.gainsSecondaryTitle}
                 className="w-full rounded-2xl border border-border shadow-lg"
               />
             </div>
           )}
-        </div>
-      </section>
-
-      {/* ===== SOCIAL PROOF — jeunes africains qui ont généré des millions ===== */}
-      <section className="py-8 px-4 bg-background sm:py-14 sm:px-6">
-        <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-6 sm:mb-8">
-            <Award className="w-8 h-8 text-primary mx-auto mb-3 sm:w-10 sm:h-10 sm:mb-4" />
-            <h2 className="text-2xl font-bold leading-tight mb-3 uppercase text-green-600 sm:text-3xl">
-              De nombreux jeunes venant de plusieurs pays se sont lancés et voilà leurs résultats et témoignages
-            </h2>
-          </div>
-
-          {testimonials && testimonials.length > 0 ? (
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3">
-              {testimonials.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-full max-w-[40rem] shrink-0 snap-center"
-                >
-                  <div className="p-3 pb-2 sm:p-4 sm:pb-3">
-                    <div className="font-bold text-xs leading-snug sm:text-sm">
-                      {t.name}
-                      {t.country && (
-                        <>
-                          <span>{` · ${t.country}`}</span>
-                          <span className="ml-1" title={`Drapeau du ${t.country}`} aria-label={`Drapeau du ${t.country}`}>
-                            {COUNTRY_FLAGS[t.country] ?? '🌍'}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    {t.duration && <div className="text-[11px] text-primary font-semibold sm:text-xs">Résultat en {t.duration}</div>}
-                    {t.text && (
-                      <p className="mt-1.5 whitespace-pre-wrap break-words text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
-                        {renderTestimonialText(t.text)}
-                      </p>
-                    )}
-                  </div>
-                  {t.mediaUrl && (
-                    t.mediaType === 'video' ? (
-                       <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
-                         <PublicVideo url={t.mediaUrl} className="h-full w-full max-h-full rounded-xl" />
-                       </div>
-                    ) : (
-                        <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
-                         <img
-                           src={t.mediaUrl}
-                           alt={`Témoignage de ${t.name}`}
-                           className="block h-full w-full rounded-xl bg-muted object-contain"
-                         />
-                       </div>
-                    )
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {GAINS.map((g, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="bg-card border border-border rounded-2xl overflow-hidden shadow-md"
-              >
-                {/* Mock screenshot top bar */}
-                <div className="bg-secondary px-3 py-2 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-red-400" />
-                  <div className="w-2 h-2 rounded-full bg-yellow-400" />
-                  <div className="w-2 h-2 rounded-full bg-green-400" />
-                </div>
-                {/* Content */}
-                <div className="p-4">
-                  <div className="text-xs text-muted-foreground mb-1">{g.name} · {g.city}</div>
-                   <div className="text-base font-black text-green-600">{g.amount}</div>
-                  <div className="text-xs text-muted-foreground">en {g.days}</div>
-                  <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          )}
-
-          <div className="text-center mt-10">
-            <SignupLink href={signupUrl} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
-              Je m'inscris maintenant <ArrowRight size={18} />
-            </SignupLink>
-          </div>
         </div>
       </section>
 
@@ -711,7 +718,7 @@ export default function Home() {
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
             <div>
-              <h2 className="text-3xl font-bold mb-3 text-green-600">Catalogue de formations</h2>
+              <h2 className="text-3xl font-bold mb-3 text-green-600">{content.trainingsTitle}</h2>
               <p className="text-muted-foreground max-w-xl">Modules exclusifs pour accélérer ta croissance digitale et financière.</p>
             </div>
             <Link href="/inscription" className="flex items-center gap-2 text-primary font-bold hover:underline shrink-0">
@@ -792,7 +799,7 @@ export default function Home() {
       <section className="mx-4 my-8 rounded-3xl border-4 border-white bg-primary px-6 py-14 text-center text-primary-foreground relative overflow-hidden shadow-[0_10px_0_rgba(255,255,255,0.35),0_24px_45px_rgba(15,23,42,0.28)] sm:mx-6 lg:mx-10">
         <div className="container mx-auto max-w-3xl relative z-10">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight text-green-300">
-            Tu veux commencer ?
+            {content.ctaTitle}
           </h2>
           <p className="text-xl mb-10 font-semibold">
             Tu as juste besoin de <span className="font-black">{content.offerPrice}</span> pour créer ton compte
@@ -814,7 +821,7 @@ export default function Home() {
       <section className="py-14 px-6 bg-background border-t border-border">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3 text-green-600">Questions fréquentes</h2>
+            <h2 className="text-3xl font-bold mb-3 text-green-600">{content.faqTitle}</h2>
             <p className="text-muted-foreground mb-6">Tout ce que tu dois savoir avant de nous rejoindre.</p>
             <Link
               href="/aide"
@@ -838,7 +845,7 @@ export default function Home() {
       <section className="py-10 px-6 bg-muted/30 border-y border-border">
         <div className="container mx-auto max-w-xl text-center">
           <Phone className="w-10 h-10 text-green-500 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold mb-3 text-green-600">Contacte le support</h3>
+          <h3 className="text-2xl font-bold mb-3 text-green-600">{content.supportTitle}</h3>
           <p className="text-muted-foreground mb-6 text-sm">Pour t'aider à t'inscrire et répondre à toutes tes questions.</p>
           <Link
             href="/contact"
@@ -851,7 +858,7 @@ export default function Home() {
 
       {/* ===== 16. PARTENAIRES — slider infini ===== */}
       <section className="py-6 bg-background border-b border-border overflow-hidden">
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Nos partenaires</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.partnersTitle}</p>
         {partners && partners.length > 0 ? (
           <InfiniteSlider speed={31.25} direction="left" gap={48}>
             {partners.map((p) => (
@@ -871,7 +878,7 @@ export default function Home() {
 
       {/* ===== 17. PAIEMENTS — slider infini ===== */}
       <section className="py-6 bg-muted/30 border-b border-border overflow-hidden">
-        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">Moyens de paiement acceptés</p>
+        <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.paymentMethodsTitle}</p>
         {paymentMethods && paymentMethods.length > 0 ? (
           <InfiniteSlider speed={25} direction="left" gap={40}>
             {paymentMethods.map((pm) => (
