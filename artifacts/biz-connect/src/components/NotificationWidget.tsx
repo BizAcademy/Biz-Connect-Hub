@@ -108,22 +108,22 @@ export function NotificationWidget() {
       {isVisible && current && (
         <motion.div
           initial={{ opacity: 0, y: 50, x: -50 }}
-          animate={{ opacity: 1, y: 0, x: '-50%' }}
-          exit={{ opacity: 0, y: 20, x: '-50%' }}
+          animate={{ opacity: 1, y: 0, x: 0 }}
+          exit={{ opacity: 0, y: 20, x: -20 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="fixed bottom-5 left-1/2 z-50 flex w-[52vw] max-w-[13rem] items-center gap-2 rounded-[1.35rem] border border-slate-100 bg-white px-3 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.18)] sm:w-[min(70vw,31rem)] sm:max-w-none sm:gap-4 sm:rounded-[1.6rem] sm:px-5 sm:py-5"
+          className="fixed bottom-4 left-4 z-50 flex w-[52vw] max-w-[340px] items-center gap-2 rounded-xl border border-slate-100 bg-white px-3 py-3 shadow-[0_8px_22px_rgba(15,23,42,0.14)] sm:bottom-5 sm:left-5 sm:w-[340px] sm:gap-3 sm:px-4 sm:py-3"
         >
           {/* BCA logo */}
-          <img src="/logo-bca.png" alt="Biz Connect Academy" className="h-auto w-12 shrink-0 object-contain sm:w-28" />
+          <img src="/logo-bca.png" alt="Biz Connect Academy" className="h-auto w-10 shrink-0 object-contain sm:w-12" />
 
-          <div className="min-w-0 flex-1 pr-5 sm:pr-7">
-            <p className="flex items-center gap-1 text-sm font-bold leading-tight text-slate-800 sm:gap-1.5 sm:text-2xl">
+          <div className="min-w-0 flex-1 pr-4">
+            <p className="flex items-center gap-1 text-sm font-bold leading-tight text-slate-800 sm:text-base">
               <span className="truncate">{current.name}</span>
-              <span className="shrink-0 text-base sm:text-2xl" aria-label={current.country.name}>
+              <span className="shrink-0 text-base" aria-label={current.country.name}>
                 {current.country.flag}
               </span>
             </p>
-            <p className="mt-0.5 text-xs font-medium leading-tight text-slate-400 sm:mt-1 sm:text-xl">
+            <p className="mt-1 text-xs font-normal leading-tight text-slate-500 sm:text-sm">
               Vient de s'inscrire
             </p>
           </div>
@@ -131,9 +131,9 @@ export function NotificationWidget() {
           <button
             onClick={() => setDismissed(true)}
             aria-label="Fermer la notification"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-slate-300 hover:text-slate-700 transition-colors sm:right-3"
+            className="absolute right-2 top-2 rounded-full p-1 text-slate-300 hover:text-slate-700 transition-colors"
           >
-            <X className="h-5 w-5 sm:h-[30px] sm:w-[30px]" strokeWidth={1.6} />
+            <X className="h-5 w-5" strokeWidth={1.6} />
           </button>
         </motion.div>
       )}
