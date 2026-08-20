@@ -735,9 +735,9 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-3 text-green-600">{content.trainingsTitle}</h2>
               <p className="text-muted-foreground max-w-xl">Modules exclusifs pour accélérer ta croissance digitale et financière.</p>
             </div>
-            <Link href="/inscription" className="flex items-center gap-2 text-primary font-bold hover:underline shrink-0">
+            <SignupLink href={signupUrl} className="flex items-center gap-2 text-primary font-bold hover:underline shrink-0">
               Voir tout <ChevronRight size={16} />
-            </Link>
+            </SignupLink>
           </div>
 
           {trainings && trainings.length > 0 ? (
