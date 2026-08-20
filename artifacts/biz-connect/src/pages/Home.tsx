@@ -56,6 +56,16 @@ const GAINS = [
   { name: "Rosine A.", city: "Lomé", amount: "340,000 FCFA", days: "9 jours" },
 ];
 
+const TESTIMONIAL_AMOUNT_PATTERN = /(\d[\d\s.,]*\s?(?:f\s?cfa|fcfa|xaf))/gi;
+
+function renderTestimonialText(text: string) {
+  return text.split(TESTIMONIAL_AMOUNT_PATTERN).map((part, index) =>
+    /^(?:\d[\d\s.,]*\s?(?:f\s?cfa|fcfa|xaf))$/i.test(part)
+      ? <span key={index} className="font-black text-green-600">{part}</span>
+      : <span key={index}>{part}</span>
+  );
+}
+
 // CTA that supports external URLs (configured in admin) or internal routes
 function SignupLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
   if (/^https?:\/\//i.test(href)) {
@@ -580,15 +590,37 @@ export default function Home() {
                   className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-80 shrink-0"
                 >
                   <div className="p-4 pb-3">
-                    <div className="font-bold text-sm">{t.name}{t.country ? ` · ${t.country}` : ''}</div>
+                    <div className="font-bold text-sm leading-snug">
+                      {t.name}
+                      {t.country && (
+                        <>
+                          <span>{` · ${t.country}`}</span>
+                          <span className="ml-1" title={`Drapeau du ${t.country}`} aria-label={`Drapeau du ${t.country}`}>
+                            {COUNTRY_FLAGS[t.country] ?? '🌍'}
+                          </span>
+                        </>
+                      )}
+                    </div>
                     {t.duration && <div className="text-xs text-primary font-semibold">Résultat en {t.duration}</div>}
-                    {t.text && <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{t.text}</p>}
+                    {t.text && (
+                      <p className="text-sm text-muted-foreground mt-2 whitespace-pre-wrap break-words leading-relaxed">
+                        {renderTestimonialText(t.text)}
+                      </p>
+                    )}
                   </div>
                   {t.mediaUrl && (
                     t.mediaType === 'video' ? (
-                       <PublicVideo url={t.mediaUrl} className="w-full max-h-[32rem]" />
+                       <div className="mx-3 mb-4 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)]">
+                         <PublicVideo url={t.mediaUrl} className="w-full max-h-[32rem] rounded-xl" />
+                       </div>
                     ) : (
-                      <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-64 object-contain bg-muted" />
+                       <div className="mx-3 mb-4 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)]">
+                         <img
+                           src={t.mediaUrl}
+                           alt={`Témoignage de ${t.name}`}
+                           className="block w-full h-auto max-h-[34rem] rounded-xl object-contain bg-muted"
+                         />
+                       </div>
                     )
                   )}
                 </div>
@@ -611,7 +643,7 @@ export default function Home() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="text-xs text-muted-foreground mb-1">{g.name} · {g.city}</div>
-                  <div className="text-base font-black text-primary">{g.amount}</div>
+                   <div className="text-base font-black text-green-600">{g.amount}</div>
                   <div className="text-xs text-muted-foreground">en {g.days}</div>
                   <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
