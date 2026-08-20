@@ -399,7 +399,7 @@ export default function Home() {
                       <Star className="text-primary" size={26} />
                     )}
                   </div>
-                  <h3 className="text-lg font-bold mb-2">{s.title}</h3>
+                  <h3 className="text-lg font-bold mb-2 text-green-600">{s.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{s.description}</p>
                   {isOpen && sTestimonials.length > 0 && (
                     <div className="mt-5 -mx-2 overflow-hidden">
@@ -446,7 +446,7 @@ export default function Home() {
                 <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <b.icon size={26} />
                 </div>
-                <h3 className="text-lg font-bold mb-2">{b.title}</h3>
+                <h3 className="text-lg font-bold mb-2 text-green-600">{b.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{b.desc}</p>
               </motion.div>
             ))}
@@ -783,7 +783,7 @@ export default function Home() {
       </section>
 
       {/* ===== 13. CTA FINAL ===== */}
-      <section className="py-14 px-6 bg-primary text-primary-foreground text-center relative overflow-hidden">
+      <section className="mx-4 my-8 rounded-3xl border-4 border-white bg-primary px-6 py-14 text-center text-primary-foreground relative overflow-hidden shadow-[0_10px_0_rgba(255,255,255,0.35),0_24px_45px_rgba(15,23,42,0.28)] sm:mx-6 lg:mx-10">
         <div className="container mx-auto max-w-3xl relative z-10">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight text-green-300">
             Tu veux commencer ?
@@ -792,11 +792,11 @@ export default function Home() {
             Tu as juste besoin de <span className="font-black">{content.offerPrice}</span> pour créer ton compte
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <SignupLink href={signupUrl} className="btn-blink px-6 py-4 bg-background text-foreground font-black rounded-xl shadow-2xl hover:scale-105 transition-transform w-full sm:w-auto text-sm sm:text-base whitespace-normal break-words leading-snug text-center">
+            <SignupLink href={signupUrl} className="btn-blink px-6 py-4 bg-amber-500 text-white font-black rounded-xl shadow-[0_6px_0_rgba(146,64,14,0.45),0_12px_24px_rgba(15,23,42,0.22)] hover:bg-amber-600 hover:scale-105 transition-all w-full sm:w-auto text-sm sm:text-base whitespace-normal break-words leading-snug text-center">
               Aujourd'hui je prends la décision de transformer ma vie avec la BCA
             </SignupLink>
             <Link href="/contact"
-              className="px-8 py-4 border-2 border-primary-foreground/40 text-primary-foreground font-bold rounded-xl hover:bg-primary-foreground/10 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto text-base"
+              className="px-8 py-4 border-2 border-white text-primary-foreground font-bold rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto text-base"
             >
               <MessageCircle size={20} /> Contacter le support
             </Link>
