@@ -1,0 +1,29 @@
+Je veux intégrer un widget de notification de type "preuve sociale" (social proof popup) sur ma page d'accueil, similaire aux notifications de plateformes comme Shopify/WooCommerce. Voici les spécifications exactes :
+Position et taille
+Positionné en bas à gauche de l'écran (position: fixed; bottom: 20px; left: 20px;)
+Largeur fixe maximale de 340px (ne doit JAMAIS s'étendre sur toute la largeur de l'écran)
+Ne doit pas être centré, ne doit pas bloquer le contenu principal
+z-index élevé pour rester au-dessus du contenu mais sans gêner la lecture
+Design de la carte
+Fond blanc, coins arrondis (border-radius: 12px)
+Ombre légère (box-shadow doux, style card flottante)
+Padding interne d'environ 12-16px
+Disposition en ligne horizontale : logo à gauche, texte au centre, bouton fermer (×) à droite
+Contenu
+Logo de la marque à gauche (petit, environ 40-48px, format carré ou rond selon le logo)
+Nom de la personne en gras (ex: "Yacoubou Eric") suivi de l'emoji du drapeau du pays
+En dessous, texte en gris plus petit : "Vient de s'inscrire"
+Bouton "×" discret en haut à droite de la carte pour fermer la notification
+Typographie
+Nom : gras, taille ~15-16px, couleur noire/foncée
+Sous-texte : normal, taille ~13-14px, couleur gris moyen (#6b7280 ou similaire)
+Comportement
+Apparaît avec une animation de glissement depuis le bas/gauche (slide-in)
+Reste visible quelques secondes puis disparaît automatiquement (slide-out), ou peut être fermée manuellement avec le ×
+Après disparition, une nouvelle notification apparaît après un délai (fréquence déjà définie), en piochant aléatoirement dans la liste des noms/pays fournis
+Doit fonctionner en boucle continue tant que l'utilisateur est sur la page
+Responsive
+Sur mobile/tablette : largeur adaptée à l'écran mais toujours en petite carte (max 90% de la largeur sur très petits écrans, jamais plein écran), reste en bas à gauche avec une marge de sécurité (16px)
+Sur desktop : largeur fixe de 340px maximum
+Ne doit jamais chevaucher les boutons d'action importants (CTA, menu) ni gêner la navigation
+Utilise les logos, noms, pays et fréquences d'affichage que je t'ai déjà transmis. Le style doit correspondre exactement à la capture d'écran que je te fournis en référence.
