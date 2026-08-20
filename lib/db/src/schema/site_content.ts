@@ -31,6 +31,7 @@ export const siteContentTable = pgTable("site_content", {
   communityImageUrl: text("community_image_url").notNull().default(""),
   countriesIconUrl: text("countries_icon_url").notNull().default(""),
   gainsPosterUrl: text("gains_poster_url").notNull().default(""),
+  gainsSecondaryImageUrl: text("gains_secondary_image_url").notNull().default(""),
   telegramLink: text("telegram_link").notNull().default(""),
   supportPhone1: text("support_phone1").notNull().default(""),
   supportPhone2: text("support_phone2").notNull().default(""),

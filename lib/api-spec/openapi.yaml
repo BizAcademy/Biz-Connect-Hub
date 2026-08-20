@@ -1556,6 +1556,8 @@ components:
           type: string
         gainsPosterUrl:
           type: string
+        gainsSecondaryImageUrl:
+          type: string
         telegramLink:
           type: string
         supportPhone1:
@@ -1621,6 +1623,8 @@ components:
         countriesIconUrl:
           type: string
         gainsPosterUrl:
+          type: string
+        gainsSecondaryImageUrl:
           type: string
         telegramLink:
           type: string

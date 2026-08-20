@@ -537,6 +537,20 @@ export default function Home() {
           </div>
           </>
           )}
+
+          {content.gainsSecondaryImageUrl && (
+            <div className="mt-12">
+              <h3 className="mb-6 text-center text-2xl font-bold leading-snug text-foreground sm:text-3xl">
+                À la <span className="text-green-600">Biz Connect Academy</span>, même si tu dors, ton{' '}
+                <span className="text-amber-500">téléphone</span> travaille pour toi.
+              </h3>
+              <img
+                src={content.gainsSecondaryImageUrl}
+                alt="À la Biz Connect Academy, même si tu dors, ton téléphone travaille pour toi"
+                className="w-full rounded-2xl border border-border shadow-lg"
+              />
+            </div>
+          )}
         </div>
       </section>
 

@@ -77,6 +77,7 @@ export interface SiteContent {
   communityImageUrl?: string;
   countriesIconUrl?: string;
   gainsPosterUrl?: string;
+  gainsSecondaryImageUrl?: string;
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
@@ -111,6 +112,7 @@ export interface SiteContentInput {
   communityImageUrl?: string;
   countriesIconUrl?: string;
   gainsPosterUrl?: string;
+  gainsSecondaryImageUrl?: string;
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;

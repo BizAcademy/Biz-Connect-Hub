@@ -127,6 +127,7 @@ export const GetContentResponse = zod.object({
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
   "gainsPosterUrl": zod.string().optional(),
+  "gainsSecondaryImageUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
@@ -169,6 +170,7 @@ export const UpdateContentBody = zod.object({
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
   "gainsPosterUrl": zod.string().optional(),
+  "gainsSecondaryImageUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional()
@@ -203,6 +205,7 @@ export const UpdateContentResponse = zod.object({
   "communityImageUrl": zod.string().optional(),
   "countriesIconUrl": zod.string().optional(),
   "gainsPosterUrl": zod.string().optional(),
+  "gainsSecondaryImageUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
