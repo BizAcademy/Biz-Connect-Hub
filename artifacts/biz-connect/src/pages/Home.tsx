@@ -860,14 +860,13 @@ export default function Home() {
       <section className="py-14 px-6 bg-background border-t border-border">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3 text-green-600">{content.faqTitle}</h2>
-            <p className="text-muted-foreground mb-6">Tout ce que tu dois savoir avant de nous rejoindre.</p>
             <Link
               href="/aide"
-              className="btn-blink-gold inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 text-white font-bold text-lg rounded-xl hover:bg-amber-600 transition-colors"
+              className="btn-blink-gold inline-flex items-center gap-2 px-7 py-3.5 bg-amber-500 text-white font-bold text-lg rounded-xl hover:bg-amber-600 transition-colors mb-6"
             >
               Guide d'utilisation BCA <ArrowRight size={19} />
             </Link>
+            <h2 className="text-3xl font-bold text-green-600">{content.faqTitle}</h2>
           </div>
           <Accordion type="single" collapsible className="w-full space-y-3">
             {faqs.map((faq, i) => (
