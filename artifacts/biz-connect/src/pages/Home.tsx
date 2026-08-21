@@ -10,6 +10,7 @@ import { NotificationWidget } from '@/components/NotificationWidget';
 import { Navbar } from '@/components/Navbar';
 import { InfiniteSlider } from '@/components/InfiniteSlider';
 import { PublicVideo } from '@/components/PublicVideo';
+import { TestimonialsAutoSlider } from '@/components/TestimonialsAutoSlider';
 import {
   ArrowRight, Users, Globe2, TrendingUp, ShieldCheck,
   Briefcase, GraduationCap, ChevronRight, CheckCircle2, Lock,
@@ -300,7 +301,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ===== RÉSULTATS & TÉMOIGNAGES — sous la vidéo de présentation ===== */}
+      {/* ===== RÉSULTATS — CAPTURES D'ÉCRAN (auto-slider) ===== */}
       <section className="py-8 px-4 bg-background sm:py-14 sm:px-6">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-6 sm:mb-8">
@@ -308,89 +309,38 @@ export default function Home() {
             <h2 className="text-2xl font-bold leading-tight mb-3 uppercase text-green-600 sm:text-3xl">{content.testimonialsTitle}</h2>
           </div>
 
-          {testimonials && testimonials.length > 0 ? (
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3">
-              {testimonials.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col w-full max-w-[40rem] shrink-0 snap-center"
-                >
-                  <div className="p-3 pb-2 sm:p-4 sm:pb-3">
-                    <div className="font-bold text-xs leading-snug sm:text-sm">
-                      {t.name}
-                      {t.country && (
-                        <>
-                          <span>{` · ${t.country}`}</span>
-                          <span className="ml-1" title={`Drapeau du ${t.country}`} aria-label={`Drapeau du ${t.country}`}>
-                            {COUNTRY_FLAGS[t.country] ?? '🌍'}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    {t.duration && <div className="text-[11px] text-primary font-semibold sm:text-xs">Résultat en {t.duration}</div>}
-                    {t.text && (
-                      <p className="mt-1.5 whitespace-pre-wrap break-words text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
-                        {renderTestimonialText(t.text)}
-                      </p>
-                    )}
-                  </div>
-                  {t.mediaUrl && (
-                    t.mediaType === 'video' ? (
-                      <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
-                        <PublicVideo url={t.mediaUrl} className="h-full w-full max-h-full rounded-xl" />
-                      </div>
-                    ) : (
-                      <div className="mx-2 mb-3 flex h-80 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4 sm:h-[30rem]">
-                        <img
-                          src={t.mediaUrl}
-                          alt={`Témoignage de ${t.name}`}
-                          className="block h-full w-full rounded-xl bg-muted object-contain"
-                        />
-                      </div>
-                    )
-                  )}
-                  <div
-                    className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
-                    aria-label="Zapper vers le témoignage suivant"
+          {(() => {
+            const imgTestimonials = (testimonials ?? []).filter(t => t.mediaType !== 'video');
+            if (imgTestimonials.length > 0) {
+              return <TestimonialsAutoSlider testimonials={imgTestimonials} />;
+            }
+            // Fallback : cartes simulées sans ZAPPER
+            return (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {GAINS.map((g, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                    className="bg-card border border-border rounded-2xl overflow-hidden shadow-md"
                   >
-                    <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
-                    <span>ZAPPER</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {GAINS.map((g, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                  className="bg-card border border-border rounded-2xl overflow-hidden shadow-md"
-                >
-                  <div className="bg-secondary px-3 py-2 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-400" />
-                    <div className="w-2 h-2 rounded-full bg-yellow-400" />
-                    <div className="w-2 h-2 rounded-full bg-green-400" />
-                  </div>
-                  <div className="p-4">
-                    <div className="text-xs text-muted-foreground mb-1">{g.name} · {g.city}</div>
-                    <div className="text-base font-black text-green-600">{g.amount}</div>
-                    <div className="text-xs text-muted-foreground">en {g.days}</div>
-                    <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
+                    <div className="bg-secondary px-3 py-2 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-400" />
+                      <div className="w-2 h-2 rounded-full bg-yellow-400" />
+                      <div className="w-2 h-2 rounded-full bg-green-400" />
                     </div>
-                  </div>
-                  <div
-                    className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
-                    aria-label="Zapper vers le témoignage suivant"
-                  >
-                    <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
-                    <span>ZAPPER</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                    <div className="p-4">
+                      <div className="text-xs text-muted-foreground mb-1">{g.name} · {g.city}</div>
+                      <div className="text-base font-black text-green-600">{g.amount}</div>
+                      <div className="text-xs text-muted-foreground">en {g.days}</div>
+                      <div className="mt-3 h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full" style={{ width: `${60 + i * 10}%` }} />
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="text-center mt-10">
             <SignupLink href={signupUrl} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
@@ -399,6 +349,81 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== TÉMOIGNAGES VIDÉO (galerie manuelle + ZAPPER) ===== */}
+      {(() => {
+        const vidTestimonials = (testimonials ?? []).filter(t => t.mediaType === 'video');
+        if (vidTestimonials.length === 0) return null;
+        return (
+          <section className="py-8 px-4 bg-muted/30 border-t border-border sm:py-12 sm:px-6">
+            <div className="container mx-auto max-w-5xl">
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="w-8 h-8 mx-auto mb-3 sm:w-10 sm:h-10 sm:mb-4 flex items-center justify-center text-primary">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <h2 className="text-2xl font-bold leading-tight mb-1 uppercase text-green-600 sm:text-3xl">
+                  Leurs témoignages en vidéo
+                </h2>
+                <p className="text-sm text-muted-foreground">Glisse pour passer d'une vidéo à l'autre</p>
+              </div>
+
+              <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-3" style={{ scrollbarWidth: 'none' }}>
+                {vidTestimonials.map((t) => (
+                  <div
+                    key={t.id}
+                    className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg flex flex-col shrink-0 w-[22rem] snap-center sm:w-[32rem]"
+                  >
+                    {/* Infos */}
+                    <div className="p-3 pb-2 sm:p-4 sm:pb-3">
+                      <div className="font-bold text-xs leading-snug sm:text-sm">
+                        {t.name}
+                        {t.country && (
+                          <>
+                            <span>{` · ${t.country}`}</span>
+                            <span className="ml-1" title={`Drapeau du ${t.country}`} aria-label={`Drapeau du ${t.country}`}>
+                              {COUNTRY_FLAGS[t.country] ?? '🌍'}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      {t.duration && (
+                        <div className="text-[11px] text-primary font-semibold sm:text-xs">
+                          Résultat en {t.duration}
+                        </div>
+                      )}
+                      {t.text && (
+                        <p className="mt-1.5 whitespace-pre-wrap break-words text-[13px] leading-5 text-muted-foreground sm:mt-2 sm:text-sm sm:leading-relaxed">
+                          {renderTestimonialText(t.text)}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Vidéo : cadre qui s'adapte au format, bords arrondis + effet 3D */}
+                    {t.mediaUrl && (
+                      <div className="mx-2 mb-0 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3">
+                        <PublicVideo
+                          url={t.mediaUrl}
+                          title={`Témoignage de ${t.name}`}
+                          className="rounded-xl"
+                        />
+                      </div>
+                    )}
+
+                    {/* ZAPPER */}
+                    <div
+                      className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner mt-auto"
+                      aria-label="Zapper vers la vidéo suivante"
+                    >
+                      <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
+                      <span>ZAPPER</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ===== 2. STATS BAR ===== */}
       <section className="py-6 border-y border-border/50 bg-muted/30">
