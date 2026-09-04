@@ -11,6 +11,7 @@ const pages: Record<string, { title: string; description: string; index?: boolea
   '/inscription': {
     title: 'Inscription | Biz Connect Academy',
     description: "Inscrivez-vous à Biz Connect Academy et accédez aux formations, au réseau business et aux opportunités d'affiliation de la communauté.",
+    index: false,
   },
   '/aide': {
     title: "Guide d'utilisation | Biz Connect Academy",
