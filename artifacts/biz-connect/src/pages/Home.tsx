@@ -942,8 +942,8 @@ export default function Home() {
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.paymentMethodsTitle}</p>
           <InfiniteSlider speed={25} direction="left" gap={40}>
             {paymentMethods.map((pm) => (
-              <div key={pm.id} className="h-20 w-36 rounded-xl border bg-background p-3 shadow-[0_5px_0_rgba(15,23,42,0.15),0_10px_18px_rgba(15,23,42,0.12)]">
-                <img src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-full w-full object-contain" />
+              <div key={pm.id} className="h-20 w-36 overflow-hidden rounded-xl border bg-background shadow-[0_5px_0_rgba(15,23,42,0.15),0_10px_18px_rgba(15,23,42,0.12)]">
+                <img src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-full w-full object-cover" />
               </div>
             ))}
           </InfiniteSlider>
