@@ -11,6 +11,7 @@ import Aide from '@/pages/Aide';
 import Contact from '@/pages/Contact';
 import Suggestions from '@/pages/Suggestions';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
+import { SeoManager } from '@/components/SeoManager';
 import {
   Route,
   Switch,
@@ -58,6 +59,7 @@ function App() {
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <AnalyticsTracker />
+          <SeoManager />
           <Router />
         </WouterRouter>
         <Toaster />
