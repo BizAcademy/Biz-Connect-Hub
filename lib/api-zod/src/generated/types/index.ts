@@ -54,6 +54,8 @@ export * from './serviceTestimonialInput';
 export * from './serviceTestimonialInputMediaType';
 export * from './siteContent';
 export * from './siteContentInput';
+export * from './suggestion';
+export * from './suggestionInput';
 export * from './testimonial';
 export * from './testimonialInput';
 export * from './training';

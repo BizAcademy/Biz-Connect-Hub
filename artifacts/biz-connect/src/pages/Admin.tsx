@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { 
   useVerifyAdmin, useListLeads, useGetLeadsStats, useExportLeads, useGetAnalyticsDashboard,
-  useGetContent, useUpdateContent 
+  useGetContent, useUpdateContent, useListSuggestions
 } from '@workspace/api-client-react';
 import { 
   BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -79,6 +80,7 @@ const contentSchema = z.object({
   telegramLink: z.string(),
   supportPhone1: z.string(),
   supportPhone2: z.string(),
+  suggestionsIntroText: z.string().min(1),
 });
 
 // Champ d'upload d'image réutilisable pour le formulaire de contenu
@@ -164,6 +166,7 @@ export default function Admin() {
           <TabsList className="flex w-full flex-wrap h-auto gap-1 mb-8">
             <TabsTrigger value="leads">Leads</TabsTrigger>
             <TabsTrigger value="stats">Statistiques</TabsTrigger>
+            <TabsTrigger value="suggestions">Suggestions</TabsTrigger>
             <TabsTrigger value="content">Contenu</TabsTrigger>
             <TabsTrigger value="trainings">Formations</TabsTrigger>
             <TabsTrigger value="testimonials">Témoignages</TabsTrigger>
@@ -183,6 +186,10 @@ export default function Admin() {
 
           <TabsContent value="stats">
             <StatsTab pwd={password} />
+          </TabsContent>
+
+          <TabsContent value="suggestions">
+            <SuggestionsTab pwd={password} />
           </TabsContent>
 
           <TabsContent value="content">
@@ -422,6 +429,42 @@ function LeadsTab({ pwd }: { pwd: string }) {
   );
 }
 
+function SuggestionsTab({ pwd }: { pwd: string }) {
+  const { data: suggestions, isLoading, isError } = useListSuggestions({
+    query: { queryKey: ['suggestions', pwd] },
+    request: { headers: { 'x-admin-password': pwd } },
+  });
+
+  if (isLoading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
+  if (isError) return <Card><CardContent className="py-8 text-destructive">Impossible de charger les suggestions.</CardContent></Card>;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Boîte à suggestions</CardTitle>
+        <CardDescription>Messages envoyés par les membres de la communauté</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="rounded-md border border-border overflow-x-auto">
+          <Table>
+            <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Nom</TableHead><TableHead>Pays</TableHead><TableHead className="min-w-80">Message</TableHead></TableRow></TableHeader>
+            <TableBody>
+              {suggestions?.length ? suggestions.map((suggestion) => (
+                <TableRow key={suggestion.id}>
+                  <TableCell className="whitespace-nowrap">{format(new Date(suggestion.createdAt), 'dd MMM yyyy, HH:mm', { locale: fr })}</TableCell>
+                  <TableCell className="font-semibold">{suggestion.name}</TableCell>
+                  <TableCell>{suggestion.country}</TableCell>
+                  <TableCell className="whitespace-pre-wrap leading-relaxed">{suggestion.message}</TableCell>
+                </TableRow>
+              )) : <TableRow><TableCell colSpan={4} className="h-24 text-center text-muted-foreground">Aucune suggestion pour le moment.</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // --------------------------------------------------------
 // STATS TAB COMPONENT
 // --------------------------------------------------------
@@ -636,6 +679,16 @@ function ContentTab({ pwd }: { pwd: string }) {
               )} />
               <FormField control={form.control} name="paymentMethodsTitle" render={({ field }) => (
                 <FormItem><FormLabel>Moyens de paiement</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
+              )} />
+            </div>
+
+            <div className="grid gap-6 p-6 rounded-xl border border-border bg-muted/10">
+              <div>
+                <h3 className="font-bold text-lg mb-2">Boîte à suggestions</h3>
+                <p className="text-sm text-muted-foreground">Modifiez le texte présenté aux visiteurs sur la page des suggestions.</p>
+              </div>
+              <FormField control={form.control} name="suggestionsIntroText" render={({ field }) => (
+                <FormItem><FormLabel>Texte d'introduction</FormLabel><FormControl><Textarea {...field} rows={5} /></FormControl><FormMessage /></FormItem>
               )} />
             </div>
 

@@ -52,5 +52,6 @@ export interface SiteContent {
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
+  suggestionsIntroText: string;
   updatedAt: string;
 }

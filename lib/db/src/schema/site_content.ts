@@ -48,6 +48,7 @@ export const siteContentTable = pgTable("site_content", {
   telegramLink: text("telegram_link").notNull().default(""),
   supportPhone1: text("support_phone1").notNull().default(""),
   supportPhone2: text("support_phone2").notNull().default(""),
+  suggestionsIntroText: text("suggestions_intro_text").notNull().default("Faite nous parvenir vos suggestions, dans cette espace, vous pouvez nous faire parvenir vos suggestions afin que nous puissions résoudre efficacement certains problème que vous rencontrez et ensemble nous ferons évoluer notre communauté"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 

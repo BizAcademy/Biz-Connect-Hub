@@ -52,6 +52,7 @@ function formatContent(c: typeof siteContentTable.$inferSelect) {
     telegramLink: c.telegramLink,
     supportPhone1: c.supportPhone1,
     supportPhone2: c.supportPhone2,
+    suggestionsIntroText: c.suggestionsIntroText,
     updatedAt: c.updatedAt.toISOString(),
   };
 }

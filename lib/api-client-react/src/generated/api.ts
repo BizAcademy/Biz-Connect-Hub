@@ -57,6 +57,8 @@ import type {
   ServiceTestimonialInput,
   SiteContent,
   SiteContentInput,
+  Suggestion,
+  SuggestionInput,
   Testimonial,
   TestimonialInput,
   Training,
@@ -306,6 +308,154 @@ export function useListLeads<TData = Awaited<ReturnType<typeof listLeads>>, TErr
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListLeadsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateSuggestionUrl = () => {
+
+
+
+
+  return `/api/suggestions`
+}
+
+/**
+ * @summary Submit a community suggestion
+ */
+export const createSuggestion = async (suggestionInput: SuggestionInput, options?: Parameters<typeof customFetch>[1]): Promise<Suggestion> => {
+
+  return customFetch<Suggestion>(getCreateSuggestionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(suggestionInput)
+  }
+);}
+
+
+
+
+
+export const getCreateSuggestionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSuggestion>>, TError,{data: BodyType<SuggestionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createSuggestion>>, TError,{data: BodyType<SuggestionInput>}, TContext> => {
+
+const mutationKey = ['createSuggestion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSuggestion>>, {data: BodyType<SuggestionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createSuggestion(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateSuggestionMutationResult = NonNullable<Awaited<ReturnType<typeof createSuggestion>>>
+    export type CreateSuggestionMutationBody = BodyType<SuggestionInput>
+    export type CreateSuggestionMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Submit a community suggestion
+ */
+export const useCreateSuggestion = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSuggestion>>, TError,{data: BodyType<SuggestionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createSuggestion>>,
+        TError,
+        {data: BodyType<SuggestionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateSuggestionMutationOptions(options));
+    }
+
+export const getListSuggestionsUrl = () => {
+
+
+
+
+  return `/api/suggestions`
+}
+
+/**
+ * @summary List suggestions (admin only)
+ */
+export const listSuggestions = async ( options?: Parameters<typeof customFetch>[1]): Promise<Suggestion[]> => {
+
+  return customFetch<Suggestion[]>(getListSuggestionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSuggestionsQueryKey = () => {
+    return [
+    `/api/suggestions`
+    ] as const;
+    }
+
+
+export const getListSuggestionsQueryOptions = <TData = Awaited<ReturnType<typeof listSuggestions>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSuggestions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSuggestionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSuggestions>>> = ({ signal }) => listSuggestions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSuggestions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSuggestionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSuggestions>>>
+export type ListSuggestionsQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary List suggestions (admin only)
+ */
+
+export function useListSuggestions<TData = Awaited<ReturnType<typeof listSuggestions>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSuggestions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSuggestionsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

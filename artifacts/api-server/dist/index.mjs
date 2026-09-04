@@ -20700,27 +20700,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router11;
+    module.exports = Router12;
     module.exports.Route = Route;
-    function Router11(options) {
-      if (!(this instanceof Router11)) {
-        return new Router11(options);
+    function Router12(options) {
+      if (!(this instanceof Router12)) {
+        return new Router12(options);
       }
       const opts = options || {};
-      function router11(req, res, next) {
-        router11.handle(req, res, next);
+      function router12(req, res, next) {
+        router12.handle(req, res, next);
       }
-      Object.setPrototypeOf(router11, this);
-      router11.caseSensitive = opts.caseSensitive;
-      router11.mergeParams = opts.mergeParams;
-      router11.params = {};
-      router11.strict = opts.strict;
-      router11.stack = [];
-      return router11;
+      Object.setPrototypeOf(router12, this);
+      router12.caseSensitive = opts.caseSensitive;
+      router12.mergeParams = opts.mergeParams;
+      router12.params = {};
+      router12.strict = opts.strict;
+      router12.stack = [];
+      return router12;
     }
-    Router11.prototype = function() {
+    Router12.prototype = function() {
     };
-    Router11.prototype.param = function param(name, fn) {
+    Router12.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20740,7 +20740,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router11.prototype.handle = function handle(req, res, callback) {
+    Router12.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20867,7 +20867,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router11.prototype.use = function use(handler) {
+    Router12.prototype.use = function use(handler) {
       let offset = 0;
       let path2 = "/";
       if (typeof handler !== "function") {
@@ -20900,7 +20900,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router11.prototype.route = function route(path2) {
+    Router12.prototype.route = function route(path2) {
       const route2 = new Route(path2);
       const layer = new Layer(path2, {
         sensitive: this.caseSensitive,
@@ -20915,7 +20915,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router11.prototype[method] = function(path2) {
+      Router12.prototype[method] = function(path2) {
         const route = this.route(path2);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21098,13 +21098,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router11 = require_router();
+    var Router12 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router11 = null;
+      var router12 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21113,13 +21113,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router11 === null) {
-            router11 = new Router11({
+          if (router12 === null) {
+            router12 = new Router12({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router11;
+          return router12;
         }
       });
     };
@@ -21190,15 +21190,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router11 = this.router;
+      var router12 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router11.use(path2, fn2);
+          return router12.use(path2, fn2);
         }
         debug(".use app under %s", path2);
         fn2.mountpath = path2;
         fn2.parent = this;
-        router11.use(path2, function mounted_app(req, res, next) {
+        router12.use(path2, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23783,7 +23783,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router11 = require_router();
+    var Router12 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23805,8 +23805,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router11.Route;
-    exports.Router = Router11;
+    exports.Route = Router12.Route;
+    exports.Router = Router12;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -33815,14 +33815,14 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express11 = __toESM(require_express2(), 1);
+var import_express12 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 // src/routes/index.ts
-var import_express10 = __toESM(require_express2(), 1);
+var import_express11 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -37740,6 +37740,35 @@ var ListLeadsResponseItem = objectType({
   "createdAt": stringType()
 });
 var ListLeadsResponse = arrayType(ListLeadsResponseItem);
+var createSuggestionBodyNameMin = 2;
+var createSuggestionBodyNameMax = 120;
+var createSuggestionBodyCountryMin = 2;
+var createSuggestionBodyCountryMax = 120;
+var createSuggestionBodyMessageMin = 10;
+var createSuggestionBodyMessageMax = 5e3;
+var CreateSuggestionBody = objectType({
+  "name": stringType().min(createSuggestionBodyNameMin).max(createSuggestionBodyNameMax),
+  "country": stringType().min(createSuggestionBodyCountryMin).max(createSuggestionBodyCountryMax),
+  "message": stringType().min(createSuggestionBodyMessageMin).max(createSuggestionBodyMessageMax)
+});
+var CreateSuggestionResponse = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "country": stringType(),
+  "message": stringType(),
+  "createdAt": coerce.date()
+});
+var ListSuggestionsHeader = objectType({
+  "x-admin-password": stringType()
+});
+var ListSuggestionsResponseItem = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "country": stringType(),
+  "message": stringType(),
+  "createdAt": coerce.date()
+});
+var ListSuggestionsResponse = arrayType(ListSuggestionsResponseItem);
 var ExportLeadsHeader = objectType({
   "x-admin-password": stringType()
 });
@@ -37806,6 +37835,7 @@ var GetContentResponse = objectType({
   "telegramLink": stringType().optional(),
   "supportPhone1": stringType().optional(),
   "supportPhone2": stringType().optional(),
+  "suggestionsIntroText": stringType(),
   "updatedAt": stringType()
 });
 var UpdateContentHeader = objectType({
@@ -37855,7 +37885,8 @@ var UpdateContentBody = objectType({
   "gainsSecondaryImageUrl": stringType().optional(),
   "telegramLink": stringType().optional(),
   "supportPhone1": stringType().optional(),
-  "supportPhone2": stringType().optional()
+  "supportPhone2": stringType().optional(),
+  "suggestionsIntroText": stringType().optional()
 });
 var UpdateContentResponse = objectType({
   "id": numberType(),
@@ -37903,6 +37934,7 @@ var UpdateContentResponse = objectType({
   "telegramLink": stringType().optional(),
   "supportPhone1": stringType().optional(),
   "supportPhone2": stringType().optional(),
+  "suggestionsIntroText": stringType(),
   "updatedAt": stringType()
 });
 var GetNotificationsResponseItem = objectType({
@@ -45717,6 +45749,7 @@ __export(schema_exports, {
   insertServiceSchema: () => insertServiceSchema,
   insertServiceTestimonialSchema: () => insertServiceTestimonialSchema,
   insertSiteContentSchema: () => insertSiteContentSchema,
+  insertSuggestionSchema: () => insertSuggestionSchema,
   insertTestimonialSchema: () => insertTestimonialSchema,
   insertTrainingSchema: () => insertTrainingSchema,
   leadsTable: () => leadsTable,
@@ -45728,6 +45761,7 @@ __export(schema_exports, {
   serviceTestimonialsTable: () => serviceTestimonialsTable,
   servicesTable: () => servicesTable,
   siteContentTable: () => siteContentTable,
+  suggestionsTable: () => suggestionsTable,
   testimonialsTable: () => testimonialsTable,
   trainingsTable: () => trainingsTable,
   visitorEventsTable: () => visitorEventsTable
@@ -57176,6 +57210,7 @@ var siteContentTable = pgTable("site_content", {
   telegramLink: text("telegram_link").notNull().default(""),
   supportPhone1: text("support_phone1").notNull().default(""),
   supportPhone2: text("support_phone2").notNull().default(""),
+  suggestionsIntroText: text("suggestions_intro_text").notNull().default("Faite nous parvenir vos suggestions, dans cette espace, vous pouvez nous faire parvenir vos suggestions afin que nous puissions r\xE9soudre efficacement certains probl\xE8me que vous rencontrez et ensemble nous ferons \xE9voluer notre communaut\xE9"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => /* @__PURE__ */ new Date())
 });
 var insertSiteContentSchema = createInsertSchema(siteContentTable).omit({ id: true, updatedAt: true });
@@ -57329,6 +57364,16 @@ var visitorEventsTable = pgTable(
     index("visitor_events_session_id_idx").on(table.sessionId)
   ]
 );
+
+// ../../lib/db/src/schema/suggestions.ts
+var suggestionsTable = pgTable("suggestions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  country: text("country").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var insertSuggestionSchema = createInsertSchema(suggestionsTable).omit({ id: true, createdAt: true });
 
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
@@ -57519,6 +57564,7 @@ function formatContent(c) {
     telegramLink: c.telegramLink,
     supportPhone1: c.supportPhone1,
     supportPhone2: c.supportPhone2,
+    suggestionsIntroText: c.suggestionsIntroText,
     updatedAt: c.updatedAt.toISOString()
   };
 }
@@ -58684,18 +58730,46 @@ router9.get("/analytics/dashboard", async (req, res) => {
 });
 var analytics_default = router9;
 
-// src/routes/index.ts
+// src/routes/suggestions.ts
+var import_express10 = __toESM(require_express2(), 1);
 var router10 = (0, import_express10.Router)();
-router10.use(health_default);
-router10.use(leads_default);
-router10.use(admin_default);
-router10.use(content_default);
-router10.use(notifications_default);
-router10.use(siteItems_default);
-router10.use(media_default);
-router10.use(migrate_default);
-router10.use(analytics_default);
-var routes_default = router10;
+router10.post("/suggestions", async (req, res) => {
+  const parsed = CreateSuggestionBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [suggestion] = await db.insert(suggestionsTable).values(parsed.data).returning();
+  req.log.info({ suggestionId: suggestion.id }, "New suggestion created");
+  res.status(201).json({ ...suggestion, createdAt: suggestion.createdAt.toISOString() });
+});
+router10.get("/suggestions", async (req, res) => {
+  const header = ListSuggestionsHeader.safeParse(req.headers);
+  if (!header.success || !checkAdminPassword(header.data["x-admin-password"])) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const suggestions = await db.select().from(suggestionsTable).orderBy(desc(suggestionsTable.createdAt));
+  res.json(suggestions.map((suggestion) => ({
+    ...suggestion,
+    createdAt: suggestion.createdAt.toISOString()
+  })));
+});
+var suggestions_default = router10;
+
+// src/routes/index.ts
+var router11 = (0, import_express11.Router)();
+router11.use(health_default);
+router11.use(leads_default);
+router11.use(admin_default);
+router11.use(content_default);
+router11.use(notifications_default);
+router11.use(siteItems_default);
+router11.use(media_default);
+router11.use(migrate_default);
+router11.use(analytics_default);
+router11.use(suggestions_default);
+var routes_default = router11;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -58716,7 +58790,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express11.default)();
+var app = (0, import_express12.default)();
 app.use(
   (0, import_pino_http.default)({
     logger,
@@ -58737,15 +58811,15 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express11.default.json());
-app.use(import_express11.default.urlencoded({ extended: true }));
+app.use(import_express12.default.json());
+app.use(import_express12.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 if (process.env.NODE_ENV === "production") {
   const publicDir = path.resolve(
     path.dirname(fileURLToPath(import.meta.url)),
     "public"
   );
-  app.use(import_express11.default.static(publicDir));
+  app.use(import_express12.default.static(publicDir));
   app.get(/^\/(?!api(\/|$)).*/, (_req, res) => {
     res.sendFile(path.join(publicDir, "index.html"));
   });

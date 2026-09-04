@@ -9,6 +9,7 @@ import Inscription from '@/pages/Inscription';
 import Admin from '@/pages/Admin';
 import Aide from '@/pages/Aide';
 import Contact from '@/pages/Contact';
+import Suggestions from '@/pages/Suggestions';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import {
   Route,
@@ -28,6 +29,7 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/aide" component={Aide} />
         <Route path="/contact" component={Contact} />
+        <Route path="/suggestions" component={Suggestions} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

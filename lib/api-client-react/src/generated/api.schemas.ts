@@ -127,6 +127,32 @@ export interface Lead {
   createdAt: string;
 }
 
+export interface SuggestionInput {
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  country: string;
+  /**
+     * @minLength 10
+     * @maxLength 5000
+     */
+  message: string;
+}
+
+export interface Suggestion {
+  id: number;
+  name: string;
+  country: string;
+  message: string;
+  createdAt: string;
+}
+
 export interface LeadStatDay {
   date: string;
   count: number;
@@ -191,6 +217,7 @@ export interface SiteContent {
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
+  suggestionsIntroText: string;
   updatedAt: string;
 }
 
@@ -239,6 +266,7 @@ export interface SiteContentInput {
   telegramLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
+  suggestionsIntroText?: string;
 }
 
 export interface ServiceTestimonial {

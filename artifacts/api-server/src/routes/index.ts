@@ -8,6 +8,7 @@ import siteItemsRouter from "./siteItems";
 import mediaRouter from "./media";
 import migrateRouter from "./migrate";
 import analyticsRouter from "./analytics";
+import suggestionsRouter from "./suggestions";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(siteItemsRouter);
 router.use(mediaRouter);
 router.use(migrateRouter);
 router.use(analyticsRouter);
+router.use(suggestionsRouter);
 
 export default router;

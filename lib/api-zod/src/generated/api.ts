@@ -58,6 +58,52 @@ export const ListLeadsResponse = zod.array(ListLeadsResponseItem)
 
 
 /**
+ * @summary Submit a community suggestion
+ */
+export const createSuggestionBodyNameMin = 2;
+export const createSuggestionBodyNameMax = 120;
+
+export const createSuggestionBodyCountryMin = 2;
+export const createSuggestionBodyCountryMax = 120;
+
+export const createSuggestionBodyMessageMin = 10;
+export const createSuggestionBodyMessageMax = 5000;
+
+
+
+export const CreateSuggestionBody = zod.object({
+  "name": zod.string().min(createSuggestionBodyNameMin).max(createSuggestionBodyNameMax),
+  "country": zod.string().min(createSuggestionBodyCountryMin).max(createSuggestionBodyCountryMax),
+  "message": zod.string().min(createSuggestionBodyMessageMin).max(createSuggestionBodyMessageMax)
+})
+
+export const CreateSuggestionResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "message": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List suggestions (admin only)
+ */
+export const ListSuggestionsHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const ListSuggestionsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "country": zod.string(),
+  "message": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListSuggestionsResponse = zod.array(ListSuggestionsResponseItem)
+
+
+/**
  * @summary Export leads as CSV (admin only)
  */
 export const ExportLeadsHeader = zod.object({
@@ -144,6 +190,7 @@ export const GetContentResponse = zod.object({
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
+  "suggestionsIntroText": zod.string(),
   "updatedAt": zod.string()
 })
 
@@ -199,7 +246,8 @@ export const UpdateContentBody = zod.object({
   "gainsSecondaryImageUrl": zod.string().optional(),
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
-  "supportPhone2": zod.string().optional()
+  "supportPhone2": zod.string().optional(),
+  "suggestionsIntroText": zod.string().optional()
 })
 
 export const UpdateContentResponse = zod.object({
@@ -248,6 +296,7 @@ export const UpdateContentResponse = zod.object({
   "telegramLink": zod.string().optional(),
   "supportPhone1": zod.string().optional(),
   "supportPhone2": zod.string().optional(),
+  "suggestionsIntroText": zod.string(),
   "updatedAt": zod.string()
 })
 
