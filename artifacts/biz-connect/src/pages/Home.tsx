@@ -367,11 +367,11 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">Glisse pour passer d'une vidéo à l'autre</p>
               </div>
 
-              <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-3" style={{ scrollbarWidth: 'none' }}>
+              <div className="flex items-start gap-5 overflow-x-auto snap-x snap-mandatory pb-3" style={{ scrollbarWidth: 'none' }}>
                 {vidTestimonials.map((t) => (
                   <div
                     key={t.id}
-                    className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg flex flex-col shrink-0 w-[22rem] snap-center sm:w-[32rem]"
+                    className="h-fit self-start bg-card border border-border rounded-2xl overflow-hidden shadow-[0_8px_0_rgba(30,64,175,0.14),0_18px_30px_rgba(15,23,42,0.18)] flex flex-col shrink-0 w-[calc(100vw-3rem)] max-w-[22rem] snap-center sm:max-w-none sm:w-[32rem]"
                   >
                     {/* Infos */}
                     <div className="p-3 pb-2 sm:p-4 sm:pb-3">
@@ -400,7 +400,7 @@ export default function Home() {
 
                     {/* Vidéo : cadre qui s'adapte au format, bords arrondis + effet 3D */}
                     {t.mediaUrl && (
-                      <div className="mx-2 mb-0 rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3">
+                      <div className="mx-2 overflow-hidden rounded-xl border border-border/60 bg-black p-1 sm:mx-3">
                         <PublicVideo
                           url={t.mediaUrl}
                           title={`Témoignage de ${t.name}`}
@@ -411,7 +411,7 @@ export default function Home() {
 
                     {/* ZAPPER */}
                     <div
-                      className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner mt-auto"
+                      className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
                       aria-label="Zapper vers la vidéo suivante"
                     >
                       <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />

@@ -112,14 +112,14 @@ export function TestimonialsAutoSlider({ testimonials }: { testimonials: Testimo
       {/* Track animé */}
       <div
         ref={trackRef}
-        className="flex will-change-transform"
+        className="flex items-start will-change-transform"
         style={{ gap: '1rem', width: 'max-content' }}
       >
         {doubled.map((t, idx) => (
           <div
             key={`img-${t.id}-${idx}`}
-            className="bg-card border border-border rounded-2xl overflow-hidden shadow-md flex flex-col shrink-0"
-            style={{ width: '20rem' }}
+            className="h-fit self-start bg-card border border-border rounded-2xl overflow-hidden shadow-[0_8px_0_rgba(30,64,175,0.14),0_18px_30px_rgba(15,23,42,0.18)] flex flex-col shrink-0"
+            style={{ width: 'min(20rem, calc(100vw - 3rem))' }}
             draggable={false}
           >
             {/* En-tête */}
@@ -149,11 +149,11 @@ export function TestimonialsAutoSlider({ testimonials }: { testimonials: Testimo
 
             {/* Capture d'écran */}
             {t.mediaUrl && (
-              <div className="mx-2 mb-3 flex h-72 items-center justify-center rounded-2xl border-2 border-white bg-white p-1 shadow-[0_8px_0_rgba(30,64,175,0.18),0_18px_30px_rgba(15,23,42,0.22)] sm:mx-3 sm:mb-4">
+              <div className="mx-2 mb-3 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-1 sm:mx-3 sm:mb-4">
                 <img
                   src={t.mediaUrl}
                   alt={`Témoignage de ${t.name}`}
-                  className="block h-full w-full rounded-xl bg-muted object-contain"
+                  className="block h-auto max-h-[32rem] w-full rounded-lg bg-white object-contain"
                   draggable={false}
                 />
               </div>
