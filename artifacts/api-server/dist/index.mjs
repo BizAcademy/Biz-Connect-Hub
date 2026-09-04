@@ -58819,6 +58819,10 @@ if (process.env.NODE_ENV === "production") {
     path.dirname(fileURLToPath(import.meta.url)),
     "public"
   );
+  app.use("/admin", (_req, res, next) => {
+    res.setHeader("X-Robots-Tag", "noindex, nofollow, noarchive");
+    next();
+  });
   app.use(import_express12.default.static(publicDir));
   app.get(/^\/(?!api(\/|$)).*/, (_req, res) => {
     res.sendFile(path.join(publicDir, "index.html"));
