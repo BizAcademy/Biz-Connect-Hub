@@ -652,6 +652,14 @@ export default function Home() {
             Configure tes ambassadeurs depuis le tableau de bord administrateur (onglet « Ambassadeurs »).
           </p>
         )}
+        <div className="mt-8 px-6 text-center">
+          <Link
+            href="/suggestions"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 text-white font-bold text-sm rounded-xl hover:bg-green-700 transition-colors shadow-lg"
+          >
+            <MessageCircle size={17} /> Boîte à suggestions
+          </Link>
+        </div>
       </section>
 
       {/* ===== 7. GAINS PAR AFFILIATION ===== */}
