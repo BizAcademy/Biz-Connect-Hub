@@ -9,6 +9,7 @@ import Inscription from '@/pages/Inscription';
 import Admin from '@/pages/Admin';
 import Aide from '@/pages/Aide';
 import Contact from '@/pages/Contact';
+import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import {
   Route,
   Switch,
@@ -54,6 +55,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <AnalyticsTracker />
           <Router />
         </WouterRouter>
         <Toaster />

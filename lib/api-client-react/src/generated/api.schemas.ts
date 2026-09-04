@@ -13,6 +13,103 @@ export interface ErrorResponse {
   error: string;
 }
 
+export type AnalyticsEventInputEventType = typeof AnalyticsEventInputEventType[keyof typeof AnalyticsEventInputEventType];
+
+
+export const AnalyticsEventInputEventType = {
+  page_view: 'page_view',
+  page_leave: 'page_leave',
+  cta_click: 'cta_click',
+} as const;
+
+export type AnalyticsEventInputMetadata = { [key: string]: unknown };
+
+export interface AnalyticsEventInput {
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  visitorId: string;
+  /**
+     * @minLength 1
+     * @maxLength 128
+     */
+  sessionId: string;
+  eventType: AnalyticsEventInputEventType;
+  /** @maxLength 256 */
+  eventName?: string;
+  /** @maxLength 2048 */
+  path?: string;
+  /**
+     * @minimum 0
+     * @maximum 86400
+     */
+  durationSeconds?: number;
+  metadata?: AnalyticsEventInputMetadata;
+}
+
+export interface AnalyticsEventAccepted {
+  accepted: boolean;
+}
+
+export interface AnalyticsSummary {
+  events: number;
+  visitors: number;
+  sessions: number;
+  pageViews: number;
+  ctaClicks: number;
+  averageDurationSeconds: number;
+}
+
+export interface AnalyticsTimelinePoint {
+  period: string;
+  country: string;
+  events: number;
+  visitors: number;
+  pageViews: number;
+  ctaClicks: number;
+}
+
+export interface AnalyticsCountry {
+  country: string;
+  events: number;
+  visitors: number;
+  pageViews: number;
+  ctaClicks: number;
+  averageDurationSeconds: number;
+}
+
+export interface AnalyticsTopPage {
+  path: string;
+  views: number;
+  visitors: number;
+}
+
+export interface AnalyticsCtaClick {
+  eventName: string;
+  country: string;
+  clicks: number;
+}
+
+export interface AnalyticsRecentVisitor {
+  visitorId: string;
+  sessionId: string;
+  country: string;
+  path: string;
+  eventType: string;
+  durationSeconds: number;
+  createdAt: string;
+}
+
+export interface AnalyticsDashboard {
+  summary: AnalyticsSummary;
+  timeline: AnalyticsTimelinePoint[];
+  countries: AnalyticsCountry[];
+  topPages: AnalyticsTopPage[];
+  ctaClicks: AnalyticsCtaClick[];
+  recentVisitors: AnalyticsRecentVisitor[];
+}
+
 export interface LeadInput {
   /** @minLength 1 */
   name: string;
@@ -386,4 +483,20 @@ export interface Notification {
   action: string;
   time: string;
 }
+
+export type GetAnalyticsDashboardParams = {
+from?: string;
+to?: string;
+granularity?: GetAnalyticsDashboardGranularity;
+};
+
+export type GetAnalyticsDashboardGranularity = typeof GetAnalyticsDashboardGranularity[keyof typeof GetAnalyticsDashboardGranularity];
+
+
+export const GetAnalyticsDashboardGranularity = {
+  day: 'day',
+  week: 'week',
+  month: 'month',
+  year: 'year',
+} as const;
 

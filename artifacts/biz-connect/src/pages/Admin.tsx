@@ -5,11 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { 
-  useVerifyAdmin, useListLeads, useGetLeadsStats, useExportLeads,
+  useVerifyAdmin, useListLeads, useGetLeadsStats, useExportLeads, useGetAnalyticsDashboard,
   useGetContent, useUpdateContent 
 } from '@workspace/api-client-react';
 import { 
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid 
+  BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
 } from 'recharts';
 import { Download, Loader2, Save, LogOut } from 'lucide-react';
 
@@ -297,6 +297,52 @@ function AdminLogin({ onLogin }: { onLogin: (pwd: string) => void }) {
 // --------------------------------------------------------
 // LEADS TAB COMPONENT
 // --------------------------------------------------------
+function AnalyticsPanel({ pwd, compact = false }: { pwd: string; compact?: boolean }) {
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const [from, setFrom] = useState(format(new Date(Date.now() - 6 * 86400000), 'yyyy-MM-dd'));
+  const [to, setTo] = useState(today);
+  const dashboard = useGetAnalyticsDashboard({ from, to, granularity: 'day' }, {
+    query: { queryKey: ['analytics', pwd, from, to] },
+    request: { headers: { 'x-admin-password': pwd } },
+  });
+  const preset = (days: number) => {
+    setFrom(format(new Date(Date.now() - days * 86400000), 'yyyy-MM-dd'));
+    setTo(today);
+  };
+  if (dashboard.isLoading) return <div className="py-6 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-primary" /></div>;
+  if (dashboard.isError) return <Card><CardContent className="py-6 text-destructive">Impossible de charger les données de fréquentation.</CardContent></Card>;
+  const data = dashboard.data;
+  if (!data) return null;
+  const countries = [...new Set(data.timeline.map(item => item.country))].slice(0, 6);
+  const timeline = [...new Set(data.timeline.map(item => item.period))].map(period => {
+    const row: Record<string, string | number> = { period: format(new Date(period), 'dd MMM', { locale: fr }) };
+    data.timeline.filter(x => x.period === period).forEach(x => { row[x.country] = x.pageViews; });
+    return row;
+  });
+  return <div className="space-y-4">
+    <div className="flex flex-wrap gap-2 items-end">
+      <Button size="sm" variant="outline" onClick={() => preset(0)}>Aujourd'hui</Button>
+      <Button size="sm" variant="outline" onClick={() => preset(6)}>Semaine</Button>
+      <Button size="sm" variant="outline" onClick={() => preset(29)}>Mois</Button>
+      <Button size="sm" variant="outline" onClick={() => preset(364)}>Année</Button>
+      <label className="text-sm ml-2">Du <Input className="inline-flex ml-1 w-36" type="date" value={from} onChange={e => setFrom(e.target.value)} /></label>
+      <label className="text-sm">Au <Input className="inline-flex ml-1 w-36" type="date" value={to} onChange={e => setTo(e.target.value)} /></label>
+    </div>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {[['Visiteurs uniques', data.summary.visitors], ['Pages vues', data.summary.pageViews], ['Durée moyenne', `${data.summary.averageDurationSeconds}s`], ['Clics CTA', data.summary.ctaClicks]].map(([label, value]) =>
+        <Card key={String(label)}><CardContent className="pt-5"><p className="text-xs text-muted-foreground">{label}</p><p className="text-2xl font-black text-primary">{value}</p></CardContent></Card>)}
+    </div>
+    {!compact && <div className="grid gap-4 lg:grid-cols-3">
+      <Card className="lg:col-span-2"><CardHeader><CardTitle>Pages vues par pays</CardTitle></CardHeader><CardContent className="h-72">
+        {timeline.length ? <ResponsiveContainer width="100%" height="100%"><LineChart data={timeline}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="period" /><YAxis allowDecimals={false} /><Tooltip /><Legend />{countries.map((country, index) => <Line key={country} type="monotone" dataKey={country} stroke={['#16a34a','#2563eb','#f59e0b','#dc2626','#7c3aed','#0891b2'][index]} />)}</LineChart></ResponsiveContainer> : <p className="text-center pt-20 text-muted-foreground">Aucune donnée sur cette période.</p>}
+      </CardContent></Card>
+      <Card><CardHeader><CardTitle>Classement pays</CardTitle></CardHeader><CardContent className="space-y-2">{data.countries.length ? data.countries.map(c => <div key={c.country} className="flex justify-between text-sm"><span>{c.country || 'Inconnu'}</span><b>{c.visitors} visiteurs</b></div>) : <p className="text-muted-foreground text-sm">Aucune donnée.</p>}</CardContent></Card>
+    </div>}
+    {compact && <div className="grid gap-4 lg:grid-cols-2"><Card><CardHeader><CardTitle>Visiteurs récents</CardTitle></CardHeader><CardContent className="overflow-x-auto"><Table><TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Pays</TableHead><TableHead>Page</TableHead><TableHead>Durée</TableHead></TableRow></TableHeader><TableBody>{data.recentVisitors.length ? data.recentVisitors.map(v => <TableRow key={`${v.visitorId}-${v.createdAt}`}><TableCell>{format(new Date(v.createdAt), 'dd/MM HH:mm')}</TableCell><TableCell>{v.country || 'Inconnu'}</TableCell><TableCell>{v.path}</TableCell><TableCell>{v.durationSeconds}s</TableCell></TableRow>) : <TableRow><TableCell colSpan={4} className="text-center">Aucun visiteur.</TableCell></TableRow>}</TableBody></Table></CardContent></Card><Card><CardHeader><CardTitle>Pages les plus vues</CardTitle></CardHeader><CardContent>{data.topPages.length ? data.topPages.map(p => <div key={p.path} className="flex justify-between py-2 border-b text-sm"><span>{p.path}</span><b>{p.views}</b></div>) : <p className="text-muted-foreground text-sm">Aucune donnée.</p>}</CardContent></Card></div>}
+    {!compact && <Card><CardHeader><CardTitle>Clics sur les CTA</CardTitle></CardHeader><CardContent className="overflow-x-auto"><Table><TableHeader><TableRow><TableHead>Bouton</TableHead><TableHead>Pays</TableHead><TableHead>Clics</TableHead></TableRow></TableHeader><TableBody>{data.ctaClicks.length ? data.ctaClicks.map(c => <TableRow key={`${c.eventName}-${c.country}`}><TableCell>{c.eventName}</TableCell><TableCell>{c.country || 'Inconnu'}</TableCell><TableCell>{c.clicks}</TableCell></TableRow>) : <TableRow><TableCell colSpan={3} className="text-center">Aucun clic.</TableCell></TableRow>}</TableBody></Table></CardContent></Card>}
+  </div>;
+}
+
 function LeadsTab({ pwd }: { pwd: string }) {
   const { data: leads, isLoading } = useListLeads({ 
     query: { queryKey: ["leads", pwd] },
@@ -324,6 +370,8 @@ function LeadsTab({ pwd }: { pwd: string }) {
   if (isLoading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" /></div>;
 
   return (
+    <div className="space-y-6">
+      <AnalyticsPanel pwd={pwd} compact />
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
@@ -370,6 +418,7 @@ function LeadsTab({ pwd }: { pwd: string }) {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
 
@@ -390,6 +439,10 @@ function StatsTab({ pwd }: { pwd: string }) {
   })) || [];
 
   return (
+    <div className="space-y-8">
+      <AnalyticsPanel pwd={pwd} />
+      <div>
+        <h2 className="text-xl font-bold mb-4">Leads (secondaire)</h2>
     <div className="grid gap-6 md:grid-cols-3">
       <Card className="md:col-span-1">
         <CardHeader>
@@ -427,6 +480,8 @@ function StatsTab({ pwd }: { pwd: string }) {
           )}
         </CardContent>
       </Card>
+    </div>
+      </div>
     </div>
   );
 }

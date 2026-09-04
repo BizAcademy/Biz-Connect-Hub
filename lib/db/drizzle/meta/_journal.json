@@ -8,6 +8,13 @@
       "when": 1787259600000,
       "tag": "0000_editable_homepage_titles",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787259600001,
+      "tag": "0001_visitor_events",
+      "breakpoints": true
     }
   ]
 }

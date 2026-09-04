@@ -7,6 +7,7 @@ import notificationsRouter from "./notifications";
 import siteItemsRouter from "./siteItems";
 import mediaRouter from "./media";
 import migrateRouter from "./migrate";
+import analyticsRouter from "./analytics";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(notificationsRouter);
 router.use(siteItemsRouter);
 router.use(mediaRouter);
 router.use(migrateRouter);
+router.use(analyticsRouter);
 
 export default router;

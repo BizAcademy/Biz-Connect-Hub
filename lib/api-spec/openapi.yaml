@@ -22,6 +22,8 @@ tags:
     description: Configurable site items (trainings, testimonials, portfolio, partners, payment methods)
   - name: storage
     description: Object storage uploads
+  - name: analytics
+    description: Privacy-conscious first-party visitor analytics
 
 paths:
   /healthz:
@@ -1524,6 +1526,85 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /analytics/events:
+    post:
+      operationId: createAnalyticsEvent
+      tags: [analytics]
+      summary: Record a first-party analytics event
+      description: Country is derived by the server from trusted proxy headers and is never accepted from the request body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyticsEventInput"
+      responses:
+        "201":
+          description: Event recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsEventAccepted"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /analytics/dashboard:
+    get:
+      operationId: getAnalyticsDashboard
+      tags: [analytics]
+      summary: Get analytics dashboard (admin only)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: day
+      responses:
+        "200":
+          description: Aggregated analytics dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsDashboard"
+        "400":
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -1540,6 +1621,135 @@ components:
       properties:
         error:
           type: string
+
+    AnalyticsEventInput:
+      type: object
+      additionalProperties: false
+      required: [visitorId, sessionId, eventType]
+      properties:
+        visitorId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        sessionId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        eventType:
+          type: string
+          enum: [page_view, page_leave, cta_click]
+        eventName:
+          type: string
+          maxLength: 256
+          default: ""
+        path:
+          type: string
+          maxLength: 2048
+          default: "/"
+        durationSeconds:
+          type: number
+          minimum: 0
+          maximum: 86400
+          default: 0
+        metadata:
+          type: object
+          additionalProperties: true
+          default: {}
+
+    AnalyticsEventAccepted:
+      type: object
+      required: [accepted]
+      properties:
+        accepted:
+          type: boolean
+
+    AnalyticsSummary:
+      type: object
+      required: [events, visitors, sessions, pageViews, ctaClicks, averageDurationSeconds]
+      properties:
+        events: { type: number }
+        visitors: { type: number }
+        sessions: { type: number }
+        pageViews: { type: number }
+        ctaClicks: { type: number }
+        averageDurationSeconds: { type: number }
+
+    AnalyticsTimelinePoint:
+      type: object
+      required: [period, country, events, visitors, pageViews, ctaClicks]
+      properties:
+        period: { type: string }
+        country: { type: string }
+        events: { type: number }
+        visitors: { type: number }
+        pageViews: { type: number }
+        ctaClicks: { type: number }
+
+    AnalyticsCountry:
+      type: object
+      required: [country, events, visitors, pageViews, ctaClicks, averageDurationSeconds]
+      properties:
+        country: { type: string }
+        events: { type: number }
+        visitors: { type: number }
+        pageViews: { type: number }
+        ctaClicks: { type: number }
+        averageDurationSeconds: { type: number }
+
+    AnalyticsTopPage:
+      type: object
+      required: [path, views, visitors]
+      properties:
+        path: { type: string }
+        views: { type: number }
+        visitors: { type: number }
+
+    AnalyticsCtaClick:
+      type: object
+      required: [eventName, country, clicks]
+      properties:
+        eventName: { type: string }
+        country: { type: string }
+        clicks: { type: number }
+
+    AnalyticsRecentVisitor:
+      type: object
+      required: [visitorId, sessionId, country, path, eventType, durationSeconds, createdAt]
+      properties:
+        visitorId: { type: string }
+        sessionId: { type: string }
+        country: { type: string }
+        path: { type: string }
+        eventType: { type: string }
+        durationSeconds: { type: number }
+        createdAt: { type: string, format: date-time }
+
+    AnalyticsDashboard:
+      type: object
+      required: [summary, timeline, countries, topPages, ctaClicks, recentVisitors]
+      properties:
+        summary:
+          $ref: "#/components/schemas/AnalyticsSummary"
+        timeline:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsTimelinePoint"
+        countries:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsCountry"
+        topPages:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsTopPage"
+        ctaClicks:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsCtaClick"
+        recentVisitors:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalyticsRecentVisitor"
 
     LeadInput:
       type: object

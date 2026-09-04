@@ -1283,3 +1283,100 @@ export const RequestUploadUrlResponse = zod.object({
 })
 
 
+/**
+ * Country is derived by the server from trusted proxy headers and is never accepted from the request body.
+ * @summary Record a first-party analytics event
+ */
+export const createAnalyticsEventBodyVisitorIdMax = 128;
+
+export const createAnalyticsEventBodySessionIdMax = 128;
+
+export const createAnalyticsEventBodyEventNameDefault = ``;
+export const createAnalyticsEventBodyEventNameMax = 256;
+
+export const createAnalyticsEventBodyPathDefault = `/`;
+export const createAnalyticsEventBodyPathMax = 2048;
+
+export const createAnalyticsEventBodyDurationSecondsDefault = 0;
+export const createAnalyticsEventBodyDurationSecondsMin = 0;
+export const createAnalyticsEventBodyDurationSecondsMax = 86400;
+
+export const createAnalyticsEventBodyMetadataDefault = {};
+
+export const CreateAnalyticsEventBody = zod.object({
+  "visitorId": zod.string().min(1).max(createAnalyticsEventBodyVisitorIdMax),
+  "sessionId": zod.string().min(1).max(createAnalyticsEventBodySessionIdMax),
+  "eventType": zod.enum(['page_view', 'page_leave', 'cta_click']),
+  "eventName": zod.string().max(createAnalyticsEventBodyEventNameMax).default(createAnalyticsEventBodyEventNameDefault),
+  "path": zod.string().max(createAnalyticsEventBodyPathMax).default(createAnalyticsEventBodyPathDefault),
+  "durationSeconds": zod.number().min(createAnalyticsEventBodyDurationSecondsMin).max(createAnalyticsEventBodyDurationSecondsMax).default(createAnalyticsEventBodyDurationSecondsDefault),
+  "metadata": zod.record(zod.string(), zod.unknown()).default(createAnalyticsEventBodyMetadataDefault)
+})
+
+export const CreateAnalyticsEventResponse = zod.object({
+  "accepted": zod.boolean()
+})
+
+
+/**
+ * @summary Get analytics dashboard (admin only)
+ */
+export const getAnalyticsDashboardQueryGranularityDefault = `day`;
+
+export const GetAnalyticsDashboardQueryParams = zod.object({
+  "from": zod.date().optional(),
+  "to": zod.date().optional(),
+  "granularity": zod.enum(['day', 'week', 'month', 'year']).default(getAnalyticsDashboardQueryGranularityDefault)
+})
+
+export const GetAnalyticsDashboardHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const GetAnalyticsDashboardResponse = zod.object({
+  "summary": zod.object({
+  "events": zod.number(),
+  "visitors": zod.number(),
+  "sessions": zod.number(),
+  "pageViews": zod.number(),
+  "ctaClicks": zod.number(),
+  "averageDurationSeconds": zod.number()
+}),
+  "timeline": zod.array(zod.object({
+  "period": zod.string(),
+  "country": zod.string(),
+  "events": zod.number(),
+  "visitors": zod.number(),
+  "pageViews": zod.number(),
+  "ctaClicks": zod.number()
+})),
+  "countries": zod.array(zod.object({
+  "country": zod.string(),
+  "events": zod.number(),
+  "visitors": zod.number(),
+  "pageViews": zod.number(),
+  "ctaClicks": zod.number(),
+  "averageDurationSeconds": zod.number()
+})),
+  "topPages": zod.array(zod.object({
+  "path": zod.string(),
+  "views": zod.number(),
+  "visitors": zod.number()
+})),
+  "ctaClicks": zod.array(zod.object({
+  "eventName": zod.string(),
+  "country": zod.string(),
+  "clicks": zod.number()
+})),
+  "recentVisitors": zod.array(zod.object({
+  "visitorId": zod.string(),
+  "sessionId": zod.string(),
+  "country": zod.string(),
+  "path": zod.string(),
+  "eventType": zod.string(),
+  "durationSeconds": zod.number(),
+  "createdAt": zod.coerce.date()
+}))
+})
+
+

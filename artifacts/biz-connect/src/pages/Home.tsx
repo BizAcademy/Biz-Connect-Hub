@@ -17,6 +17,7 @@ import {
   MessageCircle, Star, Award, Zap, Phone
 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { trackCtaClick } from '@/lib/analytics';
 
 // Country → flag emoji map
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -80,11 +81,18 @@ function renderGainsSecondaryTitle(title: string) {
 }
 
 // CTA that supports external URLs (configured in admin) or internal routes
-function SignupLink({ href, className, children }: { href: string; className?: string; children: ReactNode }) {
+function SignupLink({ href, className, children, analyticsEventName, analyticsMetadata, onClick }: {
+  href: string; className?: string; children: ReactNode; analyticsEventName?: string;
+  analyticsMetadata?: Record<string, unknown>; onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+}) {
+  const handleClick: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
+    if (analyticsEventName) trackCtaClick(analyticsEventName, analyticsMetadata);
+    onClick?.(event);
+  };
   if (/^https?:\/\//i.test(href)) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>;
+    return <a href={href} target="_blank" rel="noopener noreferrer" className={className} onClick={handleClick}>{children}</a>;
   }
-  return <Link href={href} className={className}>{children}</Link>;
+  return <Link href={href} className={className} onClick={handleClick}>{children}</Link>;
 }
 
 export default function Home() {
@@ -158,6 +166,8 @@ export default function Home() {
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4">
                 <SignupLink
                   href={signupUrl}
+                  analyticsEventName="Rejoindre Maintenant"
+                  analyticsMetadata={{ location: 'hero' }}
                   className="btn-blink px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center justify-center gap-2 text-base"
                 >
                   {content.heroCtaText} <ArrowRight size={20} />
@@ -276,6 +286,8 @@ export default function Home() {
 
                 <SignupLink
                   href={signupUrl}
+                  analyticsEventName="Je m'inscris maintenant"
+                  analyticsMetadata={{ location: 'promo' }}
                   className="btn-blink-gold px-8 py-3.5 bg-[#f59e0b] hover:bg-[#d97706] text-white font-bold rounded-xl shadow-lg transition-colors w-full sm:w-auto text-center"
                 >
                   {content.promoCtaText || "Je m'inscris maintenant"}
@@ -343,7 +355,7 @@ export default function Home() {
           })()}
 
           <div className="text-center mt-10">
-            <SignupLink href={signupUrl} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
+            <SignupLink href={signupUrl} analyticsEventName="Je m'inscris maintenant" analyticsMetadata={{ location: 'résultats' }} className="btn-blink inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform text-base">
               Je m'inscris maintenant <ArrowRight size={18} />
             </SignupLink>
           </div>
@@ -743,7 +755,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <SignupLink href={signupUrl} className="btn-blink w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
+              <SignupLink href={signupUrl} analyticsEventName="Je m'inscris maintenant" analyticsMetadata={{ location: 'tarifs' }} className="btn-blink w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2">
                 Je m'inscris maintenant <ArrowRight size={16} />
               </SignupLink>
             </motion.div>
@@ -760,7 +772,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-3 text-green-600">{content.trainingsTitle}</h2>
               <p className="text-muted-foreground max-w-xl">Modules exclusifs pour accélérer ta croissance digitale et financière.</p>
             </div>
-            <SignupLink href={signupUrl} className="flex items-center gap-2 text-primary font-bold hover:underline shrink-0">
+            <SignupLink href={signupUrl} analyticsEventName="Voir tout formations" analyticsMetadata={{ location: 'formations' }} className="flex items-center gap-2 text-primary font-bold hover:underline shrink-0">
               Voir tout <ChevronRight size={16} />
             </SignupLink>
           </div>
@@ -792,6 +804,7 @@ export default function Home() {
                       href={course.linkUrl || signupUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={() => trackCtaClick('Accéder maintenant', { trainingTitle: course.title })}
                       className="mt-auto w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm"
                     >
                       Accéder maintenant <ArrowRight size={16} />
@@ -844,7 +857,7 @@ export default function Home() {
             Tu as juste besoin de <span className="font-black">{content.offerPrice}</span> pour créer ton compte
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <SignupLink href={signupUrl} className="btn-blink px-6 py-4 bg-amber-500 text-white font-black rounded-xl shadow-[0_6px_0_rgba(146,64,14,0.45),0_12px_24px_rgba(15,23,42,0.22)] hover:bg-amber-600 hover:scale-105 transition-all w-full sm:w-auto text-sm sm:text-base whitespace-normal break-words leading-snug text-center">
+            <SignupLink href={signupUrl} analyticsEventName="Aujourd'hui je prends la décision de transformer ma vie avec la BCA" analyticsMetadata={{ location: 'cta_final' }} className="btn-blink px-6 py-4 bg-amber-500 text-white font-black rounded-xl shadow-[0_6px_0_rgba(146,64,14,0.45),0_12px_24px_rgba(15,23,42,0.22)] hover:bg-amber-600 hover:scale-105 transition-all w-full sm:w-auto text-sm sm:text-base whitespace-normal break-words leading-snug text-center">
               Aujourd'hui je prends la décision de transformer ma vie avec la BCA
             </SignupLink>
             <Link href="/contact"
@@ -895,51 +908,26 @@ export default function Home() {
       </section>
 
       {/* ===== 16. PARTENAIRES — slider infini ===== */}
-      <section className="py-6 bg-background border-b border-border overflow-hidden">
+      {partners && partners.length > 0 && <section className="py-6 bg-background border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.partnersTitle}</p>
-        {partners && partners.length > 0 ? (
-          <InfiniteSlider speed={31.25} direction="left" gap={48}>
+        <InfiniteSlider speed={31.25} direction="left" gap={48}>
             {partners.map((p) => (
               <img key={p.id} src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
             ))}
           </InfiniteSlider>
-        ) : (
-        <InfiniteSlider speed={31.25} direction="left" gap={48}>
-          {["FUTURISTE", "EVÉNEMENT+", "WESTCOAST BIZ", "AFRICA INVEST", "DIGITAL HUB", "AFRIK MEDIA", "BIZ AFRICA", "CÔTE BUSINESS", "DAKAR STARTUP"].map((p, i) => (
-            <div key={i} className="text-lg font-black italic tracking-tighter text-muted-foreground/40 hover:text-muted-foreground transition-colors whitespace-nowrap cursor-default">
-              {p}
-            </div>
-          ))}
-        </InfiniteSlider>
-        )}
-      </section>
+      </section>}
 
       {/* ===== 17. PAIEMENTS — slider infini ===== */}
-      <section className="py-6 bg-muted/30 border-b border-border overflow-hidden">
+      {paymentMethods && paymentMethods.length > 0 && <section className="py-6 bg-muted/30 border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.paymentMethodsTitle}</p>
-        {paymentMethods && paymentMethods.length > 0 ? (
           <InfiniteSlider speed={25} direction="left" gap={40}>
             {paymentMethods.map((pm) => (
-              <img key={pm.id} src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-10 w-auto object-contain" />
+              <div key={pm.id} className="h-20 w-36 rounded-xl border bg-background p-3 shadow-[0_5px_0_rgba(15,23,42,0.15),0_10px_18px_rgba(15,23,42,0.12)]">
+                <img src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-full w-full object-contain" />
+              </div>
             ))}
           </InfiniteSlider>
-        ) : (
-        <InfiniteSlider speed={25} direction="left" gap={40}>
-          {[
-            { label: "📱 MOBILE MONEY", color: "text-yellow-600" },
-            { label: "🟠 ORANGE MONEY", color: "text-orange-500" },
-            { label: "💛 MTN MOMO", color: "text-yellow-500" },
-            { label: "🌊 WAVE", color: "text-blue-500" },
-            { label: "🔴 AIRTEL MONEY", color: "text-red-500" },
-            { label: "💳 VISA", color: "text-blue-700" },
-            { label: "🔴 MASTERCARD", color: "text-red-600" },
-            { label: "📲 OM CAMEROUN", color: "text-orange-600" },
-          ].map((pm, i) => (
-            <div key={i} className={`text-sm font-black tracking-wide whitespace-nowrap ${pm.color}`}>{pm.label}</div>
-          ))}
-        </InfiniteSlider>
-        )}
-      </section>
+      </section>}
 
       {/* ===== 18. FOOTER ===== */}
       <footer className="py-10 px-6 bg-slate-900 text-white">
