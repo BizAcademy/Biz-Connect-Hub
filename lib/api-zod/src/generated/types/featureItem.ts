@@ -10,5 +10,6 @@ export interface FeatureItem {
   id: number;
   section: string;
   label: string;
+  imageUrl: string;
   sortOrder: number;
 }

@@ -889,9 +889,11 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   const update = useUpdateFeatureItem(adminReq(pwd));
   const del = useDeleteFeatureItem(adminReq(pwd));
   const [label, setLabel] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
   const [section, setSection] = useState<'included' | 'offer'>('offer');
   const [editId, setEditId] = useState<number | null>(null);
   const [eLabel, setELabel] = useState('');
+  const [eImageUrl, setEImageUrl] = useState('');
   const [eSection, setESection] = useState<'included' | 'offer'>('included');
 
   const refresh = () => qc.invalidateQueries();
@@ -907,9 +909,12 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
       <div className="space-y-2">
         {rows.map((f) => (
           <div key={f.id} className="border border-border rounded-lg px-3 py-2 flex items-center justify-between gap-2 text-sm">
-            <span className="truncate">{f.label}</span>
+            <div className="flex min-w-0 items-center gap-2">
+              {f.imageUrl && <img src={f.imageUrl} alt="" className="h-9 w-9 shrink-0 rounded-md border border-border object-cover" />}
+              <span className="truncate">{f.label}</span>
+            </div>
             <div className="flex items-center shrink-0">
-              <EditButton onClick={() => { setEditId(f.id); setELabel(f.label); setESection(f.section === 'offer' ? 'offer' : 'included'); }} />
+              <EditButton onClick={() => { setEditId(f.id); setELabel(f.label); setEImageUrl(f.imageUrl); setESection(f.section === 'offer' ? 'offer' : 'included'); }} />
               <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: f.id }, { onSuccess: refresh })}>
                 <Trash2 className="w-4 h-4 text-destructive" />
               </Button>
@@ -939,11 +944,14 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
           <option value="included">Autre liste « Tout ce qui est inclus »</option>
         </select>
         <Input placeholder="Texte de l'avantage" value={label} onChange={(e) => setLabel(e.target.value)} />
+        <div className="md:col-span-2">
+          <UploadField pwd={pwd} value={imageUrl} onChange={setImageUrl} label="Image d'illustration (facultative)" />
+        </div>
         <Button
           disabled={!label || create.isPending}
           onClick={() =>
-            create.mutate({ data: { label, section } }, {
-              onSuccess: () => { setLabel(''); refresh(); toast({ title: 'Avantage ajouté' }); },
+            create.mutate({ data: { label, section, imageUrl } }, {
+              onSuccess: () => { setLabel(''); setImageUrl(''); refresh(); toast({ title: 'Avantage ajouté' }); },
               onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
             })
           }
@@ -964,7 +972,7 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
         isSaving={update.isPending}
         canSave={!!eLabel}
         onSave={() =>
-          update.mutate({ id: editId!, data: { label: eLabel, section: eSection } }, {
+          update.mutate({ id: editId!, data: { label: eLabel, section: eSection, imageUrl: eImageUrl } }, {
             onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Avantage modifié' }); },
             onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
           })
@@ -979,6 +987,12 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
           <option value="included">Autre liste « Tout ce qui est inclus »</option>
         </select>
         <Input placeholder="Texte de l'avantage" value={eLabel} onChange={(e) => setELabel(e.target.value)} />
+        <UploadField pwd={pwd} value={eImageUrl} onChange={setEImageUrl} label="Image d'illustration (facultative)" />
+        {eImageUrl && (
+          <Button type="button" variant="outline" onClick={() => setEImageUrl('')}>
+            Retirer l'image
+          </Button>
+        )}
       </EditDialog>
     </SectionCard>
   );

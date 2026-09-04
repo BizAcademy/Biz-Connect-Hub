@@ -10,5 +10,6 @@ export interface FeatureItemInput {
   section?: string;
   /** @minLength 1 */
   label: string;
+  imageUrl?: string;
   sortOrder?: number;
 }

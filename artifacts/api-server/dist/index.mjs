@@ -38358,6 +38358,7 @@ var ListFeatureItemsResponseItem = objectType({
   "id": numberType(),
   "section": stringType(),
   "label": stringType(),
+  "imageUrl": stringType(),
   "sortOrder": numberType()
 });
 var ListFeatureItemsResponse = arrayType(ListFeatureItemsResponseItem);
@@ -38367,12 +38368,14 @@ var CreateFeatureItemHeader = objectType({
 var CreateFeatureItemBody = objectType({
   "section": stringType().optional(),
   "label": stringType().min(1),
+  "imageUrl": stringType().optional(),
   "sortOrder": numberType().optional()
 });
 var CreateFeatureItemResponse = objectType({
   "id": numberType(),
   "section": stringType(),
   "label": stringType(),
+  "imageUrl": stringType(),
   "sortOrder": numberType()
 });
 var UpdateFeatureItemParams = objectType({
@@ -38384,12 +38387,14 @@ var UpdateFeatureItemHeader = objectType({
 var UpdateFeatureItemBody = objectType({
   "section": stringType().optional(),
   "label": stringType().min(1),
+  "imageUrl": stringType().optional(),
   "sortOrder": numberType().optional()
 });
 var UpdateFeatureItemResponse = objectType({
   "id": numberType(),
   "section": stringType(),
   "label": stringType(),
+  "imageUrl": stringType(),
   "sortOrder": numberType()
 });
 var DeleteFeatureItemParams = objectType({
@@ -57299,6 +57304,7 @@ var featureItemsTable = pgTable("feature_items", {
   section: text("section").notNull().default("included"),
   // 'included' | 'offer'
   label: text("label").notNull(),
+  imageUrl: text("image_url").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
 });

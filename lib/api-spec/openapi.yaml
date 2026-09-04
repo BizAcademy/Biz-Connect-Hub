@@ -2363,13 +2363,15 @@ components:
 
     FeatureItem:
       type: object
-      required: [id, section, label, sortOrder]
+      required: [id, section, label, imageUrl, sortOrder]
       properties:
         id:
           type: number
         section:
           type: string
         label:
+          type: string
+        imageUrl:
           type: string
         sortOrder:
           type: number
@@ -2383,6 +2385,8 @@ components:
         label:
           type: string
           minLength: 1
+        imageUrl:
+          type: string
         sortOrder:
           type: number
 

@@ -987,6 +987,7 @@ export const ListFeatureItemsResponseItem = zod.object({
   "id": zod.number(),
   "section": zod.string(),
   "label": zod.string(),
+  "imageUrl": zod.string(),
   "sortOrder": zod.number()
 })
 export const ListFeatureItemsResponse = zod.array(ListFeatureItemsResponseItem)
@@ -1005,6 +1006,7 @@ export const CreateFeatureItemHeader = zod.object({
 export const CreateFeatureItemBody = zod.object({
   "section": zod.string().optional(),
   "label": zod.string().min(1),
+  "imageUrl": zod.string().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -1012,6 +1014,7 @@ export const CreateFeatureItemResponse = zod.object({
   "id": zod.number(),
   "section": zod.string(),
   "label": zod.string(),
+  "imageUrl": zod.string(),
   "sortOrder": zod.number()
 })
 
@@ -1033,6 +1036,7 @@ export const UpdateFeatureItemHeader = zod.object({
 export const UpdateFeatureItemBody = zod.object({
   "section": zod.string().optional(),
   "label": zod.string().min(1),
+  "imageUrl": zod.string().optional(),
   "sortOrder": zod.number().optional()
 })
 
@@ -1040,6 +1044,7 @@ export const UpdateFeatureItemResponse = zod.object({
   "id": zod.number(),
   "section": zod.string(),
   "label": zod.string(),
+  "imageUrl": zod.string(),
   "sortOrder": zod.number()
 })
 

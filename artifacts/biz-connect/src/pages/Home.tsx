@@ -747,19 +747,23 @@ export default function Home() {
               <p className="mb-8 text-sm font-bold text-green-600">Tout ce qui est inclus dans ton accès</p>
               <ul className="space-y-3 mb-8 text-left">
                 {(offerFeatures.length > 0
-                  ? offerFeatures.map(f => f.label)
+                  ? offerFeatures
                   : [
-                      "Accès au réseau BCA",
-                      "Système d'affiliation 3 niveaux",
-                      "Catalogue de formations premium",
-                      "Portefeuille digital",
-                      "Support WhatsApp prioritaire",
-                      "Outils marketing fournis",
+                      { label: "Accès au réseau BCA", imageUrl: "" },
+                      { label: "Système d'affiliation 3 niveaux", imageUrl: "" },
+                      { label: "Catalogue de formations premium", imageUrl: "" },
+                      { label: "Portefeuille digital", imageUrl: "" },
+                      { label: "Support WhatsApp prioritaire", imageUrl: "" },
+                      { label: "Outils marketing fournis", imageUrl: "" },
                     ]
                 ).map((item, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
-                    <span>{item}</span>
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" loading="lazy" />
+                    ) : (
+                      <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                    )}
+                    <span>{item.label}</span>
                   </li>
                 ))}
               </ul>

@@ -89,6 +89,7 @@ export const featureItemsTable = pgTable("feature_items", {
   id: serial("id").primaryKey(),
   section: text("section").notNull().default("included"), // 'included' | 'offer'
   label: text("label").notNull(),
+  imageUrl: text("image_url").notNull().default(""),
   sortOrder: integer("sort_order").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
