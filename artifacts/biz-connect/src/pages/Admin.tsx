@@ -171,7 +171,7 @@ export default function Admin() {
             <TabsTrigger value="partners">Partenaires</TabsTrigger>
             <TabsTrigger value="payments">Paiements</TabsTrigger>
             <TabsTrigger value="services">Services</TabsTrigger>
-            <TabsTrigger value="features">Avantages</TabsTrigger>
+            <TabsTrigger value="features">Accès inclus</TabsTrigger>
             <TabsTrigger value="faqs">FAQ</TabsTrigger>
             <TabsTrigger value="helpvideos">Vidéos d'aide</TabsTrigger>
             <TabsTrigger value="media">Médias</TabsTrigger>

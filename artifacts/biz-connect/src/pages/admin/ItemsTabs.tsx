@@ -901,8 +901,8 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   const included = (items ?? []).filter((f) => f.section === 'included');
   const offer = (items ?? []).filter((f) => f.section === 'offer');
 
-  const list = (title: string, rows: typeof included) => (
-    <div>
+  const list = (title: string, rows: typeof included, highlighted = false) => (
+    <div className={highlighted ? "rounded-xl border-2 border-primary/30 bg-primary/5 p-4" : "rounded-xl border border-border p-4"}>
       <h4 className="font-semibold text-sm mb-2">{title}</h4>
       <div className="space-y-2">
         {rows.map((f) => (
@@ -922,15 +922,21 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
   );
 
   return (
-    <SectionCard title="Avantages de la carte de prix" desc="Modifie ici les six informations affichées dans la carte tarifaire de la page d'accueil. Choisis « Carte de prix (offre) » pour les ajouter ou les modifier.">
+    <SectionCard
+      title="Liste « Tout ce qui est inclus dans ton accès »"
+      desc="Ajoute, modifie ou supprime ici les éléments affichés sous le prix 2900 FCFA sur la page d'accueil."
+    >
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-950">
+        Pour modifier un élément existant, clique sur le crayon. Pour ajouter une nouvelle ligne sous le prix, conserve le choix « Liste sous le prix — 2900 FCFA ».
+      </div>
       <div className="grid md:grid-cols-3 gap-4 p-4 rounded-xl border border-border bg-muted/10 items-center">
         <select
           className="border border-border rounded-md px-3 py-2 text-sm bg-background"
           value={section}
           onChange={(e) => setSection(e.target.value as 'included' | 'offer')}
         >
-          <option value="included">Tout ce qui est inclus</option>
-          <option value="offer">Carte de prix (offre)</option>
+          <option value="offer">Liste sous le prix — 2900 FCFA</option>
+          <option value="included">Autre liste « Tout ce qui est inclus »</option>
         </select>
         <Input placeholder="Texte de l'avantage" value={label} onChange={(e) => setLabel(e.target.value)} />
         <Button
@@ -947,8 +953,8 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {list('Tout ce qui est inclus', included)}
-        {list('Carte de prix (offre)', offer)}
+        {list('Liste affichée sous le prix 2900 FCFA', offer, true)}
+        {list('Autre liste « Tout ce qui est inclus »', included)}
       </div>
 
       <EditDialog
@@ -969,8 +975,8 @@ export function FeaturesTab({ pwd }: { pwd: string }) {
           value={eSection}
           onChange={(e) => setESection(e.target.value as 'included' | 'offer')}
         >
-          <option value="included">Tout ce qui est inclus</option>
-          <option value="offer">Carte de prix (offre)</option>
+          <option value="offer">Liste sous le prix — 2900 FCFA</option>
+          <option value="included">Autre liste « Tout ce qui est inclus »</option>
         </select>
         <Input placeholder="Texte de l'avantage" value={eLabel} onChange={(e) => setELabel(e.target.value)} />
       </EditDialog>
