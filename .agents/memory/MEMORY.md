@@ -2,3 +2,4 @@
 - [Stockage vidéos](biz-connect-videos-supabase.md) — uploads vidéo revenus sur Cloudinary (choix utilisateur) ; Supabase gardé en lecture/suppression ; >100 Mo → YouTube non répertoriée.
 - [Biz Connect déploiement](biz-connect-deploy.md) — la prod sert le dist/public COMMITÉ ; après toute modif frontend, rebuild + copie vers api-server/dist/public avant de pousser.
 - [Build frontend Biz Connect](biz-connect-build.md) — le build Vite exige PORT et BASE_PATH ; les changements backend doivent aussi régénérer le serveur compilé suivi par Git.
+- [Compression vidéo Biz Connect](biz-connect-video-compression.md) — les vidéos sont réencodées côté navigateur avant l’envoi Cloudinary, avec repli explicite sur l’original.

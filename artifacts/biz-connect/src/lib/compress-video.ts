@@ -9,6 +9,7 @@ export type VideoCompressionResult = {
 };
 
 type CapturableVideo = HTMLVideoElement & {
+  captureStream?: () => MediaStream;
   webkitCaptureStream?: () => MediaStream;
 };
 

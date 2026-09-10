@@ -219,7 +219,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListMedia(adminReq(pwd));
   const del = useDeleteMedia(adminReq(pwd));
-  const { uploadFile, isUploading } = useCloudinaryUpload(pwd);
+  const { uploadFile, isUploading, uploadStatus } = useCloudinaryUpload(pwd);
   const [removeBg, setRemoveBg] = useState(false);
 
   const refresh = () => qc.invalidateQueries({ queryKey: getListMediaQueryKey() });
@@ -262,7 +262,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
           <div className="p-4 rounded-xl border border-border bg-muted/10">
             <label className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
               {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              {isUploading ? 'Envoi en cours…' : 'Ajouter une image ou une vidéo'}
+              {isUploading ? uploadStatus || 'Envoi en cours…' : 'Ajouter une image ou une vidéo'}
               <input
                 type="file"
                 accept="image/*,video/*"
