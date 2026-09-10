@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useGetContent } from '@workspace/api-client-react';
 
 const SITE_URL = 'https://presentationbizconnectacademy.com';
+const DEFAULT_SHARE_IMAGE = 'https://res.cloudinary.com/czj2ytwj/image/upload/v1786924164/biz-connect/zvchuyyq6iep4g3infv9.png';
+const HOME_DESCRIPTION = "La Biz Connect Academy, une plateforme de marketing digital qui vous permet de gagner des revenus avec vos vues sur WhatsApp, avec son système d'affiliation et sa fonctionnalité Digital Store pour vendre vos produits digitaux. Elle vous permet également de développer vos compétences grâce à sa large gamme de formations et de développer votre base de données clientèle grâce au fichier de contacts. Disponible dans plus de 20 pays d'Afrique.";
 
 const pages: Record<string, { title: string; description: string; index?: boolean }> = {
   '/': {
     title: 'Biz Connect Academy | Formation et réseau business',
-    description: "Rejoignez Biz Connect Academy : formations, réseau d'entrepreneurs, affiliation et opportunités business pour développer vos revenus en Afrique.",
+    description: HOME_DESCRIPTION,
   },
   '/inscription': {
     title: 'Inscription | Biz Connect Academy',
@@ -39,6 +42,7 @@ function setMeta(selector: string, attribute: string, value: string) {
 
 export function SeoManager() {
   const [location] = useLocation();
+  const { data: content } = useGetContent();
 
   useEffect(() => {
     const path = location.split('?')[0].replace(/\/+$/, '') || '/';
@@ -48,6 +52,9 @@ export function SeoManager() {
       index: false,
     };
     const canonicalUrl = `${SITE_URL}${path === '/' ? '/' : path}`;
+    const shareImage = path === '/' && content?.communityImageUrl
+      ? content.communityImageUrl
+      : DEFAULT_SHARE_IMAGE;
 
     document.title = page.title;
     setMeta('meta[name="description"]', 'content', page.description);
@@ -55,12 +62,14 @@ export function SeoManager() {
     setMeta('meta[property="og:title"]', 'content', page.title);
     setMeta('meta[property="og:description"]', 'content', page.description);
     setMeta('meta[property="og:url"]', 'content', canonicalUrl);
+    setMeta('meta[property="og:image"]', 'content', shareImage);
     setMeta('meta[name="twitter:title"]', 'content', page.title);
     setMeta('meta[name="twitter:description"]', 'content', page.description);
+    setMeta('meta[name="twitter:image"]', 'content', shareImage);
 
     const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (canonical) canonical.href = canonicalUrl;
-  }, [location]);
+  }, [content, location]);
 
   return null;
 }
