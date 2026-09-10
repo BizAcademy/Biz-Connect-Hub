@@ -1,5 +1,5 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import {
   db,
   trainingsTable,
@@ -107,7 +107,10 @@ router.get("/testimonials", async (_req, res) => {
   const rows = await db
     .select()
     .from(testimonialsTable)
-    .orderBy(asc(testimonialsTable.sortOrder), asc(testimonialsTable.id));
+    .orderBy(
+      sql`CASE WHEN ${testimonialsTable.sortOrder} = 0 THEN 2147483647 ELSE ${testimonialsTable.sortOrder} END`,
+      asc(testimonialsTable.id),
+    );
   res.json(rows);
 });
 
@@ -497,7 +500,10 @@ router.get("/help-videos", async (_req, res) => {
   const rows = await db
     .select()
     .from(helpVideosTable)
-    .orderBy(asc(helpVideosTable.sortOrder), asc(helpVideosTable.id));
+    .orderBy(
+      sql`CASE WHEN ${helpVideosTable.sortOrder} = 0 THEN 2147483647 ELSE ${helpVideosTable.sortOrder} END`,
+      asc(helpVideosTable.id),
+    );
   res.json(rows);
 });
 

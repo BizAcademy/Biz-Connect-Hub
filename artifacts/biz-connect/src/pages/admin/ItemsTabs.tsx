@@ -333,7 +333,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         <Input placeholder="Durée pour le résultat (ex: 12 jours)" value={duration} onChange={(e) => setDuration(e.target.value)} />
         <Input placeholder="Texte affiché au-dessus du média" value={text} onChange={(e) => setText(e.target.value)} />
         <label className="flex items-center gap-2 text-sm">
-          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={sortOrder} onChange={(e) => setSortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
         <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
             <div className="p-3 flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-semibold text-sm truncate">{t.name} · {t.country}</div>
-                 <div className="text-xs text-muted-foreground truncate">Ordre {t.sortOrder} · {t.duration} — {t.text}</div>
+                 <div className="text-xs text-muted-foreground truncate">Ordre {t.sortOrder || 'à la fin'} · {t.duration} — {t.text}</div>
               </div>
               <div className="flex items-center shrink-0">
                 <EditButton onClick={() => {
@@ -414,7 +414,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         <Input placeholder="Durée pour le résultat (ex: 12 jours)" value={eDuration} onChange={(e) => setEDuration(e.target.value)} />
         <Input placeholder="Texte affiché au-dessus du média" value={eText} onChange={(e) => setEText(e.target.value)} />
         <label className="flex items-center gap-2 text-sm">
-          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={eSortOrder} onChange={(e) => setESortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
         <select
@@ -1115,7 +1115,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         <Input placeholder="Titre de la vidéo" value={title} onChange={(e) => setTitle(e.target.value)} />
         <Input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
         <label className="flex items-center gap-2 text-sm">
-          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={sortOrder} onChange={(e) => setSortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
         <Input className="md:col-span-2" placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
@@ -1140,7 +1140,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
           <div key={v.id} className="border border-border rounded-lg px-3 py-2 flex items-center justify-between gap-2 text-sm">
             <div className="min-w-0">
               <div className="font-semibold truncate">{v.title}</div>
-               <div className="text-xs text-muted-foreground truncate">Ordre {v.sortOrder} · {v.description} — {v.videoUrl}</div>
+               <div className="text-xs text-muted-foreground truncate">Ordre {v.sortOrder || 'à la fin'} · {v.description} — {v.videoUrl}</div>
             </div>
             <div className="flex items-center shrink-0">
                <EditButton onClick={() => { setEditId(v.id); setETitle(v.title); setEDescription(v.description ?? ''); setEVideoUrl(v.videoUrl); setESortOrder(v.sortOrder ?? 0); }} />
@@ -1169,7 +1169,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         <Input placeholder="Titre de la vidéo" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
         <Input placeholder="Description" value={eDescription} onChange={(e) => setEDescription(e.target.value)} />
         <label className="flex items-center gap-2 text-sm">
-          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={eSortOrder} onChange={(e) => setESortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
         <Input placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
