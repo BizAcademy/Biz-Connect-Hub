@@ -59,7 +59,6 @@ export default function Contact() {
     { label: 'TikTok', href: content.tiktokLink, icon: FaTiktok, className: 'bg-black hover:bg-zinc-800' },
     { label: 'Instagram', href: content.instagramLink, icon: FaInstagram, className: 'bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:brightness-110' },
     { label: 'YouTube', href: content.youtubeLink, icon: FaYoutube, className: 'bg-[#FF0000] hover:bg-[#d90000]' },
-    { label: 'Support Telegram', href: content.telegramLink, icon: FaTelegramPlane, className: 'bg-[#229ED9] hover:bg-[#1c8abb]' },
     { label: 'Canal Telegram', href: content.telegramChannelLink, icon: FaTelegramPlane, className: 'bg-[#168ACB] hover:bg-[#1177B5]' },
     { label: 'Chaîne WhatsApp', href: content.whatsappChannelLink, icon: FaWhatsapp, className: 'bg-[#25D366] hover:bg-[#20b858]' },
   ].filter((item) => item.href);
@@ -87,6 +86,16 @@ export default function Contact() {
               <div className="text-center py-10 bg-card border border-border rounded-2xl text-muted-foreground text-sm">
                 Les numéros du support seront bientôt disponibles.
               </div>
+            )}
+            {content.telegramLink && (
+              <a
+                href={content.telegramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center gap-3 px-5 py-3.5 bg-[#229ED9] text-white font-bold rounded-xl hover:bg-[#1c8abb] transition-all shadow-md hover:-translate-y-0.5"
+              >
+                <FaTelegramPlane size={20} /> Support Telegram
+              </a>
             )}
           </div>
 
