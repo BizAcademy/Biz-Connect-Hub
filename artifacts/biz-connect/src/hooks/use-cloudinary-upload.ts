@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getMediaUploadSignature, createMedia } from '@workspace/api-client-react';
 import type { MediaItem } from '@workspace/api-client-react';
+import { compressVideo } from '@/lib/compress-video';
 
 function adminReq(pwd: string) {
   return { headers: { 'x-admin-password': pwd } };
@@ -12,13 +13,33 @@ function adminReq(pwd: string) {
  */
 export function useCloudinaryUpload(pwd: string) {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState('');
 
   const uploadFile = async (
     file: File,
     opts?: { removeBackground?: boolean },
   ): Promise<MediaItem | null> => {
     setIsUploading(true);
+    setUploadStatus(file.type.startsWith('video/') ? 'Compression de la vidéo…' : 'Envoi en cours…');
     try {
+      const prepared = file.type.startsWith('video/')
+        ? await compressVideo(file, (progress) => setUploadStatus(`Compression de la vidéo… ${progress}%`))
+        : {
+            file,
+            compressed: false,
+            originalBytes: file.size,
+            compressedBytes: file.size,
+          };
+      const preparedFile = prepared.file;
+
+      if (prepared.compressed) {
+        setUploadStatus(`Vidéo compressée à ${Math.round((prepared.compressedBytes / prepared.originalBytes) * 100)} % — envoi…`);
+      } else if (prepared.message) {
+        setUploadStatus(prepared.message);
+      } else {
+        setUploadStatus('Envoi en cours…');
+      }
+
       // 1. Obtenir la signature auprès de notre serveur
       const sig = await getMediaUploadSignature(
         { removeBackground: opts?.removeBackground ?? false },
@@ -27,7 +48,7 @@ export function useCloudinaryUpload(pwd: string) {
 
       // 2. Envoyer le fichier directement à Cloudinary
       const form = new FormData();
-      form.append('file', file);
+      form.append('file', preparedFile);
       form.append('api_key', sig.apiKey);
       form.append('timestamp', String(sig.timestamp));
       form.append('signature', sig.signature);
@@ -45,13 +66,13 @@ export function useCloudinaryUpload(pwd: string) {
       const CHUNK_THRESHOLD = 95 * 1024 * 1024;
       const CHUNK_SIZE = 20 * 1024 * 1024; // 20 Mo par morceau
 
-      if (file.size > CHUNK_THRESHOLD) {
+      if (preparedFile.size > CHUNK_THRESHOLD) {
         const uploadId = `uw-${Date.now()}-${Math.random().toString(36).slice(2)}`;
         let result: Uploaded | null = null;
-        for (let start = 0; start < file.size; start += CHUNK_SIZE) {
-          const end = Math.min(start + CHUNK_SIZE, file.size);
+        for (let start = 0; start < preparedFile.size; start += CHUNK_SIZE) {
+          const end = Math.min(start + CHUNK_SIZE, preparedFile.size);
           const chunkForm = new FormData();
-          chunkForm.append('file', file.slice(start, end), file.name);
+          chunkForm.append('file', preparedFile.slice(start, end), preparedFile.name);
           chunkForm.append('api_key', sig.apiKey);
           chunkForm.append('timestamp', String(sig.timestamp));
           chunkForm.append('signature', sig.signature);
@@ -63,7 +84,7 @@ export function useCloudinaryUpload(pwd: string) {
             body: chunkForm,
             headers: {
               'X-Unique-Upload-Id': uploadId,
-              'Content-Range': `bytes ${start}-${end - 1}/${file.size}`,
+              'Content-Range': `bytes ${start}-${end - 1}/${preparedFile.size}`,
             },
           });
           if (!res.ok) {
@@ -92,7 +113,7 @@ export function useCloudinaryUpload(pwd: string) {
       // traitement ; en cas de délai dépassé on retente l'enregistrement
       // (sans ré-uploader le fichier).
       const body = {
-        name: file.name,
+        name: preparedFile.name,
         url: uploaded.secure_url,
         publicId: uploaded.public_id,
         resourceType: uploaded.resource_type === 'video' ? ('video' as const) : ('image' as const),
@@ -110,8 +131,9 @@ export function useCloudinaryUpload(pwd: string) {
       return null;
     } finally {
       setIsUploading(false);
+      setUploadStatus('');
     }
   };
 
-  return { uploadFile, isUploading };
+  return { uploadFile, isUploading, uploadStatus };
 }

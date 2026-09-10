@@ -39,7 +39,7 @@ function UploadField({
   label: string;
   accept?: string;
 }) {
-  const { uploadFile, isUploading } = useCloudinaryUpload(pwd);
+  const { uploadFile, isUploading, uploadStatus } = useCloudinaryUpload(pwd);
   const { toast } = useToast();
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [removeBg, setRemoveBg] = useState(false);
@@ -62,7 +62,7 @@ function UploadField({
         {/* Upload new file to Cloudinary */}
         <label className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
           {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-          {isUploading ? 'Envoi en cours…' : 'Importer'}
+           {isUploading ? uploadStatus || 'Envoi en cours…' : 'Importer'}
           <input
             type="file"
             accept={accept}
