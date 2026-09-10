@@ -50,6 +50,7 @@ export interface SiteContent {
   gainsPosterUrl?: string;
   gainsSecondaryImageUrl?: string;
   telegramLink: string;
+  telegramChannelLink: string;
   facebookLink: string;
   tiktokLink: string;
   instagramLink: string;

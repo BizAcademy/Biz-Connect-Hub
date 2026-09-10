@@ -50,6 +50,7 @@ function formatContent(c: typeof siteContentTable.$inferSelect) {
     gainsPosterUrl: c.gainsPosterUrl,
     gainsSecondaryImageUrl: c.gainsSecondaryImageUrl,
     telegramLink: c.telegramLink,
+    telegramChannelLink: c.telegramChannelLink,
     facebookLink: c.facebookLink,
     tiktokLink: c.tiktokLink,
     instagramLink: c.instagramLink,

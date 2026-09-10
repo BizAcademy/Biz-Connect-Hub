@@ -78,6 +78,7 @@ const contentSchema = z.object({
   gainsPosterUrl: z.string(),
   gainsSecondaryImageUrl: z.string(),
   telegramLink: z.string(),
+  telegramChannelLink: z.string(),
   facebookLink: z.string(),
   tiktokLink: z.string(),
   instagramLink: z.string(),
@@ -833,6 +834,9 @@ function ContentTab({ pwd }: { pwd: string }) {
                 <FormItem><FormLabel>Page contact — Numéro support 2</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name="telegramLink" render={({ field }) => (
+                <FormItem><FormLabel>Support Telegram</FormLabel><FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="telegramChannelLink" render={({ field }) => (
                 <FormItem><FormLabel>Canal Telegram</FormLabel><FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name="facebookLink" render={({ field }) => (

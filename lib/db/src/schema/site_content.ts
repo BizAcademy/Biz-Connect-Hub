@@ -46,6 +46,7 @@ export const siteContentTable = pgTable("site_content", {
   gainsPosterUrl: text("gains_poster_url").notNull().default(""),
   gainsSecondaryImageUrl: text("gains_secondary_image_url").notNull().default(""),
   telegramLink: text("telegram_link").notNull().default(""),
+  telegramChannelLink: text("telegram_channel_link").notNull().default(""),
   facebookLink: text("facebook_link").notNull().default(""),
   tiktokLink: text("tiktok_link").notNull().default(""),
   instagramLink: text("instagram_link").notNull().default(""),
