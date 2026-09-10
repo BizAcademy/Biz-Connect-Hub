@@ -311,6 +311,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
   const [text, setText] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
+  const [sortOrder, setSortOrder] = useState(0);
   const [editId, setEditId] = useState<number | null>(null);
   const [eName, setEName] = useState('');
   const [eCountry, setECountry] = useState('');
@@ -318,6 +319,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
   const [eText, setEText] = useState('');
   const [eMediaUrl, setEMediaUrl] = useState('');
   const [eMediaType, setEMediaType] = useState<'image' | 'video'>('image');
+  const [eSortOrder, setESortOrder] = useState(0);
 
   const refresh = () => qc.invalidateQueries();
 
@@ -330,6 +332,10 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         <Input placeholder="Pays (ex: Côte d'Ivoire)" value={country} onChange={(e) => setCountry(e.target.value)} />
         <Input placeholder="Durée pour le résultat (ex: 12 jours)" value={duration} onChange={(e) => setDuration(e.target.value)} />
         <Input placeholder="Texte affiché au-dessus du média" value={text} onChange={(e) => setText(e.target.value)} />
+        <label className="flex items-center gap-2 text-sm">
+          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <Input type="number" min="0" step="1" value={sortOrder} onChange={(e) => setSortOrder(Math.max(0, Number(e.target.value) || 0))} />
+        </label>
         <div className="flex items-center gap-2">
           <select
             className="border border-border rounded-md px-3 py-2 text-sm bg-background"
@@ -350,9 +356,9 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         <Button
           disabled={!name || create.isPending}
           onClick={() =>
-            create.mutate({ data: { name, country, duration, text, mediaUrl, mediaType } }, {
+            create.mutate({ data: { name, country, duration, text, mediaUrl, mediaType, sortOrder } }, {
               onSuccess: () => {
-                setName(''); setCountry(''); setDuration(''); setText(''); setMediaUrl('');
+                setName(''); setCountry(''); setDuration(''); setText(''); setMediaUrl(''); setSortOrder(0);
                 refresh(); toast({ title: 'Témoignage ajouté' });
               },
               onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
@@ -373,12 +379,12 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
             <div className="p-3 flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <div className="font-semibold text-sm truncate">{t.name} · {t.country}</div>
-                <div className="text-xs text-muted-foreground truncate">{t.duration} — {t.text}</div>
+                 <div className="text-xs text-muted-foreground truncate">Ordre {t.sortOrder} · {t.duration} — {t.text}</div>
               </div>
               <div className="flex items-center shrink-0">
                 <EditButton onClick={() => {
                   setEditId(t.id); setEName(t.name); setECountry(t.country ?? ''); setEDuration(t.duration ?? '');
-                  setEText(t.text ?? ''); setEMediaUrl(t.mediaUrl ?? ''); setEMediaType((t.mediaType === 'video' ? 'video' : 'image'));
+                  setEText(t.text ?? ''); setEMediaUrl(t.mediaUrl ?? ''); setEMediaType((t.mediaType === 'video' ? 'video' : 'image')); setESortOrder(t.sortOrder ?? 0);
                 }} />
                 <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: t.id }, { onSuccess: refresh })}>
                   <Trash2 className="w-4 h-4 text-destructive" />
@@ -397,7 +403,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         isSaving={update.isPending}
         canSave={!!eName}
         onSave={() =>
-          update.mutate({ id: editId!, data: { name: eName, country: eCountry, duration: eDuration, text: eText, mediaUrl: eMediaUrl, mediaType: eMediaType } }, {
+           update.mutate({ id: editId!, data: { name: eName, country: eCountry, duration: eDuration, text: eText, mediaUrl: eMediaUrl, mediaType: eMediaType, sortOrder: eSortOrder } }, {
             onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Témoignage modifié' }); },
             onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
           })
@@ -407,6 +413,10 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
         <Input placeholder="Pays (ex: Côte d'Ivoire)" value={eCountry} onChange={(e) => setECountry(e.target.value)} />
         <Input placeholder="Durée pour le résultat (ex: 12 jours)" value={eDuration} onChange={(e) => setEDuration(e.target.value)} />
         <Input placeholder="Texte affiché au-dessus du média" value={eText} onChange={(e) => setEText(e.target.value)} />
+        <label className="flex items-center gap-2 text-sm">
+          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <Input type="number" min="0" step="1" value={eSortOrder} onChange={(e) => setESortOrder(Math.max(0, Number(e.target.value) || 0))} />
+        </label>
         <select
           className="border border-border rounded-md px-3 py-2 text-sm bg-background"
           value={eMediaType}
@@ -1088,10 +1098,12 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
+  const [sortOrder, setSortOrder] = useState(0);
   const [editId, setEditId] = useState<number | null>(null);
   const [eTitle, setETitle] = useState('');
   const [eDescription, setEDescription] = useState('');
   const [eVideoUrl, setEVideoUrl] = useState('');
+  const [eSortOrder, setESortOrder] = useState(0);
 
   const refresh = () => qc.invalidateQueries();
 
@@ -1102,6 +1114,10 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
       <div className="grid md:grid-cols-2 gap-4 p-4 rounded-xl border border-border bg-muted/10">
         <Input placeholder="Titre de la vidéo" value={title} onChange={(e) => setTitle(e.target.value)} />
         <Input placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+        <label className="flex items-center gap-2 text-sm">
+          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <Input type="number" min="0" step="1" value={sortOrder} onChange={(e) => setSortOrder(Math.max(0, Number(e.target.value) || 0))} />
+        </label>
         <Input className="md:col-span-2" placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
         <div className="md:col-span-2">
           <UploadField pwd={pwd} value={videoUrl} onChange={setVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
@@ -1109,8 +1125,8 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         <Button
           disabled={!title || !videoUrl || create.isPending}
           onClick={() =>
-            create.mutate({ data: { title, description, videoUrl } }, {
-              onSuccess: () => { setTitle(''); setDescription(''); setVideoUrl(''); refresh(); toast({ title: 'Vidéo ajoutée' }); },
+            create.mutate({ data: { title, description, videoUrl, sortOrder } }, {
+              onSuccess: () => { setTitle(''); setDescription(''); setVideoUrl(''); setSortOrder(0); refresh(); toast({ title: 'Vidéo ajoutée' }); },
               onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
             })
           }
@@ -1124,10 +1140,10 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
           <div key={v.id} className="border border-border rounded-lg px-3 py-2 flex items-center justify-between gap-2 text-sm">
             <div className="min-w-0">
               <div className="font-semibold truncate">{v.title}</div>
-              <div className="text-xs text-muted-foreground truncate">{v.description} — {v.videoUrl}</div>
+               <div className="text-xs text-muted-foreground truncate">Ordre {v.sortOrder} · {v.description} — {v.videoUrl}</div>
             </div>
             <div className="flex items-center shrink-0">
-              <EditButton onClick={() => { setEditId(v.id); setETitle(v.title); setEDescription(v.description ?? ''); setEVideoUrl(v.videoUrl); }} />
+               <EditButton onClick={() => { setEditId(v.id); setETitle(v.title); setEDescription(v.description ?? ''); setEVideoUrl(v.videoUrl); setESortOrder(v.sortOrder ?? 0); }} />
               <Button variant="ghost" size="icon" onClick={() => del.mutate({ id: v.id }, { onSuccess: refresh })}>
                 <Trash2 className="w-4 h-4 text-destructive" />
               </Button>
@@ -1144,7 +1160,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         isSaving={update.isPending}
         canSave={!!eTitle && !!eVideoUrl}
         onSave={() =>
-          update.mutate({ id: editId!, data: { title: eTitle, description: eDescription, videoUrl: eVideoUrl } }, {
+           update.mutate({ id: editId!, data: { title: eTitle, description: eDescription, videoUrl: eVideoUrl, sortOrder: eSortOrder } }, {
             onSuccess: () => { setEditId(null); refresh(); toast({ title: 'Vidéo modifiée' }); },
             onError: () => toast({ title: 'Erreur', variant: 'destructive' }),
           })
@@ -1152,6 +1168,10 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
       >
         <Input placeholder="Titre de la vidéo" value={eTitle} onChange={(e) => setETitle(e.target.value)} />
         <Input placeholder="Description" value={eDescription} onChange={(e) => setEDescription(e.target.value)} />
+        <label className="flex items-center gap-2 text-sm">
+          <span className="shrink-0 text-muted-foreground">Ordre</span>
+          <Input type="number" min="0" step="1" value={eSortOrder} onChange={(e) => setESortOrder(Math.max(0, Number(e.target.value) || 0))} />
+        </label>
         <Input placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
         <UploadField pwd={pwd} value={eVideoUrl} onChange={setEVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
       </EditDialog>
