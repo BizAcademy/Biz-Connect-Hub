@@ -78,6 +78,11 @@ const contentSchema = z.object({
   gainsPosterUrl: z.string(),
   gainsSecondaryImageUrl: z.string(),
   telegramLink: z.string(),
+  facebookLink: z.string(),
+  tiktokLink: z.string(),
+  instagramLink: z.string(),
+  youtubeLink: z.string(),
+  whatsappChannelLink: z.string(),
   supportPhone1: z.string(),
   supportPhone2: z.string(),
   suggestionsIntroText: z.string().min(1),
@@ -828,7 +833,22 @@ function ContentTab({ pwd }: { pwd: string }) {
                 <FormItem><FormLabel>Page contact — Numéro support 2</FormLabel><FormControl><Input {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name="telegramLink" render={({ field }) => (
-                <FormItem className="col-span-2"><FormLabel>Lien Telegram (page contact)</FormLabel><FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl></FormItem>
+                <FormItem><FormLabel>Canal Telegram</FormLabel><FormControl><Input {...field} placeholder="https://t.me/..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="facebookLink" render={({ field }) => (
+                <FormItem><FormLabel>Facebook</FormLabel><FormControl><Input {...field} placeholder="https://facebook.com/..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="tiktokLink" render={({ field }) => (
+                <FormItem><FormLabel>TikTok</FormLabel><FormControl><Input {...field} placeholder="https://tiktok.com/@..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="instagramLink" render={({ field }) => (
+                <FormItem><FormLabel>Instagram</FormLabel><FormControl><Input {...field} placeholder="https://instagram.com/..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="youtubeLink" render={({ field }) => (
+                <FormItem><FormLabel>YouTube</FormLabel><FormControl><Input {...field} placeholder="https://youtube.com/@..." /></FormControl></FormItem>
+              )} />
+              <FormField control={form.control} name="whatsappChannelLink" render={({ field }) => (
+                <FormItem><FormLabel>Chaîne WhatsApp</FormLabel><FormControl><Input {...field} placeholder="https://whatsapp.com/channel/..." /></FormControl></FormItem>
               )} />
             </div>
 

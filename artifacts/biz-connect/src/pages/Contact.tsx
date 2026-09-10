@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { ArrowLeft, Copy, Check, Phone, Send } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Phone } from 'lucide-react';
+import { FaFacebookF, FaInstagram, FaTelegramPlane, FaTiktok, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import { useGetContent } from '@workspace/api-client-react';
 import { Navbar } from '@/components/Navbar';
 
@@ -53,6 +54,14 @@ export default function Contact() {
 
   const phone1 = content.supportPhone1 || content.whatsappNumber;
   const phone2 = content.supportPhone2;
+  const socialLinks = [
+    { label: 'Facebook', href: content.facebookLink, icon: FaFacebookF, className: 'bg-[#1877F2] hover:bg-[#1669d5]' },
+    { label: 'TikTok', href: content.tiktokLink, icon: FaTiktok, className: 'bg-black hover:bg-zinc-800' },
+    { label: 'Instagram', href: content.instagramLink, icon: FaInstagram, className: 'bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] hover:brightness-110' },
+    { label: 'YouTube', href: content.youtubeLink, icon: FaYoutube, className: 'bg-[#FF0000] hover:bg-[#d90000]' },
+    { label: 'Canal Telegram', href: content.telegramLink, icon: FaTelegramPlane, className: 'bg-[#229ED9] hover:bg-[#1c8abb]' },
+    { label: 'Chaîne WhatsApp', href: content.whatsappChannelLink, icon: FaWhatsapp, className: 'bg-[#25D366] hover:bg-[#20b858]' },
+  ].filter((item) => item.href);
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -80,17 +89,24 @@ export default function Contact() {
             )}
           </div>
 
-          {content.telegramLink && (
-            <div className="text-center">
-              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Ou rejoins-nous sur Telegram</div>
-              <a
-                href={content.telegramLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-sky-500 text-white font-bold rounded-xl hover:bg-sky-600 transition-colors shadow-lg"
-              >
-                <Send size={20} /> Ouvrir Telegram
-              </a>
+          {socialLinks.length > 0 && (
+            <div>
+              <div className="text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-4">
+                Retrouve-nous sur nos réseaux
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {socialLinks.map(({ label, href, icon: Icon, className }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center justify-center gap-3 px-5 py-3.5 text-white font-bold rounded-xl transition-all shadow-md hover:-translate-y-0.5 ${className}`}
+                  >
+                    <Icon size={20} /> {label}
+                  </a>
+                ))}
+              </div>
             </div>
           )}
         </div>

@@ -214,7 +214,12 @@ export interface SiteContent {
   countriesIconUrl?: string;
   gainsPosterUrl?: string;
   gainsSecondaryImageUrl?: string;
-  telegramLink?: string;
+  telegramLink: string;
+  facebookLink: string;
+  tiktokLink: string;
+  instagramLink: string;
+  youtubeLink: string;
+  whatsappChannelLink: string;
   supportPhone1?: string;
   supportPhone2?: string;
   suggestionsIntroText: string;
@@ -264,6 +269,11 @@ export interface SiteContentInput {
   gainsPosterUrl?: string;
   gainsSecondaryImageUrl?: string;
   telegramLink?: string;
+  facebookLink?: string;
+  tiktokLink?: string;
+  instagramLink?: string;
+  youtubeLink?: string;
+  whatsappChannelLink?: string;
   supportPhone1?: string;
   supportPhone2?: string;
   suggestionsIntroText?: string;
