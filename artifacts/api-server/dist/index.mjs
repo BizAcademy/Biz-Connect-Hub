@@ -57709,7 +57709,10 @@ router6.delete("/trainings/:id", async (req, res) => {
   res.json({ success: true });
 });
 router6.get("/testimonials", async (_req, res) => {
-  const rows = await db.select().from(testimonialsTable).orderBy(asc(testimonialsTable.sortOrder), asc(testimonialsTable.id));
+  const rows = await db.select().from(testimonialsTable).orderBy(
+    sql`CASE WHEN ${testimonialsTable.sortOrder} = 0 THEN 2147483647 ELSE ${testimonialsTable.sortOrder} END`,
+    asc(testimonialsTable.id)
+  );
   res.json(rows);
 });
 router6.post("/testimonials", async (req, res) => {
@@ -57989,7 +57992,10 @@ router6.delete("/features/:id", async (req, res) => {
   res.json({ success: true });
 });
 router6.get("/help-videos", async (_req, res) => {
-  const rows = await db.select().from(helpVideosTable).orderBy(asc(helpVideosTable.sortOrder), asc(helpVideosTable.id));
+  const rows = await db.select().from(helpVideosTable).orderBy(
+    sql`CASE WHEN ${helpVideosTable.sortOrder} = 0 THEN 2147483647 ELSE ${helpVideosTable.sortOrder} END`,
+    asc(helpVideosTable.id)
+  );
   res.json(rows);
 });
 router6.post("/help-videos", async (req, res) => {
