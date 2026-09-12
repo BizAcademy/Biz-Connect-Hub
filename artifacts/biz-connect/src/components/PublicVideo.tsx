@@ -6,6 +6,36 @@ type EmbeddedVideo = {
   aspectClass: string;
 };
 
+function toPlayableVideoUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const uploadMarker = '/video/upload/';
+    const uploadIndex = parsed.pathname.indexOf(uploadMarker);
+
+    if (
+      !parsed.hostname.endsWith('res.cloudinary.com') ||
+      uploadIndex === -1
+    ) {
+      return url;
+    }
+
+    const transformation = 'f_mp4,vc_h264,ac_aac/';
+    const pathAfterUpload = parsed.pathname.slice(uploadIndex + uploadMarker.length);
+
+    if (pathAfterUpload.startsWith(transformation)) {
+      return url;
+    }
+
+    parsed.pathname =
+      parsed.pathname.slice(0, uploadIndex + uploadMarker.length) +
+      transformation +
+      pathAfterUpload;
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 function toEmbedUrl(url: string): EmbeddedVideo | null {
   if (!url) return null;
   const ytShort = url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/i);
@@ -86,12 +116,13 @@ export function PublicVideo({
       void videoRef.current.play().catch(() => setIsPlaying(false));
     }
   };
+  const playableUrl = toPlayableVideoUrl(url);
 
   return (
     <div className={`relative w-full rounded-xl overflow-hidden ${className}`}>
       <video
         ref={videoRef}
-        src={url}
+        src={playableUrl}
         controls={isPlaying}
         playsInline
         preload="auto"
