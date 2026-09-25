@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { PlayCircle } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 type EmbeddedVideo = {
   url: string;
@@ -162,25 +162,19 @@ export function PublicVideo({
       />
 
       {!isPlaying && (
-        <div 
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           aria-label={title ? `Lire la vidéo : ${title}` : "Lire la vidéo"}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center cursor-pointer group focus:outline-none focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-inset"
           onClick={handlePlay}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handlePlay();
-            }
-          }}
         >
-          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300" />
+          <span className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300" />
 
-          <div className="relative z-20 bg-white/20 p-4 rounded-full backdrop-blur-md border border-white/30 text-white shadow-2xl motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-110">
-            <PlayCircle className="w-12 h-12 fill-white text-primary" />
-          </div>
-        </div>
+          <span className="relative z-20 flex flex-col items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-white shadow-2xl border border-white/50 motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105 group-hover:bg-blue-700">
+            <Play aria-hidden="true" className="h-10 w-10 fill-current" />
+            <span className="text-sm font-bold">Lire la vidéo</span>
+          </span>
+        </button>
       )}
     </div>
     <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
