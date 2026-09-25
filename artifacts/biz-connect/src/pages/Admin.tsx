@@ -275,7 +275,7 @@ function AdminLogin({ onLogin }: { onLogin: (pwd: string) => void }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-sm">
+      <Card data-reveal-auto className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Administration</CardTitle>
           <CardDescription>Accès sécurisé réservé à la direction</CardDescription>

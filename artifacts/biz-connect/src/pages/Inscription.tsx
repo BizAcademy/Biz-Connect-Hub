@@ -40,7 +40,7 @@ export default function Inscription() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col selection:bg-primary/30">
-      <div className="p-6">
+      <div data-reveal-auto className="p-6">
         <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft size={16} /> Retour à l'accueil
         </Link>

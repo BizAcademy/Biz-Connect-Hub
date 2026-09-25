@@ -51,7 +51,7 @@ export default function Aide() {
               <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
             </div>
           ) : videos && videos.length > 0 ? (
-            <div className="space-y-10">
+            <div data-reveal-group className="space-y-10">
               {videos.map((v, i) => (
                 <motion.div
                   key={v.id}

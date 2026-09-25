@@ -3,3 +3,4 @@
 - [Biz Connect déploiement](biz-connect-deploy.md) — la prod sert le dist/public COMMITÉ ; après toute modif frontend, rebuild + copie vers api-server/dist/public avant de pousser.
 - [Build frontend Biz Connect](biz-connect-build.md) — le build Vite exige PORT et BASE_PATH ; les changements backend doivent aussi régénérer le serveur compilé suivi par Git.
 - [Intégrité vidéo Biz Connect](biz-connect-video-compression.md) — ne pas réintroduire la compression canvas/MediaRecorder ; préserver les fichiers originaux à l’envoi.
+- [Motion et interactions](biz-connect-motion.md) — animer les blocs sans remonter les vidéos/formulaires ni transformer les ancêtres du menu fixe.

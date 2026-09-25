@@ -12,6 +12,8 @@ import Contact from '@/pages/Contact';
 import Suggestions from '@/pages/Suggestions';
 import { AnalyticsTracker } from '@/components/AnalyticsTracker';
 import { SeoManager } from '@/components/SeoManager';
+import { MotionSystem } from '@/components/MotionSystem';
+import { MotionConfig } from 'framer-motion';
 import {
   Route,
   Switch,
@@ -55,16 +57,19 @@ function App() {
   }, []);
 
   return (
+    <MotionConfig reducedMotion="user">
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
           <AnalyticsTracker />
           <SeoManager />
+          <MotionSystem />
           <Router />
         </WouterRouter>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
+    </MotionConfig>
   );
 }
 
