@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { PlayCircle } from 'lucide-react';
 
 type EmbeddedVideo = {
@@ -6,14 +6,14 @@ type EmbeddedVideo = {
   aspectClass: string;
 };
 
-function toPlayableVideoUrl(url: string): string {
+function toPlayableVideoUrl(url: string, reloadToken: string): string {
   try {
     const parsed = new URL(url);
     const uploadMarker = '/video/upload/';
     const uploadIndex = parsed.pathname.indexOf(uploadMarker);
 
     if (
-      !parsed.hostname.endsWith('res.cloudinary.com') ||
+      parsed.hostname !== 'res.cloudinary.com' ||
       uploadIndex === -1
     ) {
       return url;
@@ -21,9 +21,12 @@ function toPlayableVideoUrl(url: string): string {
 
     const transformation = 'f_mp4,vc_h264,ac_aac/';
     const pathAfterUpload = parsed.pathname.slice(uploadIndex + uploadMarker.length);
+    // A stable revision bypasses previously cached media without disabling
+    // caching on every visit. A manual reload gets its own request URL.
+    parsed.searchParams.set('bca_player', reloadToken);
 
     if (pathAfterUpload.startsWith(transformation)) {
-      return url;
+      return parsed.toString();
     }
 
     parsed.pathname =
@@ -90,7 +93,15 @@ export function PublicVideo({
   className?: string;
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [reloadToken, setReloadToken] = useState('2');
+  const [duration, setDuration] = useState<number | null>(null);
+  const [hasError, setHasError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    setIsPlaying(false);
+    setDuration(null);
+    setHasError(false);
+  }, [url, reloadToken]);
   
   if (!url) return null;
 
@@ -116,20 +127,32 @@ export function PublicVideo({
       void videoRef.current.play().catch(() => setIsPlaying(false));
     }
   };
-  const playableUrl = toPlayableVideoUrl(url);
+  const playableUrl = toPlayableVideoUrl(url, reloadToken);
 
   return (
+    <div>
     <div className={`relative w-full rounded-xl overflow-hidden ${className}`}>
       <video
+        key={`${playableUrl}:${reloadToken}`}
         ref={videoRef}
         src={playableUrl}
         controls={isPlaying}
         playsInline
-        preload="auto"
+        preload="metadata"
         poster={posterUrl || undefined}
         className="block w-full h-auto max-h-[80vh] object-contain"
         onPlaying={() => setIsPlaying(true)}
         onEnded={() => setIsPlaying(false)}
+        onLoadedMetadata={(event) => {
+          const seconds = event.currentTarget.duration;
+          setDuration(Number.isFinite(seconds) ? seconds : null);
+          setHasError(false);
+        }}
+        onDurationChange={(event) => {
+          const seconds = event.currentTarget.duration;
+          setDuration(Number.isFinite(seconds) ? seconds : null);
+        }}
+        onError={() => setHasError(true)}
         onLoadedData={() => {
           if (!posterUrl && videoRef.current && videoRef.current.currentTime === 0) {
             videoRef.current.currentTime = 0.1;
@@ -159,6 +182,26 @@ export function PublicVideo({
           </div>
         </div>
       )}
+    </div>
+    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <span aria-live="polite">
+        {hasError
+          ? 'Impossible de charger cette vidéo. Essaie de la recharger.'
+          : duration !== null
+            ? `Durée chargée : ${Math.floor(duration / 60)}:${String(Math.floor(duration % 60)).padStart(2, '0')}`
+            : ''}
+      </span>
+      <button
+        type="button"
+        className="underline underline-offset-2 hover:opacity-80"
+        onClick={() => {
+          videoRef.current?.pause();
+          setReloadToken(`2-${Date.now()}`);
+        }}
+      >
+        Recharger la vidéo
+      </button>
+    </div>
     </div>
   );
 }

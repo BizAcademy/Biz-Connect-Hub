@@ -23,7 +23,9 @@ function SignupButton({ href }: { href: string }) {
 }
 
 export default function Aide() {
-  const { data: videos, isLoading } = useListHelpVideos();
+  const { data: videos, isLoading } = useListHelpVideos({
+    request: { cache: 'no-store' },
+  });
   const { data: content } = useGetContent();
   const signupUrl = content?.signupUrl || '/inscription';
 
@@ -61,7 +63,7 @@ export default function Aide() {
                 >
                   <h2 className="text-xl font-bold mb-2">{v.title}</h2>
                   {v.description && <p className="text-muted-foreground text-sm mb-4">{v.description}</p>}
-                  <PublicVideo url={v.videoUrl} title={v.title} />
+                  <PublicVideo key={v.videoUrl} url={v.videoUrl} title={v.title} />
                   <div className="mt-4 text-center">
                     <SignupButton href={signupUrl} />
                   </div>
