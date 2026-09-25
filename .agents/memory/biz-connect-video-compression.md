@@ -1,10 +1,10 @@
 ---
-name: Compression vidéo Biz Connect
-description: Décision de compression des vidéos envoyées depuis l’administration.
+name: Intégrité des vidéos Biz Connect
+description: Pourquoi la compression temps réel dans le navigateur a été abandonnée.
 ---
 
-Les vidéos locales sont réencodées côté navigateur avant l’upload Cloudinary, avec une cible d’au moins 10 % de réduction. Si le navigateur ne permet pas la capture MediaRecorder ou si la réduction n’est pas atteinte, l’original est envoyé et l’interface l’indique.
+Préserver les octets du fichier original lors de l’envoi. Ne pas réintroduire la compression temps réel via canvas, requestAnimationFrame et MediaRecorder.
 
-**Why:** Les vidéos sont envoyées directement de l’interface vers Cloudinary ; une compression serveur nécessiterait de faire transiter de gros fichiers par l’API et de dépendre de ffmpeg sur Plesk.
+**Why:** Le 2026-09-25, une vidéo compressée contenait 626 secondes d’audio mais seulement 169 secondes d’images. L’analyse des paquets du WebM source et du MP4 Cloudinary a confirmé que le défaut existait avant la conversion de lecture. Un gain de taille de 10 % ne justifie pas la perte des images ; une petite taille de sortie ne prouve pas l’intégrité du fichier.
 
-**How to apply:** Conserver la compression avant la signature et l’upload Cloudinary. Ne pas déplacer ce traitement dans l’API sans revoir les limites de taille, les délais et la disponibilité de ffmpeg en production.
+**How to apply:** Toute future compression doit utiliser un traitement indépendant du rafraîchissement de l’onglet et vérifier l’intégrité des deux pistes sur toute la durée. Ne pas supposer ffmpeg disponible sur Plesk. Conserver séparément la compatibilité H.264 à la lecture ; elle ne peut pas restaurer des images absentes du fichier envoyé.

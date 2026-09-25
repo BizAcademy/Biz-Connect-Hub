@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { getMediaUploadSignature, createMedia } from '@workspace/api-client-react';
 import type { MediaItem } from '@workspace/api-client-react';
-import { compressVideo } from '@/lib/compress-video';
 
 function adminReq(pwd: string) {
   return { headers: { 'x-admin-password': pwd } };
@@ -20,25 +19,13 @@ export function useCloudinaryUpload(pwd: string) {
     opts?: { removeBackground?: boolean },
   ): Promise<MediaItem | null> => {
     setIsUploading(true);
-    setUploadStatus(file.type.startsWith('video/') ? 'Compression de la vidéo…' : 'Envoi en cours…');
+    setUploadStatus(file.type.startsWith('video/')
+      ? 'Envoi de la vidéo originale, sans compression…'
+      : 'Envoi en cours…');
     try {
-      const prepared = file.type.startsWith('video/')
-        ? await compressVideo(file, (progress) => setUploadStatus(`Compression de la vidéo… ${progress}%`))
-        : {
-            file,
-            compressed: false,
-            originalBytes: file.size,
-            compressedBytes: file.size,
-          };
-      const preparedFile = prepared.file;
-
-      if (prepared.compressed) {
-        setUploadStatus(`Vidéo compressée à ${Math.round((prepared.compressedBytes / prepared.originalBytes) * 100)} % — envoi…`);
-      } else if (prepared.message) {
-        setUploadStatus(prepared.message);
-      } else {
-        setUploadStatus('Envoi en cours…');
-      }
+      // Preserve the original bytes: real-time canvas recording can lose video
+      // frames while the audio continues (for example in a background tab).
+      const preparedFile = file;
 
       // 1. Obtenir la signature auprès de notre serveur
       const sig = await getMediaUploadSignature(
