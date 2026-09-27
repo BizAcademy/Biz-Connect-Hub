@@ -96,6 +96,7 @@ export function PublicVideo({
   const [reloadToken, setReloadToken] = useState('2');
   const [duration, setDuration] = useState<number | null>(null);
   const [hasError, setHasError] = useState(false);
+  const [fallbackFor, setFallbackFor] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     setIsPlaying(false);
@@ -127,7 +128,12 @@ export function PublicVideo({
       void videoRef.current.play().catch(() => setIsPlaying(false));
     }
   };
-  const playableUrl = toPlayableVideoUrl(url, reloadToken);
+  // Do not transcode an already playable original. Cloudinary can serve a
+  // short processing placeholder from an on-demand transformation URL.
+  const sourceKey = `${url}:${reloadToken}`;
+  const convertedUrl = toPlayableVideoUrl(url, reloadToken);
+  const usingFallback = fallbackFor === sourceKey;
+  const playableUrl = usingFallback ? convertedUrl : url;
 
   return (
     <div>
@@ -152,10 +158,15 @@ export function PublicVideo({
           const seconds = event.currentTarget.duration;
           setDuration(Number.isFinite(seconds) ? seconds : null);
         }}
-        onError={() => setHasError(true)}
-        onLoadedData={() => {
-          if (!posterUrl && videoRef.current && videoRef.current.currentTime === 0) {
-            videoRef.current.currentTime = 0.1;
+        onError={(event) => {
+          const code = event.currentTarget.error?.code;
+          setIsPlaying(false);
+          if (!usingFallback && convertedUrl !== url && (code === 3 || code === 4)) {
+            setDuration(null);
+            setHasError(false);
+            setFallbackFor(sourceKey);
+          } else {
+            setHasError(true);
           }
         }}
         style={isPlaying ? {} : { pointerEvents: 'none' }}
