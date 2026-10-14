@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { PublicVideo } from '@/components/PublicVideo';
+import { VideoFormatField } from '@/components/VideoFormatField';
 
 function adminReq(pwd: string) {
   return { request: { headers: { 'x-admin-password': pwd } } };
@@ -1122,6 +1123,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         <div className="md:col-span-2 space-y-2">
           <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
           <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
+          <VideoFormatField key={videoUrl ? 'new-video' : 'empty-video'} value={videoUrl} onChange={setVideoUrl} />
           {videoUrl && <PublicVideo url={videoUrl} title={title || 'Aperçu vidéo'} className="mx-auto w-full max-w-lg" />}
         </div>
         <div className="md:col-span-2">
@@ -1179,6 +1181,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         </label>
         <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
         <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
+        <VideoFormatField key={editId} value={eVideoUrl} onChange={setEVideoUrl} />
         {eVideoUrl && <PublicVideo url={eVideoUrl} title={eTitle || 'Aperçu vidéo'} className="mx-auto w-full max-w-lg" />}
         <UploadField pwd={pwd} value={eVideoUrl} onChange={setEVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
       </EditDialog>
