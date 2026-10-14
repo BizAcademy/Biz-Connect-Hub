@@ -732,7 +732,7 @@ function ContentTab({ pwd }: { pwd: string }) {
                       }}
                     />
                   </label>
-                  {form.watch('promoVideoUrl') && <PublicVideo url={form.watch('promoVideoUrl')} title="Aperçu de la vidéo promotionnelle" className="w-full max-w-sm aspect-video" />}
+                  {form.watch('promoVideoUrl') && <PublicVideo url={form.watch('promoVideoUrl')} title="Aperçu de la vidéo promotionnelle" className="w-full max-w-sm" />}
                 </div>
                 <FormField control={form.control} name="promoVideoUrl" render={({ field }) => (
                   <FormItem>
@@ -819,7 +819,7 @@ function ContentTab({ pwd }: { pwd: string }) {
                       }}
                     />
                   </label>
-                  {form.watch('videoUrl') && <PublicVideo url={form.watch('videoUrl')} title="Aperçu de la vidéo de présentation" className="w-full max-w-sm aspect-video" />}
+                  {form.watch('videoUrl') && <PublicVideo url={form.watch('videoUrl')} title="Aperçu de la vidéo de présentation" className="w-full max-w-sm" />}
                 </div>
                 <FormField control={form.control} name="videoUrl" render={({ field }) => (
                   <FormItem>

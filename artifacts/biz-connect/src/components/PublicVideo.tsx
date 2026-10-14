@@ -3,7 +3,8 @@ import { Play } from 'lucide-react';
 
 type EmbeddedVideo = {
   url: string;
-  aspectClass: string;
+  aspectRatio: number;
+  frameClass: string;
 };
 
 function toPlayableVideoUrl(url: string, reloadToken: string): string {
@@ -39,12 +40,41 @@ function toPlayableVideoUrl(url: string, reloadToken: string): string {
   }
 }
 
+function getDeclaredAspectRatio(markup: string): number | null {
+  const iframeTag = markup.match(/<iframe\b[^>]*>/i)?.[0] ?? '';
+  const ratioAttribute = iframeTag.match(/\bdata-aspect-ratio\s*=\s*(["'])(\d+(?:\.\d+)?)\s*[:/]\s*(\d+(?:\.\d+)?)\1/i);
+  if (ratioAttribute) {
+    const ratio = Number(ratioAttribute[2]) / Number(ratioAttribute[3]);
+    if (Number.isFinite(ratio) && ratio >= 0.25 && ratio <= 4) return ratio;
+  }
+
+  const style = iframeTag.match(/\bstyle\s*=\s*(["'])(.*?)\1/i)?.[2] ?? '';
+  const cssRatio = style.match(/aspect-ratio\s*:\s*(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/i);
+  if (cssRatio) {
+    const ratio = Number(cssRatio[1]) / Number(cssRatio[2]);
+    if (Number.isFinite(ratio) && ratio >= 0.25 && ratio <= 4) return ratio;
+  }
+
+  const width = iframeTag.match(/\bwidth\s*=\s*(["']?)(\d+(?:\.\d+)?)(?:px)?\1/i)?.[2] ??
+    style.match(/(?:^|;)\s*width\s*:\s*(\d+(?:\.\d+)?)px/i)?.[1];
+  const height = iframeTag.match(/\bheight\s*=\s*(["']?)(\d+(?:\.\d+)?)(?:px)?\1/i)?.[2] ??
+    style.match(/(?:^|;)\s*height\s*:\s*(\d+(?:\.\d+)?)px/i)?.[1];
+  if (!width || !height) return null;
+  const ratio = Number(width) / Number(height);
+  return Number.isFinite(ratio) && ratio >= 0.25 && ratio <= 4 ? ratio : null;
+}
+
 function toEmbedUrl(url: string): EmbeddedVideo | null {
   if (!url) return null;
   // Accept the standard iframe snippet supplied by video platforms, but
-  // extract only its URL and rebuild a trusted provider embed below.
+  // extract only its URL and dimensions, then rebuild a trusted provider
+  // embed below. Instagram's official snippet is often a blockquote instead.
   const iframeSrc = url.match(/<iframe\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/i);
-  const source = (iframeSrc?.[2] ?? url).replace(/&amp;/gi, '&').trim();
+  const blockquoteCite = url.match(/<blockquote\b[^>]*\bcite\s*=\s*(["'])(.*?)\1/i);
+  const sourceCandidate = iframeSrc?.[2] ?? blockquoteCite?.[2] ??
+    (url.match(/https?:\/\/[^\s"'<>]+/i)?.[0] ?? url);
+  const source = sourceCandidate.replace(/&amp;/gi, '&').trim();
+  const declaredAspectRatio = getDeclaredAspectRatio(url);
   let parsed: URL;
   try {
     parsed = new URL(source);
@@ -57,9 +87,11 @@ function toEmbedUrl(url: string): EmbeddedVideo | null {
 
   const ytShort = source.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/i);
   if (ytShort) {
+    const aspectRatio = declaredAspectRatio ?? 9 / 16;
     return {
       url: `https://www.youtube.com/embed/${ytShort[1]}`,
-      aspectClass: 'aspect-[9/16] max-w-md mx-auto',
+      aspectRatio,
+      frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '',
     };
   }
   const yt = source.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
@@ -67,19 +99,27 @@ function toEmbedUrl(url: string): EmbeddedVideo | null {
     const embed = new URL(`https://www.youtube-nocookie.com/embed/${yt[1]}`);
     const start = parsed.searchParams.get('start') ?? parsed.searchParams.get('t');
     if (start && /^\d+$/.test(start)) embed.searchParams.set('start', start);
-    return { url: embed.toString(), aspectClass: 'aspect-video' };
+    return { url: embed.toString(), aspectRatio: declaredAspectRatio ?? 16 / 9, frameClass: '' };
   }
   const vimeo = path.match(/\/(?:video\/)?(\d+)/i);
-  if (vimeo && ['vimeo.com', 'player.vimeo.com'].includes(host)) return { url: `https://player.vimeo.com/video/${vimeo[1]}`, aspectClass: 'aspect-video' };
+  if (vimeo && ['vimeo.com', 'player.vimeo.com'].includes(host)) {
+    const aspectRatio = declaredAspectRatio ?? 16 / 9;
+    return { url: `https://player.vimeo.com/video/${vimeo[1]}`, aspectRatio, frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '' };
+  }
   const dm = path.match(/\/(?:video\/|embed\/video\/)([A-Za-z0-9]+)/i);
   const dmShort = host === 'dai.ly' ? path.match(/^\/([A-Za-z0-9]+)/) : null;
-  if ((dm || dmShort) && ['dailymotion.com', 'dai.ly'].includes(host)) return { url: `https://www.dailymotion.com/embed/video/${(dm || dmShort)![1]}`, aspectClass: 'aspect-video' };
+  if ((dm || dmShort) && ['dailymotion.com', 'dai.ly'].includes(host)) {
+    const aspectRatio = declaredAspectRatio ?? 16 / 9;
+    return { url: `https://www.dailymotion.com/embed/video/${(dm || dmShort)![1]}`, aspectRatio, frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '' };
+  }
 
   const instagram = path.match(/^\/(reel|p)\/([^/?#]+)/i);
   if (instagram && host === 'instagram.com') {
+    const aspectRatio = declaredAspectRatio ?? (instagram[1].toLowerCase() === 'reel' ? 9 / 16 : 4 / 5);
     return {
       url: `https://www.instagram.com/${instagram[1]}/${instagram[2]}/embed/captioned/`,
-      aspectClass: 'aspect-[9/16] max-w-md mx-auto',
+      aspectRatio,
+      frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '',
     };
   }
 
@@ -87,9 +127,11 @@ function toEmbedUrl(url: string): EmbeddedVideo | null {
   const tikTokEmbedPath = path.match(/^\/embed\/v2\/(\d+)/i);
   if ((tikTokPath || tikTokEmbedPath) && host === 'tiktok.com') {
     const id = (tikTokPath ?? tikTokEmbedPath)![1];
+    const aspectRatio = declaredAspectRatio ?? 9 / 16;
     return {
       url: `https://www.tiktok.com/embed/v2/${id}`,
-      aspectClass: 'aspect-[9/16] max-w-md mx-auto',
+      aspectRatio,
+      frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '',
     };
   }
 
@@ -108,7 +150,8 @@ function toEmbedUrl(url: string): EmbeddedVideo | null {
     const embed = new URL('https://www.facebook.com/plugins/video.php');
     embed.searchParams.set('href', shareUrl);
     embed.searchParams.set('show_text', 'false');
-    return { url: embed.toString(), aspectClass: 'aspect-video' };
+    const aspectRatio = declaredAspectRatio ?? 16 / 9;
+    return { url: embed.toString(), aspectRatio, frameClass: aspectRatio < 1 ? 'max-w-md mx-auto' : '' };
   }
 
   return null;
@@ -143,7 +186,10 @@ export function PublicVideo({
 
   if (embedUrl) {
     return (
-      <div className={`w-full rounded-xl overflow-hidden bg-black shadow-lg ring-1 ring-black/10 ${embedUrl.aspectClass} ${className}`}>
+      <div
+        className={`w-full rounded-xl overflow-hidden bg-black shadow-lg ring-1 ring-black/10 ${embedUrl.frameClass} ${className}`}
+        style={{ aspectRatio: embedUrl.aspectRatio }}
+      >
         <iframe
           src={embedUrl.url}
           title={title}

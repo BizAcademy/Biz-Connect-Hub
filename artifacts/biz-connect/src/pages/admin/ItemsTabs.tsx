@@ -1122,7 +1122,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         <div className="md:col-span-2 space-y-2">
           <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
           <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
-          {videoUrl && <PublicVideo url={videoUrl} title={title || 'Aperçu vidéo'} className="mx-auto aspect-video w-full max-w-lg" />}
+          {videoUrl && <PublicVideo url={videoUrl} title={title || 'Aperçu vidéo'} className="mx-auto w-full max-w-lg" />}
         </div>
         <div className="md:col-span-2">
           <UploadField pwd={pwd} value={videoUrl} onChange={setVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
@@ -1179,7 +1179,7 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
         </label>
         <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
         <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
-        {eVideoUrl && <PublicVideo url={eVideoUrl} title={eTitle || 'Aperçu vidéo'} className="mx-auto aspect-video w-full max-w-lg" />}
+        {eVideoUrl && <PublicVideo url={eVideoUrl} title={eTitle || 'Aperçu vidéo'} className="mx-auto w-full max-w-lg" />}
         <UploadField pwd={pwd} value={eVideoUrl} onChange={setEVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
       </EditDialog>
     </SectionCard>
