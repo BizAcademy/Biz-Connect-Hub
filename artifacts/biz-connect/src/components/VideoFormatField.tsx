@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { readVideoFormat, videoFormatRatio, writeVideoFormat } from '@/lib/video-format';
 
 const formats = [
-  ['', 'Automatique (Shorts : vertical ; lien YouTube classique : horizontal)'],
+  ['', 'Par défaut du Centre d’aide — vertical (9:16)'],
   ['9:16', 'Vertical — 9:16 (Reels, Shorts, WhatsApp)'],
   ['16:9', 'Horizontal — 16:9'],
   ['1:1', 'Carré — 1:1'],
@@ -65,8 +65,9 @@ export function VideoFormatField({ value, onChange }: {
         </div>
       )}
       <p className="text-xs text-muted-foreground">
-        Pour une vidéo verticale hébergée sur un lien YouTube classique, choisissez Vertical.
-        Le lien seul ne révèle pas toujours le format original. Les bandes déjà enregistrées dans le fichier ne peuvent pas être supprimées ici.
+        Le Centre d’aide affiche les vidéos en vertical par défaut, même avec un lien YouTube classique.
+        Pour une vidéo horizontale, choisissez Horizontal. Le lien seul ne révèle pas toujours le format original.
+        Les bandes déjà enregistrées dans le fichier ne peuvent pas être supprimées ici.
       </p>
     </div>
   );

@@ -58,3 +58,28 @@ test('Facebook uses the configured original format too', () => {
   assert.match(html, /facebook\.com\/plugins\/video\.php/);
   assert.match(html, /aspect-ratio:0\.5625/);
 });
+
+test('help page uses a large portrait frame for existing YouTube links and snippets', () => {
+  for (const url of [
+    video,
+    '<iframe src="https://www.youtube.com/embed/aqz-KE-bpKQ" width="560" height="315"></iframe>',
+  ]) {
+    const html = renderToStaticMarkup(createElement(PublicVideo, {
+      url, defaultAspectRatio: 9 / 16, portraitMaxWidth: '36rem',
+    }));
+    assert.match(html, /aspect-ratio:0\.5625/);
+    assert.match(html, /max-width:36rem/);
+    assert.doesNotMatch(html, /80dvh/);
+    assert.doesNotMatch(html, /object-cover/);
+  }
+});
+
+test('explicit horizontal or square formats override the help page portrait default', () => {
+  for (const format of ['16:9', '1:1', '4:5']) {
+    const [width, height] = format.split(':').map(Number);
+    const html = renderToStaticMarkup(createElement(PublicVideo, {
+      url: writeVideoFormat(video, format), defaultAspectRatio: 9 / 16, portraitMaxWidth: '36rem',
+    }));
+    assert.ok(html.includes(`aspect-ratio:${width / height}`));
+  }
+});

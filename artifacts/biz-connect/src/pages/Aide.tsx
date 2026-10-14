@@ -63,7 +63,13 @@ export default function Aide() {
                 >
                   <h2 className="text-xl font-bold mb-2">{v.title}</h2>
                   {v.description && <p className="text-muted-foreground text-sm mb-4">{v.description}</p>}
-                  <PublicVideo key={v.videoUrl} url={v.videoUrl} title={v.title} />
+                  <PublicVideo
+                    key={v.videoUrl}
+                    url={v.videoUrl}
+                    title={v.title}
+                    defaultAspectRatio={9 / 16}
+                    portraitMaxWidth="36rem"
+                  />
                   <div className="mt-4 text-center">
                     <SignupButton href={signupUrl} />
                   </div>

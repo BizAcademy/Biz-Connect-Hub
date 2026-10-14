@@ -67,7 +67,7 @@ function getDeclaredAspectRatio(markup: string): number | null {
   return Number.isFinite(ratio) && ratio >= 0.25 && ratio <= 4 ? ratio : null;
 }
 
-function toEmbedUrl(url: string): EmbeddedVideo | null {
+function toEmbedUrl(url: string, defaultAspectRatio?: number): EmbeddedVideo | null {
   if (!url) return null;
   // Accept the standard iframe snippet supplied by video platforms, but
   // extract only its URL and dimensions, then rebuild a trusted provider
@@ -77,7 +77,10 @@ function toEmbedUrl(url: string): EmbeddedVideo | null {
   const sourceCandidate = iframeSrc?.[2] ?? blockquoteCite?.[2] ??
     (url.match(/https?:\/\/[^\s"'<>]+/i)?.[0] ?? url);
   const source = sourceCandidate.replace(/&amp;/gi, '&').trim();
-  const declaredAspectRatio = getDeclaredAspectRatio(url);
+  // A page default also covers existing entries and the generic 560×315
+  // dimensions supplied by YouTube embed snippets. An explicitly saved
+  // original format must always take precedence.
+  const declaredAspectRatio = videoFormatRatio(url) ?? defaultAspectRatio ?? getDeclaredAspectRatio(url);
   let parsed: URL;
   try {
     parsed = new URL(source);
@@ -167,11 +170,15 @@ export function PublicVideo({
   posterUrl,
   title = "Vidéo",
   className = "",
+  defaultAspectRatio,
+  portraitMaxWidth,
 }: {
   url: string;
   posterUrl?: string | null;
   title?: string;
   className?: string;
+  defaultAspectRatio?: number;
+  portraitMaxWidth?: string;
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [reloadToken, setReloadToken] = useState('2');
@@ -187,7 +194,7 @@ export function PublicVideo({
   
   if (!url) return null;
 
-  const embedUrl = toEmbedUrl(url);
+  const embedUrl = toEmbedUrl(url, defaultAspectRatio);
 
   if (embedUrl) {
     return (
@@ -196,7 +203,7 @@ export function PublicVideo({
         style={{
           aspectRatio: embedUrl.aspectRatio,
           ...(embedUrl.aspectRatio < 1 ? {
-            maxWidth: `min(28rem, calc(80dvh * ${embedUrl.aspectRatio}))`,
+            maxWidth: portraitMaxWidth ?? `min(28rem, calc(80dvh * ${embedUrl.aspectRatio}))`,
             marginInline: 'auto',
           } : {}),
         }}
