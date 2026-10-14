@@ -1,12 +1,16 @@
 import { createHash } from "crypto";
 import { CreateMediaBody } from "@workspace/api-zod";
 import { db, mediaTable } from "@workspace/db";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, getTableColumns, sql } from "drizzle-orm";
 import { Router, type IRouter, type Request, type Response } from "express";
 
 import { requireAdmin } from "../lib/adminAuth";
+import databaseImagesRouter from "./database-images";
+import { DATABASE_IMAGE_PREFIX } from "../lib/database-images";
+import { VIDEO_PREFIX, readVideoMetadata } from "../lib/database-videos";
 
 const router: IRouter = Router();
+router.use(databaseImagesRouter);
 
 const CLOUDINARY_FOLDER = "biz-connect";
 const BACKGROUND_REMOVAL = "cloudinary_ai";
@@ -236,7 +240,10 @@ router.get("/media", async (req: Request, res: Response) => {
   if (!requireAdmin(req, res)) return;
   try {
     const rows = await db
-      .select()
+      .select({
+        ...getTableColumns(mediaTable),
+        url: sql<string>`case when ${mediaTable.publicId} like 'database:%' then '/api/media/' || ${mediaTable.id} || '/content' when ${mediaTable.publicId} like 'database-video:%' then '/api/media/' || ${mediaTable.id} || '/video' else ${mediaTable.url} end`,
+      })
       .from(mediaTable)
       .orderBy(desc(mediaTable.createdAt));
     res.json(
@@ -257,12 +264,6 @@ router.get("/media", async (req: Request, res: Response) => {
  */
 router.post("/media", async (req: Request, res: Response) => {
   if (!requireAdmin(req, res)) return;
-
-  const config = getCloudinaryConfig();
-  if (!config) {
-    res.status(500).json({ error: "Cloudinary n'est pas configuré" });
-    return;
-  }
 
   const parsed = CreateMediaBody.safeParse(req.body);
   if (!parsed.success) {
@@ -326,6 +327,12 @@ router.post("/media", async (req: Request, res: Response) => {
       req.log.error({ err: error }, "Error creating Supabase media");
       res.status(500).json({ error: "Failed to create media" });
     }
+    return;
+  }
+
+  const config = getCloudinaryConfig();
+  if (!config) {
+    res.status(500).json({ error: "Cloudinary n'est pas configuré" });
     return;
   }
 
@@ -420,6 +427,23 @@ router.delete("/media/:id", async (req: Request, res: Response) => {
       .where(eq(mediaTable.id, id));
     if (!row) {
       res.status(404).json({ error: "Media not found" });
+      return;
+    }
+
+    if (row.publicId.startsWith(VIDEO_PREFIX)) {
+      const metadata = readVideoMetadata(row.url);
+      if (!metadata) { res.status(500).json({ error: "Métadonnées vidéo invalides." }); return; }
+      await db.transaction(async tx => {
+        await tx.delete(mediaTable).where(eq(mediaTable.id, id));
+        const [remaining] = await tx.select({ id: mediaTable.id }).from(mediaTable).where(eq(mediaTable.url, row.url)).limit(1);
+        if (!remaining) await tx.execute(sql`select lo_unlink(${metadata.oid}::oid)`);
+      });
+      res.json({ success: true });
+      return;
+    }
+    if (row.publicId.startsWith(DATABASE_IMAGE_PREFIX)) {
+      await db.delete(mediaTable).where(eq(mediaTable.id, id));
+      res.json({ success: true });
       return;
     }
 

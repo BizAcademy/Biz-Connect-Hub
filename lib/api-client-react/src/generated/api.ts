@@ -37,6 +37,9 @@ import type {
   HealthStatus,
   HelpVideo,
   HelpVideoInput,
+  ImageMigrationCandidate,
+  ImageMigrationInput,
+  ImageMigrationResult,
   Lead,
   LeadInput,
   LeadsStats,
@@ -93,6 +96,302 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getUploadDatabaseVideoUrl = () => {
+
+
+
+
+  return `/api/media/uploads/database-video`
+}
+
+/**
+ * @summary Stream a video file into PostgreSQL (MP4 or WebM, maximum 200 MiB)
+ */
+export const uploadDatabaseVideo = async (uploadDatabaseVideoBody: Blob, options?: Parameters<typeof customFetch>[1]): Promise<MediaItem> => {
+
+  return customFetch<MediaItem>(getUploadDatabaseVideoUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream', ...options?.headers },
+    body: uploadDatabaseVideoBody
+  }
+);}
+
+
+
+
+
+export const getUploadDatabaseVideoMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseVideo>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseVideo>>, TError,{data: BodyType<Blob>}, TContext> => {
+
+const mutationKey = ['uploadDatabaseVideo'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadDatabaseVideo>>, {data: BodyType<Blob>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  uploadDatabaseVideo(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadDatabaseVideoMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDatabaseVideo>>>
+    export type UploadDatabaseVideoMutationBody = BodyType<Blob>
+    export type UploadDatabaseVideoMutationError = ErrorType<void>
+
+    /**
+ * @summary Stream a video file into PostgreSQL (MP4 or WebM, maximum 200 MiB)
+ */
+export const useUploadDatabaseVideo = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseVideo>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof uploadDatabaseVideo>>,
+        TError,
+        {data: BodyType<Blob>},
+        TContext
+      > => {
+      return useMutation(getUploadDatabaseVideoMutationOptions(options));
+    }
+
+export const getGetDatabaseVideoUrl = (id: number,) => {
+
+
+
+
+  return `/api/media/${id}/video`
+}
+
+/**
+ * @summary Serve a database video with HTTP byte-range seeking support
+ */
+export const getDatabaseVideo = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+  return customFetch<Blob>(getGetDatabaseVideoUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDatabaseVideoQueryKey = (id: number,) => {
+    return [
+    `/api/media/${id}/video`
+    ] as const;
+    }
+
+
+export const getGetDatabaseVideoQueryOptions = <TData = Awaited<ReturnType<typeof getDatabaseVideo>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseVideo>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDatabaseVideoQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDatabaseVideo>>> = ({ signal }) => getDatabaseVideo(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDatabaseVideo>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDatabaseVideoQueryResult = NonNullable<Awaited<ReturnType<typeof getDatabaseVideo>>>
+export type GetDatabaseVideoQueryError = ErrorType<void>
+
+
+/**
+ * @summary Serve a database video with HTTP byte-range seeking support
+ */
+
+export function useGetDatabaseVideo<TData = Awaited<ReturnType<typeof getDatabaseVideo>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseVideo>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDatabaseVideoQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListCloudinaryImagesUrl = () => {
+
+
+
+
+  return `/api/admin/cloudinary-images`
+}
+
+/**
+ * @summary List Cloudinary images from the library and all configured image fields
+ */
+export const listCloudinaryImages = async ( options?: Parameters<typeof customFetch>[1]): Promise<ImageMigrationCandidate[]> => {
+
+  return customFetch<ImageMigrationCandidate[]>(getListCloudinaryImagesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCloudinaryImagesQueryKey = () => {
+    return [
+    `/api/admin/cloudinary-images`
+    ] as const;
+    }
+
+
+export const getListCloudinaryImagesQueryOptions = <TData = Awaited<ReturnType<typeof listCloudinaryImages>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCloudinaryImages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCloudinaryImagesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCloudinaryImages>>> = ({ signal }) => listCloudinaryImages({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCloudinaryImages>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCloudinaryImagesQueryResult = NonNullable<Awaited<ReturnType<typeof listCloudinaryImages>>>
+export type ListCloudinaryImagesQueryError = ErrorType<void>
+
+
+/**
+ * @summary List Cloudinary images from the library and all configured image fields
+ */
+
+export function useListCloudinaryImages<TData = Awaited<ReturnType<typeof listCloudinaryImages>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCloudinaryImages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCloudinaryImagesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getMigrateCloudinaryImageUrl = () => {
+
+
+
+
+  return `/api/admin/cloudinary-images`
+}
+
+/**
+ * @summary Copy one registered image to the database and atomically replace its image references
+ */
+export const migrateCloudinaryImage = async (imageMigrationInput: ImageMigrationInput, options?: Parameters<typeof customFetch>[1]): Promise<ImageMigrationResult> => {
+
+  return customFetch<ImageMigrationResult>(getMigrateCloudinaryImageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(imageMigrationInput)
+  }
+);}
+
+
+
+
+
+export const getMigrateCloudinaryImageMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migrateCloudinaryImage>>, TError,{data: BodyType<ImageMigrationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof migrateCloudinaryImage>>, TError,{data: BodyType<ImageMigrationInput>}, TContext> => {
+
+const mutationKey = ['migrateCloudinaryImage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof migrateCloudinaryImage>>, {data: BodyType<ImageMigrationInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  migrateCloudinaryImage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MigrateCloudinaryImageMutationResult = NonNullable<Awaited<ReturnType<typeof migrateCloudinaryImage>>>
+    export type MigrateCloudinaryImageMutationBody = BodyType<ImageMigrationInput>
+    export type MigrateCloudinaryImageMutationError = ErrorType<void>
+
+    /**
+ * @summary Copy one registered image to the database and atomically replace its image references
+ */
+export const useMigrateCloudinaryImage = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof migrateCloudinaryImage>>, TError,{data: BodyType<ImageMigrationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof migrateCloudinaryImage>>,
+        TError,
+        {data: BodyType<ImageMigrationInput>},
+        TContext
+      > => {
+      return useMutation(getMigrateCloudinaryImageMutationOptions(options));
+    }
 
 export const getHealthCheckUrl = () => {
 
@@ -4047,6 +4346,236 @@ export const useDeleteHelpVideo = <TError = ErrorType<ErrorResponse>,
       return useMutation(getDeleteHelpVideoMutationOptions(options));
     }
 
+export const getUploadDatabaseImageUrl = () => {
+
+
+
+
+  return `/api/media/uploads/database`
+}
+
+/**
+ * @summary Store an image directly in the database (admin only, maximum 10 MiB)
+ */
+export const uploadDatabaseImage = async (uploadDatabaseImageBody: Blob, options?: Parameters<typeof customFetch>[1]): Promise<MediaItem> => {
+
+  return customFetch<MediaItem>(getUploadDatabaseImageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream', ...options?.headers },
+    body: uploadDatabaseImageBody
+  }
+);}
+
+
+
+
+
+export const getUploadDatabaseImageMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseImage>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseImage>>, TError,{data: BodyType<Blob>}, TContext> => {
+
+const mutationKey = ['uploadDatabaseImage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadDatabaseImage>>, {data: BodyType<Blob>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  uploadDatabaseImage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadDatabaseImageMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDatabaseImage>>>
+    export type UploadDatabaseImageMutationBody = BodyType<Blob>
+    export type UploadDatabaseImageMutationError = ErrorType<void>
+
+    /**
+ * @summary Store an image directly in the database (admin only, maximum 10 MiB)
+ */
+export const useUploadDatabaseImage = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDatabaseImage>>, TError,{data: BodyType<Blob>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof uploadDatabaseImage>>,
+        TError,
+        {data: BodyType<Blob>},
+        TContext
+      > => {
+      return useMutation(getUploadDatabaseImageMutationOptions(options));
+    }
+
+export const getGetDatabaseImageUrl = (id: number,) => {
+
+
+
+
+  return `/api/media/${id}/content`
+}
+
+/**
+ * @summary Serve a public database image with its original bytes and MIME type
+ */
+export const getDatabaseImage = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+  return customFetch<Blob>(getGetDatabaseImageUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDatabaseImageQueryKey = (id: number,) => {
+    return [
+    `/api/media/${id}/content`
+    ] as const;
+    }
+
+
+export const getGetDatabaseImageQueryOptions = <TData = Awaited<ReturnType<typeof getDatabaseImage>>, TError = ErrorType<void>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDatabaseImageQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDatabaseImage>>> = ({ signal }) => getDatabaseImage(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDatabaseImageQueryResult = NonNullable<Awaited<ReturnType<typeof getDatabaseImage>>>
+export type GetDatabaseImageQueryError = ErrorType<void>
+
+
+/**
+ * @summary Serve a public database image with its original bytes and MIME type
+ */
+
+export function useGetDatabaseImage<TData = Awaited<ReturnType<typeof getDatabaseImage>>, TError = ErrorType<void>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDatabaseImageQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetDatabaseImageVariantUrl = (id: number,
+    width: 64 | 160 | 320 | 640 | 960 | 1440,) => {
+
+
+
+
+  return `/api/media/${id}/content/${width}`
+}
+
+/**
+ * @summary Serve a smaller display copy without changing the stored original
+ */
+export const getDatabaseImageVariant = async (id: number,
+    width: 64 | 160 | 320 | 640 | 960 | 1440, options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+  return customFetch<Blob>(getGetDatabaseImageVariantUrl(id,width),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDatabaseImageVariantQueryKey = (id: number,
+    width: 64 | 160 | 320 | 640 | 960 | 1440,) => {
+    return [
+    `/api/media/${id}/content/${width}`
+    ] as const;
+    }
+
+
+export const getGetDatabaseImageVariantQueryOptions = <TData = Awaited<ReturnType<typeof getDatabaseImageVariant>>, TError = ErrorType<void>>(id: number,
+    width: 64 | 160 | 320 | 640 | 960 | 1440, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImageVariant>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDatabaseImageVariantQueryKey(id,width);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDatabaseImageVariant>>> = ({ signal }) => getDatabaseImageVariant(id,width, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined && width !== null && width !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImageVariant>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDatabaseImageVariantQueryResult = NonNullable<Awaited<ReturnType<typeof getDatabaseImageVariant>>>
+export type GetDatabaseImageVariantQueryError = ErrorType<void>
+
+
+/**
+ * @summary Serve a smaller display copy without changing the stored original
+ */
+
+export function useGetDatabaseImageVariant<TData = Awaited<ReturnType<typeof getDatabaseImageVariant>>, TError = ErrorType<void>>(
+ id: number,
+    width: 64 | 160 | 320 | 640 | 960 | 1440, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDatabaseImageVariant>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDatabaseImageVariantQueryOptions(id,width,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getGetMediaUploadSignatureUrl = () => {
 
 
@@ -4275,7 +4804,7 @@ export const getDeleteMediaUrl = (id: number,) => {
 }
 
 /**
- * @summary Delete media from Cloudinary and database (admin only)
+ * @summary Delete a database image or legacy external media (admin only)
  */
 export const deleteMedia = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<DeleteResult> => {
 
@@ -4324,7 +4853,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type DeleteMediaMutationError = ErrorType<ErrorResponse>
 
     /**
- * @summary Delete media from Cloudinary and database (admin only)
+ * @summary Delete a database image or legacy external media (admin only)
  */
 export const useDeleteMedia = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMedia>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}

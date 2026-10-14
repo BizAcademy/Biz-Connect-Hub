@@ -28,6 +28,124 @@ tags:
     description: Community suggestions
 
 paths:
+  /media/uploads/database-video:
+    post:
+      operationId: uploadDatabaseVideo
+      tags: [storage]
+      summary: Stream a video file into PostgreSQL (MP4 or WebM, maximum 200 MiB)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema: { type: string }
+        - name: x-file-name
+          in: header
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "201":
+          description: Stored video with a public range-streaming URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaItem"
+        "401":
+          description: Unauthorized
+        "413":
+          description: File exceeds 200 MiB
+        "415":
+          description: Unsupported video
+        "429":
+          description: Too many concurrent uploads
+  /media/{id}/video:
+    get:
+      operationId: getDatabaseVideo
+      tags: [storage]
+      summary: Serve a database video with HTTP byte-range seeking support
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: Range
+          in: header
+          schema: { type: string }
+      responses:
+        "200":
+          description: Complete video stream
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "206":
+          description: Requested byte range
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "404":
+          description: Video not found
+        "416":
+          description: Invalid byte range
+  /admin/cloudinary-images:
+    get:
+      operationId: listCloudinaryImages
+      tags: [storage]
+      summary: List Cloudinary images from the library and all configured image fields
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Unique source images and their usage locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ImageMigrationCandidate"
+        "401":
+          description: Unauthorized
+    post:
+      operationId: migrateCloudinaryImage
+      tags: [storage]
+      summary: Copy one registered image to the database and atomically replace its image references
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageMigrationInput"
+      responses:
+        "200":
+          description: Transferred or previously transferred image (Cloudinary original retained)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageMigrationResult"
+        "400":
+          description: Invalid URL
+        "401":
+          description: Unauthorized
+        "404":
+          description: Image not registered on this site
+        "409":
+          description: Image changed concurrently
+        "413":
+          description: Image exceeds 10 MiB
+        "415":
+          description: Unsupported image format
+        "502":
+          description: Cloudinary download failed
   /healthz:
     get:
       operationId: healthCheck
@@ -1429,6 +1547,87 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /media/uploads/database:
+    post:
+      operationId: uploadDatabaseImage
+      tags: [storage]
+      summary: Store an image directly in the database (admin only, maximum 10 MiB)
+      parameters:
+        - name: x-admin-password
+          in: header
+          required: true
+          schema: { type: string }
+        - name: x-file-name
+          in: header
+          description: URI-encoded original filename
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+      responses:
+        "201":
+          description: Stored image metadata with a public image URL (not the bytes)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaItem"
+        "400":
+          description: Empty file or invalid filename
+        "401":
+          description: Unauthorized
+        "413":
+          description: Image exceeds 10 MiB
+        "415":
+          description: Unsupported image format
+
+  /media/{id}/content:
+    get:
+      operationId: getDatabaseImage
+      tags: [storage]
+      summary: Serve a public database image with its original bytes and MIME type
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        "200":
+          description: Image bytes (PNG, JPEG, WebP, GIF, AVIF or ICO)
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "404":
+          description: Image not found
+
+  /media/{id}/content/{width}:
+    get:
+      operationId: getDatabaseImageVariant
+      tags: [storage]
+      summary: Serve a smaller display copy without changing the stored original
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: width
+          in: path
+          required: true
+          schema:
+            type: integer
+            enum: [64, 160, 320, 640, 960, 1440]
+      responses:
+        "200":
+          description: Resized JPEG/PNG or original encoding for other image formats
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "400":
+          description: Unsupported width
+        "404":
+          description: Image not found
+
   /media/uploads/signature:
     post:
       operationId: getMediaUploadSignature
@@ -1520,7 +1719,7 @@ paths:
     delete:
       operationId: deleteMedia
       tags: [storage]
-      summary: Delete media from Cloudinary and database (admin only)
+      summary: Delete a database image or legacy external media (admin only)
       parameters:
         - name: id
           in: path
@@ -1658,6 +1857,28 @@ paths:
 
 components:
   schemas:
+    ImageMigrationCandidate:
+      type: object
+      required: [url, name, locations, references]
+      properties:
+        url: { type: string }
+        name: { type: string }
+        locations:
+          type: array
+          items: { type: string }
+        references: { type: integer }
+    ImageMigrationInput:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string, minLength: 1, maxLength: 4096 }
+    ImageMigrationResult:
+      type: object
+      required: [id, url, replacedReferences]
+      properties:
+        id: { type: integer }
+        url: { type: string }
+        replacedReferences: { type: integer }
     HealthStatus:
       type: object
       properties:

@@ -44,3 +44,23 @@ Cette commande est sûre à rejouer : elle applique uniquement les migrations no
 3. Sur Plesk : **Pull** depuis GitHub → **Deploy Now** → **Restart App**.
 
 C'est tout — l'application redémarre avec la nouvelle version sans rebuild.
+
+## Images et vidéos conservées en base
+
+Les images originales restent dans PostgreSQL. Les copies JPEG/PNG adaptées à
+l’affichage sont générées par le serveur et mises en cache ; elles ne remplacent
+pas les originaux.
+
+L’import des vidéos de témoignages accepte MP4/WebM jusqu’à 200 Mo. Les fichiers
+sont conservés dans les objets binaires natifs de PostgreSQL et servis par
+morceaux pour permettre la lecture et le déplacement dans la vidéo. Cette
+fonctionnalité ne nécessite pas de nouvelle migration de tables. L’autre choix
+dans l’administration est l’intégration YouTube, qui conserve seulement un lien.
+
+Le proxy de l’hébergement doit accepter la taille des fichiers importés ; une
+limite du proxy inférieure à 200 Mo reste prioritaire. Pour une vidéo trop
+volumineuse ou une connexion d’envoi lente, utiliser l’intégration YouTube.
+
+**Sauvegardes :** inclure les objets binaires PostgreSQL, pas seulement les tables
+(`pg_dump --blobs`, ou une sauvegarde complète équivalente), et vérifier leur
+restauration. Une exportation des seules tables ne contient pas les fichiers vidéo.

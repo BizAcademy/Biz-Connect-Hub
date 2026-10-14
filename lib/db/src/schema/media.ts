@@ -2,7 +2,8 @@ import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-// Médias uploadés vers Cloudinary (images et vidéos)
+// Images en base (data URL privée, exposée via /api/media/:id/content)
+// et références aux médias externes existants.
 export const mediaTable = pgTable("media", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().default(""),

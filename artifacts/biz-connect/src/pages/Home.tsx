@@ -10,6 +10,7 @@ import { NotificationWidget } from '@/components/NotificationWidget';
 import { Navbar } from '@/components/Navbar';
 import { InfiniteSlider } from '@/components/InfiniteSlider';
 import { PublicVideo } from '@/components/PublicVideo';
+import { SmartImage } from '@/components/SmartImage';
 import { TestimonialsAutoSlider } from '@/components/TestimonialsAutoSlider';
 import {
   ArrowRight, Users, Globe2, TrendingUp, ShieldCheck,
@@ -183,7 +184,7 @@ export default function Home() {
               className="flex items-center justify-center order-first lg:order-none"
             >
               {content.heroImageUrl ? (
-                <img
+                <SmartImage loading="eager" fetchPriority="high" sizes="(max-width: 640px) 300px, 480px"
                   src={content.heroImageUrl}
                   alt="Aperçu de l'application BCA"
                   className="max-h-[340px] lg:max-h-[560px] w-auto object-contain drop-shadow-2xl rounded-3xl"
@@ -470,7 +471,7 @@ export default function Home() {
         <div className="container mx-auto max-w-5xl px-6">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="text-center mb-6">
             {content.countriesIconUrl ? (
-              <img
+              <SmartImage sizes="144px" width={144} height={144}
                 src={content.countriesIconUrl}
                 alt="Pays d'Afrique"
                 className="w-36 h-36 object-contain bg-white mx-auto mb-4 rounded-2xl shadow-[0_10px_25px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.4)] ring-1 ring-black/10 transition-transform hover:scale-105"
@@ -518,7 +519,7 @@ export default function Home() {
       <section className="pt-14 px-6 bg-background">
         <div className="container mx-auto max-w-[84rem]">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="relative">
-            <img
+            <SmartImage sizes="(max-width: 640px) 100vw, 1200px"
               src={communityImage}
               alt="Les membres de la Biz Connect Academy"
               className="w-full object-contain"
@@ -561,7 +562,7 @@ export default function Home() {
                   )}
                   <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-5 overflow-hidden">
                     {s.iconUrl ? (
-                      <img src={s.iconUrl} alt="" className="w-9 h-9 object-contain" />
+                      <SmartImage src={s.iconUrl} sizes="36px" width={36} height={36} alt="" className="w-9 h-9 object-contain" />
                     ) : (
                       <Star className="text-primary" size={26} />
                     )}
@@ -576,7 +577,7 @@ export default function Home() {
                             {t.mediaType === 'video' ? (
                                <PublicVideo url={t.mediaUrl} className="w-full max-h-64" />
                             ) : (
-                              <img src={t.mediaUrl} alt={`Témoignage de ${t.name}`} className="w-full h-40 object-contain bg-muted" />
+                              <SmartImage src={t.mediaUrl} sizes="192px" alt={`Témoignage de ${t.name}`} className="w-full h-40 object-contain bg-muted" />
                             )}
                             <div className="px-3 py-2 text-xs">
                               <span className="font-bold">{t.name}</span>
@@ -634,7 +635,7 @@ export default function Home() {
             {ambassadors.map((a) => (
               <div key={a.id} className="w-56 sm:w-64 shrink-0">
                 <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
-                  <img src={a.imageUrl} alt={a.name} className="w-full aspect-[3/4] object-contain bg-white" />
+                  <SmartImage src={a.imageUrl} sizes="256px" alt={a.name} className="w-full aspect-[3/4] object-contain bg-white" />
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-3 text-sm">
                   <span className="font-bold">{a.name}</span>
@@ -676,7 +677,7 @@ export default function Home() {
 
           {content.gainsPosterUrl ? (
             <div className="mb-12">
-              <img
+              <SmartImage
                 src={content.gainsPosterUrl}
                 alt="Tes gains par affiliation"
                 className="w-full rounded-2xl border border-border shadow-lg"
@@ -718,7 +719,7 @@ export default function Home() {
               <h3 className="mb-6 text-center text-2xl font-bold leading-snug text-foreground sm:text-3xl">
                 {renderGainsSecondaryTitle(content.gainsSecondaryTitle)}
               </h3>
-              <img
+              <SmartImage
                 src={content.gainsSecondaryImageUrl}
                 alt={content.gainsSecondaryTitle}
                 className="w-full rounded-2xl border border-border shadow-lg"
@@ -759,7 +760,7 @@ export default function Home() {
                 ).map((item, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     {item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" loading="lazy" />
+                      <SmartImage src={item.imageUrl} sizes="40px" width={40} height={40} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
                     ) : (
                       <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                     )}
@@ -799,7 +800,7 @@ export default function Home() {
                 >
                   <div className="h-40 bg-white relative overflow-hidden rounded-t-2xl">
                     {course.bannerUrl ? (
-                      <img
+                      <SmartImage sizes="(max-width: 640px) 100vw, 400px"
                         src={course.bannerUrl}
                         alt={course.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
@@ -932,7 +933,7 @@ export default function Home() {
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.partnersTitle}</p>
         <InfiniteSlider speed={31.25} direction="left" gap={48}>
             {partners.map((p) => (
-              <img key={p.id} src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
+              <SmartImage key={p.id} sizes="160px" src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
             ))}
           </InfiniteSlider>
       </section>}
@@ -943,7 +944,7 @@ export default function Home() {
           <InfiniteSlider speed={25} direction="left" gap={40}>
             {paymentMethods.map((pm) => (
               <div key={pm.id} className="h-20 w-20 shrink-0 overflow-hidden rounded-full border bg-background shadow-[0_5px_0_rgba(15,23,42,0.15),0_10px_18px_rgba(15,23,42,0.12)]">
-                <img src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-full w-full object-cover" />
+                <SmartImage sizes="96px" src={pm.logoUrl} alt={pm.name || 'Moyen de paiement'} className="h-full w-full object-cover" />
               </div>
             ))}
           </InfiniteSlider>

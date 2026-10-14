@@ -23,7 +23,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
-import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
+import { useMediaUpload } from '@/hooks/use-media-upload';
+import { SmartImage } from '@/components/SmartImage';
 import { PublicVideo } from '@/components/PublicVideo';
 import { VideoFormatField } from '@/components/VideoFormatField';
 
@@ -31,20 +32,20 @@ function adminReq(pwd: string) {
   return { request: { headers: { 'x-admin-password': pwd } } };
 }
 
-// Reusable upload field: upload a new file to Cloudinary OR pick from the media gallery
+// Images are stored in the database; existing media can also be reused.
 function UploadField({
-  pwd, value, onChange, label, accept = 'image/*',
+  pwd, value, onChange, label, accept = 'image/*', databaseVideo = false,
 }: {
   pwd: string;
   value: string;
   onChange: (url: string) => void;
   label: string;
   accept?: string;
+  databaseVideo?: boolean;
 }) {
-  const { uploadFile, isUploading, uploadStatus } = useCloudinaryUpload(pwd);
+  const { uploadFile, isUploading, uploadStatus } = useMediaUpload(pwd);
   const { toast } = useToast();
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [removeBg, setRemoveBg] = useState(false);
 
   const { data: allMedia } = useListMedia(adminReq(pwd));
 
@@ -52,7 +53,7 @@ function UploadField({
   const wantsVideo = accept.includes('video');
   const wantsImage = accept.includes('image');
   const filteredMedia = (allMedia ?? []).filter((m) => {
-    if (wantsVideo && !wantsImage) return m.resourceType === 'video';
+    if (wantsVideo && !wantsImage) return m.resourceType === 'video' && (!databaseVideo || m.publicId.startsWith('database-video:'));
     if (wantsImage && !wantsVideo) return m.resourceType === 'image';
     return true; // accept both
   });
@@ -61,7 +62,7 @@ function UploadField({
     <div className="space-y-2">
       <div className="text-sm font-medium">{label}</div>
       <div className="flex items-center gap-2 flex-wrap">
-        {/* Upload new file to Cloudinary */}
+        {/* Upload a new file */}
         <label className="inline-flex items-center gap-2 px-3 py-2 border border-border rounded-md text-sm cursor-pointer hover:bg-muted transition-colors">
           {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
            {isUploading ? uploadStatus || 'Envoi en cours…' : 'Importer'}
@@ -73,19 +74,17 @@ function UploadField({
             onChange={async (e) => {
               const file = e.target.files?.[0];
               if (!file) return;
-              const media = await uploadFile(file, { removeBackground: removeBg && !file.type.startsWith('video') });
+              const media = await uploadFile(file, { databaseVideo });
               if (media) {
                 onChange(media.url);
                 toast({ title: 'Fichier envoyé' });
-              } else {
-                toast({ title: 'Erreur', description: "Échec de l'envoi du fichier", variant: 'destructive' });
               }
               e.target.value = '';
             }}
           />
         </label>
 
-        {/* Pick from existing Cloudinary gallery */}
+        {/* Pick from the media gallery */}
         <Dialog open={galleryOpen} onOpenChange={setGalleryOpen}>
           <DialogTrigger asChild>
             <Button type="button" variant="outline" size="sm" className="gap-2 h-9">
@@ -94,7 +93,7 @@ function UploadField({
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Choisir depuis la bibliothèque Cloudinary</DialogTitle>
+              <DialogTitle>Choisir depuis la bibliothèque de médias</DialogTitle>
               <DialogDescription>
                 Clique sur un média pour le sélectionner.
               </DialogDescription>
@@ -117,9 +116,9 @@ function UploadField({
                     }}
                   >
                     {m.resourceType === 'video' ? (
-                      <video src={m.url} className="w-full aspect-square object-contain bg-black" muted playsInline />
+                      <video src={m.url} preload="none" className="w-full aspect-square object-contain bg-black" muted playsInline />
                     ) : (
-                      <img src={m.url} alt={m.name} className="w-full aspect-square object-contain bg-muted" loading="lazy" />
+                      <SmartImage src={m.url} sizes="160px" alt={m.name} className="w-full aspect-square object-contain bg-muted" />
                     )}
                     <div className="px-2 py-1 text-xs truncate text-muted-foreground">{m.name || m.publicId}</div>
                   </button>
@@ -139,15 +138,10 @@ function UploadField({
         )}
       </div>
       {wantsImage && (
-        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
-          <input
-            type="checkbox"
-            className="accent-primary"
-            checked={removeBg}
-            onChange={(e) => setRemoveBg(e.target.checked)}
-          />
-          Supprimer le fond (image détourée, qualité conservée)
-        </label>
+        <p className="text-xs text-muted-foreground">
+          Images enregistrées en base de données, sans Cloudinary — 10 Mo maximum.
+          PNG, JPEG, WebP, GIF, AVIF ou ICO. Importez un PNG transparent pour une image sans fond.
+        </p>
       )}
     </div>
   );
@@ -202,6 +196,31 @@ function SectionCard({ title, desc, children }: { title: string; desc: string; c
       <CardContent className="space-y-6">{children}</CardContent>
     </Card>
   );
+}
+
+function TestimonialMediaField(props: Parameters<typeof UploadField>[0]) {
+  const isVideo = props.accept?.includes('video');
+  const [source, setSource] = useState<'database' | 'youtube'>(() =>
+    props.value && !/^\/api\/media\/\d+\/video$/.test(props.value) ? 'youtube' : 'database');
+  if (!isVideo) return <UploadField {...props} />;
+  return <div className="space-y-3">
+    <fieldset className="flex flex-wrap gap-4 text-sm">
+      <legend className="text-sm font-medium mb-2">Source de la vidéo du témoignage</legend>
+      {(['database', 'youtube'] as const).map(option => (
+        <label key={option} className="flex items-center gap-2">
+          <input type="radio" checked={source === option} onChange={() => { setSource(option); props.onChange(''); }} />
+          {option === 'database' ? 'Importer dans la base de données' : 'Intégrer YouTube'}
+        </label>
+      ))}
+    </fieldset>
+    {source === 'database' ? <>
+      <UploadField {...props} accept="video/mp4,video/webm" databaseVideo label="Fichier vidéo (base de données)" />
+      <p className="text-xs text-muted-foreground">Fichier conservé en base, sans Cloudinary ni Supabase. MP4 ou WebM, 200 Mo maximum. Choisissez YouTube pour un fichier plus volumineux.</p>
+    </> : <>
+      <Textarea aria-label="Lien YouTube du témoignage" placeholder="Lien YouTube ou code d’intégration iframe" value={props.value} onChange={event => props.onChange(event.target.value)} rows={2} />
+      <p className="text-xs text-muted-foreground">La vidéo reste hébergée sur YouTube ; seul le lien d’intégration est enregistré.</p>
+    </>}
+  </div>;
 }
 
 // --------------------------------------------------------
@@ -348,7 +367,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
             <option value="video">Vidéo</option>
           </select>
         </div>
-        <UploadField
+        <TestimonialMediaField
           pwd={pwd}
           value={mediaUrl}
           onChange={setMediaUrl}
@@ -427,7 +446,7 @@ export function TestimonialsTab({ pwd }: { pwd: string }) {
           <option value="image">Capture d'écran</option>
           <option value="video">Vidéo</option>
         </select>
-        <UploadField
+        <TestimonialMediaField
           pwd={pwd}
           value={eMediaUrl}
           onChange={setEMediaUrl}
@@ -806,7 +825,7 @@ function ServiceTestimonialsDialog({
                 <option value="video">Vidéo</option>
               </select>
               <div className="md:col-span-2">
-                <UploadField
+                <TestimonialMediaField
                   pwd={pwd}
                   value={mediaUrl}
                   onChange={setMediaUrl}
@@ -877,7 +896,7 @@ function ServiceTestimonialsDialog({
             <option value="image">Photo</option>
             <option value="video">Vidéo</option>
           </select>
-          <UploadField
+          <TestimonialMediaField
             pwd={pwd}
             value={eMediaUrl}
             onChange={setEMediaUrl}

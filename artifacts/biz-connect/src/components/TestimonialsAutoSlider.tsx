@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { SmartImage } from './SmartImage';
 import type { Testimonial } from '@workspace/api-client-react';
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -150,7 +151,7 @@ export function TestimonialsAutoSlider({ testimonials }: { testimonials: Testimo
             {/* Capture d'écran */}
             {t.mediaUrl && (
               <div className="mx-2 mb-3 overflow-hidden rounded-xl border border-border/60 bg-muted/20 p-1 sm:mx-3 sm:mb-4">
-                <img
+                <SmartImage sizes="(max-width: 640px) 90vw, 480px"
                   src={t.mediaUrl}
                   alt={`Témoignage de ${t.name}`}
                   className="block h-auto max-h-[32rem] w-full rounded-lg bg-white object-contain"

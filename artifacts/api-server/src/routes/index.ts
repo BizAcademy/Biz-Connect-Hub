@@ -9,6 +9,8 @@ import mediaRouter from "./media";
 import migrateRouter from "./migrate";
 import analyticsRouter from "./analytics";
 import suggestionsRouter from "./suggestions";
+import cloudinaryImagesRouter from "./cloudinary-images";
+import databaseVideosRouter from "./database-videos";
 
 const router: IRouter = Router();
 
@@ -22,5 +24,7 @@ router.use(mediaRouter);
 router.use(migrateRouter);
 router.use(analyticsRouter);
 router.use(suggestionsRouter);
+router.use(cloudinaryImagesRouter);
+router.use(databaseVideosRouter);
 
 export default router;

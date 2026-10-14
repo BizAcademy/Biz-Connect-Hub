@@ -9,6 +9,79 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Stream a video file into PostgreSQL (MP4 or WebM, maximum 200 MiB)
+ */
+export const UploadDatabaseVideoHeader = zod.object({
+  "x-admin-password": zod.string(),
+  "x-file-name": zod.string().optional()
+})
+
+export const UploadDatabaseVideoResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "url": zod.string(),
+  "publicId": zod.string(),
+  "resourceType": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Serve a database video with HTTP byte-range seeking support
+ */
+
+
+
+export const GetDatabaseVideoParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const GetDatabaseVideoHeader = zod.object({
+  "Range": zod.string().optional()
+})
+
+export const GetDatabaseVideoResponse = zod.unknown()
+
+
+/**
+ * @summary List Cloudinary images from the library and all configured image fields
+ */
+export const ListCloudinaryImagesHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const ListCloudinaryImagesResponseItem = zod.object({
+  "url": zod.string(),
+  "name": zod.string(),
+  "locations": zod.array(zod.string()),
+  "references": zod.number().int()
+})
+export const ListCloudinaryImagesResponse = zod.array(ListCloudinaryImagesResponseItem)
+
+
+/**
+ * @summary Copy one registered image to the database and atomically replace its image references
+ */
+export const MigrateCloudinaryImageHeader = zod.object({
+  "x-admin-password": zod.string()
+})
+
+export const migrateCloudinaryImageBodyUrlMax = 4096;
+
+
+
+export const MigrateCloudinaryImageBody = zod.object({
+  "url": zod.string().min(1).max(migrateCloudinaryImageBodyUrlMax)
+})
+
+export const MigrateCloudinaryImageResponse = zod.object({
+  "id": zod.number().int(),
+  "url": zod.string(),
+  "replacedReferences": zod.number().int()
+})
+
+
+/**
  * Returns server health status
  * @summary Health check
  */
@@ -1253,6 +1326,51 @@ export const DeleteHelpVideoResponse = zod.object({
 
 
 /**
+ * @summary Store an image directly in the database (admin only, maximum 10 MiB)
+ */
+export const UploadDatabaseImageHeader = zod.object({
+  "x-admin-password": zod.string(),
+  "x-file-name": zod.string().optional().describe('URI-encoded original filename')
+})
+
+export const UploadDatabaseImageResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "url": zod.string(),
+  "publicId": zod.string(),
+  "resourceType": zod.string(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Serve a public database image with its original bytes and MIME type
+ */
+
+
+
+export const GetDatabaseImageParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const GetDatabaseImageResponse = zod.unknown()
+
+
+/**
+ * @summary Serve a smaller display copy without changing the stored original
+ */
+
+
+
+export const GetDatabaseImageVariantParams = zod.object({
+  "id": zod.coerce.number().int().min(1),
+  "width": zod.union([zod.literal(64),zod.literal(160),zod.literal(320),zod.literal(640),zod.literal(960),zod.literal(1440)])
+})
+
+export const GetDatabaseImageVariantResponse = zod.unknown()
+
+
+/**
  * @summary Get a signed Cloudinary upload signature (admin only)
  */
 export const GetMediaUploadSignatureHeader = zod.object({
@@ -1321,7 +1439,7 @@ export const CreateMediaResponse = zod.object({
 
 
 /**
- * @summary Delete media from Cloudinary and database (admin only)
+ * @summary Delete a database image or legacy external media (admin only)
  */
 export const DeleteMediaParams = zod.object({
   "id": zod.coerce.number()

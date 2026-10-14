@@ -1,6 +1,34 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import { videoFormatRatio } from '@/lib/video-format';
+import { imageDisplayUrl } from './SmartImage';
+
+function DeferredEmbed({ url, title }: { url: string; title: string }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const [active, setActive] = useState(false);
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setReady(false);
+    if (!frame.current) return;
+    if (!('IntersectionObserver' in window)) { setActive(true); return; }
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) { setActive(true); observer.disconnect(); }
+    }, { rootMargin: '200px' });
+    observer.observe(frame.current);
+    return () => observer.disconnect();
+  }, [url]);
+  return <div className="relative w-full h-full bg-slate-900">
+    <iframe ref={frame} src={active ? url : undefined} data-src={url} title={title} loading="lazy"
+      onLoad={() => { if (active) setReady(true); }}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen referrerPolicy="strict-origin-when-cross-origin" className="w-full h-full" />
+    {!ready && <button type="button" onClick={() => setActive(true)}
+      className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white"
+      aria-label={`Charger la vidéo : ${title}`}>
+      <Play className="w-12 h-12" /> <span>{active ? 'Chargement du lecteur…' : 'Charger la vidéo'}</span>
+    </button>}
+  </div>;
+}
 
 type EmbeddedVideo = {
   url: string;
@@ -185,6 +213,7 @@ export function PublicVideo({
   const [duration, setDuration] = useState<number | null>(null);
   const [hasError, setHasError] = useState(false);
   const [fallbackFor, setFallbackFor] = useState<string | null>(null);
+  const [buffering, setBuffering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     setIsPlaying(false);
@@ -208,14 +237,7 @@ export function PublicVideo({
           } : {}),
         }}
       >
-        <iframe
-          src={embedUrl.url}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-          className="w-full h-full"
-        />
+        <DeferredEmbed key={embedUrl.url} url={embedUrl.url} title={title} />
       </div>
     );
   }
@@ -235,17 +257,19 @@ export function PublicVideo({
 
   return (
     <div>
-    <div className={`relative w-full rounded-xl overflow-hidden ${className}`}>
+    <div className={`relative w-full rounded-xl overflow-hidden bg-slate-900 ${className}`}>
       <video
         key={`${playableUrl}:${reloadToken}`}
         ref={videoRef}
         src={playableUrl}
         controls={isPlaying}
         playsInline
-        preload="metadata"
-        poster={posterUrl || undefined}
+        preload="none"
+        poster={posterUrl ? imageDisplayUrl(posterUrl) : undefined}
         className="block w-full h-auto max-h-[80vh] object-contain"
-        onPlaying={() => setIsPlaying(true)}
+        onWaiting={() => setBuffering(true)}
+        onCanPlay={() => setBuffering(false)}
+        onPlaying={() => { setIsPlaying(true); setBuffering(false); }}
         onEnded={() => setIsPlaying(false)}
         onLoadedMetadata={(event) => {
           const seconds = event.currentTarget.duration;
@@ -267,8 +291,14 @@ export function PublicVideo({
             setHasError(true);
           }
         }}
-        style={isPlaying ? {} : { pointerEvents: 'none' }}
+        style={{
+          ...(duration === null ? { aspectRatio: videoFormatRatio(url) ?? defaultAspectRatio ?? 16 / 9 } : {}),
+          ...(!isPlaying ? { pointerEvents: 'none' as const } : {}),
+        }}
       />
+      {isPlaying && buffering && <div role="status" className="pointer-events-none absolute inset-0 flex items-center justify-center text-white bg-black/20">
+        <span className="rounded-lg bg-black/60 px-3 py-2 text-sm">Chargement de la vidéo…</span>
+      </div>}
 
       {!isPlaying && (
         <button

@@ -5,6 +5,27 @@
  * API specification for Biz Connect Academy
  * OpenAPI spec version: 0.1.0
  */
+export interface ImageMigrationCandidate {
+  url: string;
+  name: string;
+  locations: string[];
+  references: number;
+}
+
+export interface ImageMigrationInput {
+  /**
+     * @minLength 1
+     * @maxLength 4096
+     */
+  url: string;
+}
+
+export interface ImageMigrationResult {
+  id: number;
+  url: string;
+  replacedReferences: number;
+}
+
 export interface HealthStatus {
   status: string;
 }

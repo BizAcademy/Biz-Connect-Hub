@@ -8,7 +8,9 @@ import { Loader2, Trash2, Upload, Copy, Film, Image as ImageIcon, ArrowRightLeft
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
+import { useMediaUpload } from '@/hooks/use-media-upload';
+import { ImageMigrationPanel } from './ImageMigrationPanel';
+import { SmartImage } from '@/components/SmartImage';
 
 function adminReq(pwd: string) {
   return { request: { headers: { 'x-admin-password': pwd } } };
@@ -219,8 +221,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
   const { toast } = useToast();
   const { data: items, isLoading } = useListMedia(adminReq(pwd));
   const del = useDeleteMedia(adminReq(pwd));
-  const { uploadFile, isUploading, uploadStatus } = useCloudinaryUpload(pwd);
-  const [removeBg, setRemoveBg] = useState(false);
+  const { uploadFile, isUploading, uploadStatus } = useMediaUpload(pwd);
 
   const refresh = () => qc.invalidateQueries({ queryKey: getListMediaQueryKey() });
 
@@ -234,6 +235,7 @@ export function MediaTab({ pwd }: { pwd: string }) {
 
   return (
     <div className="space-y-4">
+      <ImageMigrationPanel pwd={pwd} />
       {/* ── Migration Cloudinary → Supabase ── */}
       <Card>
         <CardHeader className="pb-3">
@@ -271,26 +273,21 @@ export function MediaTab({ pwd }: { pwd: string }) {
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  const media = await uploadFile(file, { removeBackground: removeBg && file.type.startsWith('image') });
+                  const media = await uploadFile(file);
                   if (media) {
                     refresh();
                     toast({ title: 'Média envoyé', description: media.name });
-                  } else {
-                    toast({ title: 'Erreur', description: "Échec de l'envoi du fichier", variant: 'destructive' });
                   }
                   e.target.value = '';
                 }}
               />
             </label>
-            <label className="mt-3 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer select-none">
-              <input
-                type="checkbox"
-                className="accent-primary"
-                checked={removeBg}
-                onChange={(e) => setRemoveBg(e.target.checked)}
-              />
-              Supprimer le fond (images uniquement — image détourée, qualité conservée)
-            </label>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Les nouvelles images sont stockées directement en base de données, sans Cloudinary
+              (PNG, JPEG, WebP, GIF, AVIF ou ICO, 10 Mo maximum).
+              Les fichiers vidéo sont envoyés sur Supabase ; vos liens YouTube et Facebook restent inchangés.
+              Pour un fond transparent, importez un PNG déjà détouré.
+            </p>
           </div>
 
           {(!items || items.length === 0) ? (
@@ -303,9 +300,9 @@ export function MediaTab({ pwd }: { pwd: string }) {
                 <div key={m.id} className="rounded-lg border border-border overflow-hidden bg-muted/10">
                   <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
                     {m.resourceType === 'video' ? (
-                      <video src={m.url} className="w-full h-full object-contain bg-black" muted playsInline />
+                      <video src={m.url} preload="none" className="w-full h-full object-contain bg-black" muted playsInline />
                     ) : (
-                      <img src={m.url} alt={m.name} className="w-full h-full object-contain bg-muted" loading="lazy" />
+                      <SmartImage src={m.url} sizes="240px" alt={m.name} className="w-full h-full object-contain bg-muted" />
                     )}
                   </div>
                   <div className="p-2 space-y-2">
