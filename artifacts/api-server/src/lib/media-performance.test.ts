@@ -45,3 +45,21 @@ test("image variants reduce transfer size and retain originals and transparency"
   const gif = { bytes: Buffer.from("GIF89a"), mimeType: "image/gif" };
   assert.equal(await imageVariant(gif, 320), gif);
 });
+
+test("opaque PNG posters can be lighter JPEG displays without touching the original", async () => {
+  const photo = new Jimp({ width: 160, height: 160, color: 0xffffffff });
+  let seed = 123456;
+  for (let offset = 0; offset < photo.bitmap.data.length; offset += 4) {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    photo.bitmap.data[offset] = seed & 255;
+    photo.bitmap.data[offset + 1] = (seed >>> 8) & 255;
+    photo.bitmap.data[offset + 2] = (seed >>> 16) & 255;
+  }
+  const original = await photo.getBuffer("image/png");
+  const before = Buffer.from(original);
+  const variant = await imageVariant({ bytes: original, mimeType: "image/png" }, 320);
+  assert.equal(variant.mimeType, "image/jpeg");
+  assert(variant.bytes.length < original.length);
+  assert.equal((await Jimp.read(variant.bytes)).width, 160);
+  assert.deepEqual(original, before);
+});

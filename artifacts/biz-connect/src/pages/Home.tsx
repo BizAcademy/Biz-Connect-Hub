@@ -12,6 +12,8 @@ import { InfiniteSlider } from '@/components/InfiniteSlider';
 import { PublicVideo } from '@/components/PublicVideo';
 import { SmartImage } from '@/components/SmartImage';
 import { TestimonialsAutoSlider } from '@/components/TestimonialsAutoSlider';
+import { VideoTestimonials } from '@/components/VideoTestimonials';
+import { PartnerLogos } from '@/components/PartnerLogos';
 import {
   ArrowRight, Users, Globe2, TrendingUp, ShieldCheck,
   Briefcase, GraduationCap, ChevronRight, CheckCircle2, Lock,
@@ -136,7 +138,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="home-emphasis min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans overflow-hidden">
+    <div className="home-emphasis home-compact min-h-screen bg-background text-foreground selection:bg-primary/30 font-sans overflow-hidden">
 
       <Navbar />
 
@@ -365,7 +367,7 @@ export default function Home() {
 
       {/* ===== TÉMOIGNAGES VIDÉO (galerie manuelle + ZAPPER) ===== */}
       {(() => {
-        const vidTestimonials = (testimonials ?? []).filter(t => t.mediaType === 'video');
+        const vidTestimonials = (testimonials ?? []).filter(t => t.mediaType === 'video' && Boolean(t.mediaUrl?.trim()));
         if (vidTestimonials.length === 0) return null;
         return (
           <section className="py-8 px-4 bg-muted/30 border-t border-border sm:py-12 sm:px-6">
@@ -380,13 +382,7 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">Glisse pour passer d'une vidéo à l'autre</p>
               </div>
 
-              <div className="flex items-start gap-5 overflow-x-auto snap-x snap-mandatory pb-3" style={{ scrollbarWidth: 'none' }}>
-                {vidTestimonials.map((t) => (
-                  <div
-                    key={t.id}
-                    className="h-fit self-start bg-card border border-border rounded-2xl overflow-hidden shadow-[0_8px_0_rgba(30,64,175,0.14),0_18px_30px_rgba(15,23,42,0.18)] flex flex-col shrink-0 w-[calc(100vw-3rem)] max-w-[22rem] snap-center sm:max-w-none sm:w-[32rem]"
-                  >
-                    {/* Infos */}
+              <VideoTestimonials items={vidTestimonials} renderHeader={t => (
                     <div className="p-3 pb-2 sm:p-4 sm:pb-3">
                       <div className="font-bold text-xs leading-snug sm:text-sm">
                         {t.name}
@@ -411,28 +407,7 @@ export default function Home() {
                       )}
                     </div>
 
-                    {/* Vidéo : cadre qui s'adapte au format, bords arrondis + effet 3D */}
-                    {t.mediaUrl && (
-                      <div className="mx-2 overflow-hidden rounded-xl border border-border/60 bg-black p-1 sm:mx-3">
-                        <PublicVideo
-                          url={t.mediaUrl}
-                          title={`Témoignage de ${t.name}`}
-                          className="rounded-xl"
-                        />
-                      </div>
-                    )}
-
-                    {/* ZAPPER */}
-                    <div
-                      className="flex items-center justify-start gap-2 border-t-2 border-blue-700 bg-blue-600 px-4 py-3 text-left text-sm font-black uppercase tracking-wider text-white shadow-inner"
-                      aria-label="Zapper vers la vidéo suivante"
-                    >
-                      <ArrowRight size={20} strokeWidth={3} aria-hidden="true" />
-                      <span>ZAPPER</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              )} />
             </div>
           </section>
         );
@@ -861,7 +836,7 @@ export default function Home() {
       </section>
 
       {/* ===== 13. CTA FINAL ===== */}
-      <section className="mx-4 my-8 rounded-3xl border-4 border-white bg-primary px-6 py-14 text-center text-primary-foreground relative overflow-hidden shadow-[0_10px_0_rgba(255,255,255,0.35),0_24px_45px_rgba(15,23,42,0.28)] sm:mx-6 lg:mx-10">
+      <section className="mx-4 my-4 rounded-3xl border-4 border-white bg-primary px-6 py-14 text-center text-primary-foreground relative overflow-hidden shadow-[0_10px_0_rgba(255,255,255,0.35),0_24px_45px_rgba(15,23,42,0.28)] sm:mx-6 lg:mx-10">
         <div className="container mx-auto max-w-3xl relative z-10">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 leading-tight text-green-300">
             {content.ctaTitle}
@@ -931,11 +906,7 @@ export default function Home() {
       {/* ===== 16. PARTENAIRES — slider infini ===== */}
       {partners && partners.length > 0 && <section className="py-6 bg-background border-b border-border overflow-hidden">
         <p className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-6">{content.partnersTitle}</p>
-        <InfiniteSlider speed={31.25} direction="left" gap={48}>
-            {partners.map((p) => (
-              <SmartImage key={p.id} sizes="160px" src={p.logoUrl} alt={p.name || 'Partenaire'} className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition-all" />
-            ))}
-          </InfiniteSlider>
+        <PartnerLogos partners={partners} />
       </section>}
 
       {/* ===== 17. PAIEMENTS — slider infini ===== */}

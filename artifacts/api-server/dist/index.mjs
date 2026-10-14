@@ -93969,11 +93969,21 @@ async function imageVariant(image2, width) {
   if (pending.has(key)) return pending.get(key);
   const task = (async () => {
     if (image2.mimeType === "image/png" && image2.bytes.length >= 24 && image2.bytes.readUInt32BE(16) * image2.bytes.readUInt32BE(20) > 24e6) return image2;
+    if (image2.mimeType === "image/png" && image2.bytes.includes(Buffer.from("acTL"))) return image2;
     const decoded = await Jimp.read(image2.bytes, { "image/jpeg": { maxResolutionInMP: 24, maxMemoryUsageInMB: 128 } });
-    if (decoded.width <= width || decoded.width * decoded.height > 24e6) return image2;
-    decoded.resize({ w: width });
-    const bytes = image2.mimeType === "image/jpeg" ? await decoded.getBuffer("image/jpeg", { quality: 80 }) : await decoded.getBuffer("image/png");
-    const result = bytes.length < image2.bytes.length ? { bytes, mimeType: image2.mimeType } : image2;
+    if (decoded.width * decoded.height > 24e6) return image2;
+    if (decoded.width > width) decoded.resize({ w: width });
+    else if (image2.mimeType === "image/jpeg") return image2;
+    let mimeType = image2.mimeType;
+    let bytes = image2.mimeType === "image/jpeg" ? await decoded.getBuffer("image/jpeg", { quality: 80 }) : await decoded.getBuffer("image/png");
+    if (mimeType === "image/png" && !decoded.hasAlpha()) {
+      const jpeg2 = await decoded.getBuffer("image/jpeg", { quality: 86 });
+      if (jpeg2.length < bytes.length) {
+        bytes = jpeg2;
+        mimeType = "image/jpeg";
+      }
+    }
+    const result = bytes.length < image2.bytes.length ? { bytes, mimeType } : image2;
     if (result.bytes.length <= MAX_CACHE_BYTES) {
       while (cacheBytes + result.bytes.length > MAX_CACHE_BYTES && cache.size) {
         const oldest = cache.keys().next().value;
@@ -95218,7 +95228,7 @@ router12.get("/media/:id/video", async (req, res) => {
         yield bytes;
       }
     };
-    await pipeline(Readable.from(chunks()), res);
+    await pipeline(Readable.from(chunks(), { objectMode: false, highWaterMark: VIDEO_CHUNK_BYTES }), res);
   } catch (error40) {
     if (!res.destroyed) {
       req.log.error({ err: error40 }, "Database video streaming failed");

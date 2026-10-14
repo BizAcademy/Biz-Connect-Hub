@@ -65,7 +65,9 @@ router.get("/media/:id/video", async (req, res) => {
         yield bytes;
       }
     };
-    await pipeline(Readable.from(chunks()), res);
+    // Binary backpressure: do not queue the default 16 one-megabyte objects
+    // per viewer, especially when mobile connections cannot drain them yet.
+    await pipeline(Readable.from(chunks(), { objectMode: false, highWaterMark: VIDEO_CHUNK_BYTES }), res);
   } catch (error) {
     if (!res.destroyed) {
       req.log.error({ err: error }, "Database video streaming failed");

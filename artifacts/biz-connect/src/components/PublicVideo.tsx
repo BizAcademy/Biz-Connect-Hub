@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Play } from 'lucide-react';
 import { videoFormatRatio } from '@/lib/video-format';
 import { imageDisplayUrl } from './SmartImage';
@@ -200,6 +200,7 @@ export function PublicVideo({
   className = "",
   defaultAspectRatio,
   portraitMaxWidth,
+  preload = 'none',
 }: {
   url: string;
   posterUrl?: string | null;
@@ -207,6 +208,7 @@ export function PublicVideo({
   className?: string;
   defaultAspectRatio?: number;
   portraitMaxWidth?: string;
+  preload?: 'none' | 'metadata';
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [reloadToken, setReloadToken] = useState('2');
@@ -215,10 +217,34 @@ export function PublicVideo({
   const [fallbackFor, setFallbackFor] = useState<string | null>(null);
   const [buffering, setBuffering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [nearViewport, setNearViewport] = useState(false);
+  const attachVideo = useCallback((node: HTMLVideoElement | null) => {
+    const previous = videoRef.current;
+    if (previous && previous !== node) {
+      previous.pause();
+      previous.removeAttribute('src');
+      previous.load();
+    }
+    videoRef.current = node;
+  }, []);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (preload !== 'metadata' || !video) return;
+    if (!('IntersectionObserver' in window)) { setNearViewport(true); return; }
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) {
+        setNearViewport(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '250px' });
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [url, preload, reloadToken]);
   useEffect(() => {
     setIsPlaying(false);
     setDuration(null);
     setHasError(false);
+    setBuffering(false);
   }, [url, reloadToken]);
   
   if (!url) return null;
@@ -260,16 +286,17 @@ export function PublicVideo({
     <div className={`relative w-full rounded-xl overflow-hidden bg-slate-900 ${className}`}>
       <video
         key={`${playableUrl}:${reloadToken}`}
-        ref={videoRef}
+        ref={attachVideo}
         src={playableUrl}
         controls={isPlaying}
         playsInline
-        preload="none"
+        preload={preload === 'metadata' && nearViewport ? 'metadata' : 'none'}
         poster={posterUrl ? imageDisplayUrl(posterUrl) : undefined}
         className="block w-full h-auto max-h-[80vh] object-contain"
         onWaiting={() => setBuffering(true)}
         onCanPlay={() => setBuffering(false)}
         onPlaying={() => { setIsPlaying(true); setBuffering(false); }}
+        onPause={() => { setIsPlaying(false); setBuffering(false); }}
         onEnded={() => setIsPlaying(false)}
         onLoadedMetadata={(event) => {
           const seconds = event.currentTarget.duration;
