@@ -24,6 +24,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
 } from '@/components/ui/dialog';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
+import { PublicVideo } from '@/components/PublicVideo';
 
 function adminReq(pwd: string) {
   return { request: { headers: { 'x-admin-password': pwd } } };
@@ -1118,7 +1119,11 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
           <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={sortOrder} onChange={(e) => setSortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
-        <Input className="md:col-span-2" placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
+        <div className="md:col-span-2 space-y-2">
+          <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
+          <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
+          {videoUrl && <PublicVideo url={videoUrl} title={title || 'Aperçu vidéo'} className="mx-auto aspect-video w-full max-w-lg" />}
+        </div>
         <div className="md:col-span-2">
           <UploadField pwd={pwd} value={videoUrl} onChange={setVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
         </div>
@@ -1172,7 +1177,9 @@ export function HelpVideosTab({ pwd }: { pwd: string }) {
           <span className="shrink-0 text-muted-foreground">Ordre (1 = premier)</span>
           <Input type="number" min="0" step="1" value={eSortOrder} onChange={(e) => setESortOrder(Math.max(0, Number(e.target.value) || 0))} />
         </label>
-        <Input placeholder="Lien vidéo (YouTube embed, ou fichier envoyé ci-dessous)" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
+        <Textarea rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par YouTube, Facebook, Vimeo, TikTok…" value={eVideoUrl} onChange={(e) => setEVideoUrl(e.target.value)} />
+        <p className="text-xs text-muted-foreground">Lien direct accepté, ou collez le code d’intégration « iframe » de la plateforme.</p>
+        {eVideoUrl && <PublicVideo url={eVideoUrl} title={eTitle || 'Aperçu vidéo'} className="mx-auto aspect-video w-full max-w-lg" />}
         <UploadField pwd={pwd} value={eVideoUrl} onChange={setEVideoUrl} label="Ou envoyer un fichier vidéo" accept="video/*" />
       </EditDialog>
     </SectionCard>

@@ -28,6 +28,7 @@ import { TrainingsTab, TestimonialsTab, AmbassadorsTab, PartnersTab, PaymentsTab
 import { MediaTab } from '@/pages/admin/MediaTab';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 import { Upload } from 'lucide-react';
+import { PublicVideo } from '@/components/PublicVideo';
 
 // Auth Form Schema
 const authSchema = z.object({
@@ -731,12 +732,14 @@ function ContentTab({ pwd }: { pwd: string }) {
                       }}
                     />
                   </label>
-                  {form.watch('promoVideoUrl') && !/youtube\.com|youtu\.be|vimeo\.com/.test(form.watch('promoVideoUrl')) && (
-                    <video src={form.watch('promoVideoUrl')} className="h-24 rounded-md border border-border bg-black" controls preload="metadata" />
-                  )}
+                  {form.watch('promoVideoUrl') && <PublicVideo url={form.watch('promoVideoUrl')} title="Aperçu de la vidéo promotionnelle" className="w-full max-w-sm aspect-video" />}
                 </div>
                 <FormField control={form.control} name="promoVideoUrl" render={({ field }) => (
-                  <FormItem><FormControl><Input {...field} placeholder="…ou collez une URL de vidéo" /></FormControl></FormItem>
+                  <FormItem>
+                    <FormLabel>Lien vidéo ou code d’intégration (YouTube, Facebook, Vimeo…)</FormLabel>
+                    <FormControl><Textarea {...field} rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par la plateforme" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
               </div>
 
@@ -816,12 +819,14 @@ function ContentTab({ pwd }: { pwd: string }) {
                       }}
                     />
                   </label>
-                  {form.watch('videoUrl') && !/youtube\.com|youtu\.be|vimeo\.com/.test(form.watch('videoUrl')) && (
-                    <video src={form.watch('videoUrl')} className="h-24 rounded-md border border-border bg-black" controls preload="metadata" />
-                  )}
+                  {form.watch('videoUrl') && <PublicVideo url={form.watch('videoUrl')} title="Aperçu de la vidéo de présentation" className="w-full max-w-sm aspect-video" />}
                 </div>
                 <FormField control={form.control} name="videoUrl" render={({ field }) => (
-                  <FormItem><FormControl><Input {...field} placeholder="…ou collez une URL de vidéo" /></FormControl></FormItem>
+                  <FormItem>
+                    <FormLabel>Lien vidéo ou code d’intégration (YouTube, Facebook, Vimeo…)</FormLabel>
+                    <FormControl><Textarea {...field} rows={3} placeholder="Collez un lien vidéo ou le code iframe fourni par la plateforme" /></FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
               </div>
               <FormField control={form.control} name="whatsappNumber" render={({ field }) => (

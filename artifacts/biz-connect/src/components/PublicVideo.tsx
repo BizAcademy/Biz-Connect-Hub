@@ -41,41 +41,74 @@ function toPlayableVideoUrl(url: string, reloadToken: string): string {
 
 function toEmbedUrl(url: string): EmbeddedVideo | null {
   if (!url) return null;
-  const ytShort = url.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/i);
+  // Accept the standard iframe snippet supplied by video platforms, but
+  // extract only its URL and rebuild a trusted provider embed below.
+  const iframeSrc = url.match(/<iframe\b[^>]*\bsrc\s*=\s*(["'])(.*?)\1/i);
+  const source = (iframeSrc?.[2] ?? url).replace(/&amp;/gi, '&').trim();
+  let parsed: URL;
+  try {
+    parsed = new URL(source);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'https:') return null;
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
+  const path = parsed.pathname;
+
+  const ytShort = source.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/i);
   if (ytShort) {
     return {
       url: `https://www.youtube.com/embed/${ytShort[1]}`,
       aspectClass: 'aspect-[9/16] max-w-md mx-auto',
     };
   }
-  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
-  if (yt) return { url: `https://www.youtube.com/embed/${yt[1]}`, aspectClass: 'aspect-video' };
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
-  if (vimeo) return { url: `https://player.vimeo.com/video/${vimeo[1]}`, aspectClass: 'aspect-video' };
-  const dm = url.match(/dailymotion\.com\/(?:video|embed\/video)\/([A-Za-z0-9]+)/i);
-  if (dm) return { url: `https://www.dailymotion.com/embed/video/${dm[1]}`, aspectClass: 'aspect-video' };
+  const yt = source.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/i);
+  if (yt && ['youtube.com', 'm.youtube.com', 'youtu.be', 'youtube-nocookie.com'].includes(host)) {
+    const embed = new URL(`https://www.youtube-nocookie.com/embed/${yt[1]}`);
+    const start = parsed.searchParams.get('start') ?? parsed.searchParams.get('t');
+    if (start && /^\d+$/.test(start)) embed.searchParams.set('start', start);
+    return { url: embed.toString(), aspectClass: 'aspect-video' };
+  }
+  const vimeo = path.match(/\/(?:video\/)?(\d+)/i);
+  if (vimeo && ['vimeo.com', 'player.vimeo.com'].includes(host)) return { url: `https://player.vimeo.com/video/${vimeo[1]}`, aspectClass: 'aspect-video' };
+  const dm = path.match(/\/(?:video\/|embed\/video\/)([A-Za-z0-9]+)/i);
+  const dmShort = host === 'dai.ly' ? path.match(/^\/([A-Za-z0-9]+)/) : null;
+  if ((dm || dmShort) && ['dailymotion.com', 'dai.ly'].includes(host)) return { url: `https://www.dailymotion.com/embed/video/${(dm || dmShort)![1]}`, aspectClass: 'aspect-video' };
 
-  const instagram = url.match(/instagram\.com\/(reel|p)\/([^/?#]+)/i);
-  if (instagram) {
+  const instagram = path.match(/^\/(reel|p)\/([^/?#]+)/i);
+  if (instagram && host === 'instagram.com') {
     return {
       url: `https://www.instagram.com/${instagram[1]}/${instagram[2]}/embed/captioned/`,
       aspectClass: 'aspect-[9/16] max-w-md mx-auto',
     };
   }
 
-  const tiktok = url.match(/tiktok\.com\/@[^/]+\/video\/(\d+)/i);
-  if (tiktok) {
+  const tikTokPath = path.match(/\/@[^/]+\/video\/(\d+)/i);
+  const tikTokEmbedPath = path.match(/^\/embed\/v2\/(\d+)/i);
+  if ((tikTokPath || tikTokEmbedPath) && host === 'tiktok.com') {
+    const id = (tikTokPath ?? tikTokEmbedPath)![1];
     return {
-      url: `https://www.tiktok.com/embed/v2/${tiktok[1]}`,
+      url: `https://www.tiktok.com/embed/v2/${id}`,
       aspectClass: 'aspect-[9/16] max-w-md mx-auto',
     };
   }
 
-  if (/facebook\.com|fb\.watch/i.test(url)) {
-    return {
-      url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`,
-      aspectClass: 'aspect-video',
-    };
+  if (host === 'facebook.com' || host === 'fb.watch') {
+    const shareUrl = host === 'facebook.com' && path.startsWith('/plugins/video.php')
+      ? parsed.searchParams.get('href')
+      : source;
+    if (!shareUrl) return null;
+    try {
+      const shared = new URL(shareUrl);
+      const sharedHost = shared.hostname.toLowerCase().replace(/^www\./, '');
+      if (shared.protocol !== 'https:' || !['facebook.com', 'fb.watch', 'm.facebook.com'].includes(sharedHost)) return null;
+    } catch {
+      return null;
+    }
+    const embed = new URL('https://www.facebook.com/plugins/video.php');
+    embed.searchParams.set('href', shareUrl);
+    embed.searchParams.set('show_text', 'false');
+    return { url: embed.toString(), aspectClass: 'aspect-video' };
   }
 
   return null;
@@ -110,12 +143,13 @@ export function PublicVideo({
 
   if (embedUrl) {
     return (
-      <div className={`w-full rounded-xl overflow-hidden ${embedUrl.aspectClass} ${className}`}>
+      <div className={`w-full rounded-xl overflow-hidden bg-black shadow-lg ring-1 ring-black/10 ${embedUrl.aspectClass} ${className}`}>
         <iframe
           src={embedUrl.url}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          referrerPolicy="strict-origin-when-cross-origin"
           className="w-full h-full"
         />
       </div>
